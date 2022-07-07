@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: there
+
+  datasource:
+    url: jdbc:mysql://theredb.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com
+    username: admin
+    password: therezzang!
+    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
+  sql:
+    init:
+      platform: mysql
