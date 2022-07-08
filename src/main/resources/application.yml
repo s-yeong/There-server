@@ -6,10 +6,10 @@ spring:
     name: there
 
   datasource:
-    url: jdbc:mysql://theredb.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com
-    username: admin
+    url: jdbc:mysql://there-db.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com
+    username: There
     password: therezzang!
-    driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
+    driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
       platform: mysql
