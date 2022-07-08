@@ -1,4 +1,4 @@
-package com.there.src.Post.model;
+package com.there.src.post.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
