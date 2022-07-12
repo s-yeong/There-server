@@ -96,7 +96,30 @@ public class HistoryController {
         }
     }
 
+    /**
+     * 히스토리 삭제 API
+     * [PATCH] /historys/:historyIdx/status
+     * @return BaseResponse<result>
+     */
+    @ResponseBody
+    @PatchMapping("/{historyIdx}/status")
+    public BaseResponse<String> deleteHistory(@PathVariable ("historyIdx") int historyIdx) {
 
+        try {
+
+            // 유저 로그인 API 작성 완료시 주석해제
+            // int userIdxByJwt = jwtService.getUserIdx();
+            //historyService.deleteHistory(userIdxByJwt, historyIdx);
+            int userIdxByJwt = 1;   // 유저 로그인 API 작성 완료시 삭제
+            historyService.deleteHistory(userIdxByJwt, historyIdx);
+
+            String result = "히스토리가 삭제되었습니다.";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }
 

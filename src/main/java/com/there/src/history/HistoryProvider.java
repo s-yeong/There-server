@@ -50,4 +50,29 @@ public class HistoryProvider {
 
     }
 
+    public int checkUserExist(int userIdx) throws BaseException{
+        try{
+            return historyDao.checkUserExist(userIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public int checkHistoryExist(int historyIdx) throws BaseException{
+        try{
+            return historyDao.checkHistoryExist(historyIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public int checkUserHistoryExist(int userIdx, int historyIdx) throws BaseException{
+        try{
+            return historyDao.checkUserHistoryExist(userIdx, historyIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

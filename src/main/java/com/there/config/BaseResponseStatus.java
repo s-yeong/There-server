@@ -22,6 +22,11 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    // ******** ethan ********
+    // users
+    USERS_EMPTY_USER_ID(false,2010, "유저 아이디 값을 확인해주세요."),
+    USERS_HISTORYS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
+    HISTORYS_EMPTY_HISTORY_ID(false, 2030, "히스토리 아이디 값을 확인해주세요."),
 
     /**
      * 3000 : Response 오류
@@ -29,6 +34,8 @@ public enum BaseResponseStatus {
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
 
+    // ******** ethan ********
+    DELETE_FAIL_HISTORY(false, 3030,"히스토리 삭제를 실패하였습니다."),
 
 
     /**
@@ -37,6 +44,7 @@ public enum BaseResponseStatus {
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
+
 
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),

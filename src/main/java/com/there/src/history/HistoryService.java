@@ -49,4 +49,34 @@ public class HistoryService {
         }
     }
 
+    // 히스토리 삭제
+    public void deleteHistory(int userIdx, int historyIdx) throws BaseException{
+
+
+        if(historyProvider.checkUserExist(userIdx) == 0){
+            throw new BaseException(USERS_EMPTY_USER_ID);
+        }
+
+        if(historyProvider.checkHistoryExist(historyIdx) == 0){
+            throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
+        }
+
+        // 이 히스토리의 userIdx가 맞는지
+        if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
+            throw new BaseException(USERS_HISTORYS_INVALID_ID);
+        }
+
+        try{
+
+            int result = historyDao.deleteHistory(historyIdx);
+            if(result == 0){
+                throw new BaseException(DELETE_FAIL_HISTORY);
+            }
+
+        }
+        catch (Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

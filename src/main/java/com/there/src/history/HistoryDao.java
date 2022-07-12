@@ -102,5 +102,53 @@ public class HistoryDao {
         return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
     }
 
+    // 히스토리 삭제 함수
+    public int deleteHistory(int historyIdx){
+        String deleteHistoryQuery = "update History SET status = 'DELETED' where historyIdx = ?;" ;
+        int deleteHistoryParam = historyIdx;
+        return this.jdbcTemplate.update(deleteHistoryQuery,
+                deleteHistoryParam);
+
+    }
+
+    // 유저 체크 함수
+    public int checkUserExist(int userIdx){
+        String checkUserExistQuery = "select exists(select userIdx\n" +
+                "from User\n" +
+                "where userIdx = ?);" ;
+        int checkUserExistParam = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserExistQuery,
+                int.class,
+                checkUserExistParam);
+
+    }
+
+    // 히스토리 체크 함수
+    public int checkHistoryExist(int historyIdx){
+        String checkHistoryExistQuery = "select exists(select historyIdx\n" +
+                "from History\n" +
+                "where historyIdx = ?);" ;
+        int checkHistoryExistParam = historyIdx;
+        return this.jdbcTemplate.queryForObject(checkHistoryExistQuery,
+                int.class,
+                checkHistoryExistParam);
+
+    }
+
+    // 히스토리 유저 체크 함수
+    public int checkUserHistoryExist(int userIdx, int historyIdx){
+        String checkUserHistoryExistQuery = "select exists(\n" +
+                "    select h.historyIdx, u.userIdx\n" +
+                "    from History as h\n" +
+                "        join User as u on u.userIdx = h.userIdx\n" +
+                "    where u.userIdx=? and h.historyIdx = ?);" ;
+        Object []checkUserHistoryExistParams = new Object[] {userIdx, historyIdx};
+        return this.jdbcTemplate.queryForObject(checkUserHistoryExistQuery,
+                int.class,
+                checkUserHistoryExistParams);
+
+    }
+
+
 
 }
