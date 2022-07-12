@@ -6,7 +6,7 @@ spring:
     name: there
 
   datasource:
-    url: jdbc:mysql://there-db.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com:3306/there
+    url: jdbc:mysql://there-db.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com/There
     username: There
     password: therezzang!
     driver-class-name: com.mysql.cj.jdbc.Driver
