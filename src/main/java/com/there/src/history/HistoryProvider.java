@@ -37,4 +37,17 @@ public class HistoryProvider {
         }
     }
 
+    // 히스토리 리스트 조회
+    public List<GetHistoryListRes> retrieveHistorys(int postIdx) throws BaseException{
+        try{
+            List<GetHistoryListRes> getHistoryList = historyDao.selectHistoryList(postIdx);
+            return getHistoryList;
+        }
+        catch (Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
 }

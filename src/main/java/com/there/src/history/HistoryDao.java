@@ -55,4 +55,30 @@ public class HistoryDao {
                 ), selectHistoryParam);
     }
 
+    // 히스토리 리스트 조회 함수
+    public List<GetHistoryListRes> selectHistoryList(int postIdx){
+        String selectHistoryListQuery = "select h.historyIdx as historyIdx, h.title as title,\n" +
+                "       DATE(h.updated_At) as updatedAt,\n" +
+                "        CASE DAYOFWEEK(h.updated_At)\n" +
+                "        WHEN '1' THEN '(일)'\n" +
+                "        WHEN '2' THEN '(월)'\n" +
+                "        WHEN '3' THEN '(화)'\n" +
+                "        WHEN '4' THEN '(수)'\n" +
+                "        WHEN '5' THEN '(목)'\n" +
+                "        WHEN '6' THEN '(금)'\n" +
+                "        WHEN '7' THEN '(토)'\n" +
+                "        END AS dayOfWeek\n" +
+                "from History as h\n" +
+                "    join Post as p on p.postIdx = h.postIdx\n" +
+                "where p.postIdx = ? and h.status = 'ACTIVE';";
+        int selectHistoryListParam = postIdx;
+        return this.jdbcTemplate.query(selectHistoryListQuery,
+                (rs, rowNum) -> new GetHistoryListRes(
+                        rs.getInt("historyIdx"),
+                        rs.getString("title"),
+                        rs.getString("updatedAt"),
+                        rs.getString("dayOfWeek")
+                ), selectHistoryListParam);
+    }
+
 }

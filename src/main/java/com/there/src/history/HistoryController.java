@@ -39,7 +39,7 @@ public class HistoryController {
     /**
      * 히스토리 조회 API   -- ex) "히스토리 제목" 누르면 그 히스토리 조회
      * [GET] /historys/:historyIdx
-     * @return BaseResponse<GetHistoryRes>
+     * @return BaseResponse<getHistoryRes>
      */
     @ResponseBody
     @GetMapping("/{historyIdx}")
@@ -53,6 +53,25 @@ public class HistoryController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 히스토리 리스트 조회 API  -- ex) "히스토리의 제목" + 날짜들이 리스트로 조회
+     * [GET] /historys?postIdx=
+     * @return BaseResponse<getHistoryListRes>
+     */
+    @ResponseBody
+    @GetMapping("")
+    public BaseResponse<List<GetHistoryListRes>> getHistoryList(@RequestParam int postIdx) {
+        try{
+
+            List<GetHistoryListRes> getHistoryListRes = historyProvider.retrieveHistorys(postIdx);
+            return new BaseResponse<>(getHistoryListRes);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 
 
 
