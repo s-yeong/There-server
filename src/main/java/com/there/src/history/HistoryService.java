@@ -28,4 +28,25 @@ public class HistoryService {
 
     }
 
+    // 히스토리 작성
+    public PostHistoryRes createHistory(int userIdx, PostHistoryReq postHistoryReq) throws BaseException {
+
+        try{
+
+            // 히스토리 DB에서 생성시 히스토리 식별자 Dao에서 가져옴
+            int historyIdx = historyDao.insertHistory(userIdx, postHistoryReq);
+
+            for(int i = 0; i < postHistoryReq.getPostHistoryPicturesReq().size(); i++){
+                historyDao.insertHistoryPicture(historyIdx, postHistoryReq.getPostHistoryPicturesReq().get(i));
+            }
+
+            return new PostHistoryRes(historyIdx);
+        }
+        catch (Exception exception) {
+
+            throw new BaseException(DATABASE_ERROR);
+
+        }
+    }
+
 }

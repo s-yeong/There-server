@@ -72,6 +72,29 @@ public class HistoryController {
         }
     }
 
+    /**
+     * 히스토리 작성 API
+     * [POST] /historys
+     * @return BaseResponse<postHistoryRes>
+     */
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<PostHistoryRes> createHistory(@RequestBody PostHistoryReq postHistoryReq) {
+
+
+        try {
+
+            // 유저 로그인 API 작성 완료시 주석해제
+            // int userIdxByJwt = jwtService.getUserIdx();
+
+            //PostHistoryRes postHistoryRes = historyService.createHistory(userIdxByJwt, postHistoryReq);
+            PostHistoryRes postHistoryRes = historyService.createHistory(postHistoryReq.getUserIdx(), postHistoryReq);
+            return new BaseResponse<>(postHistoryRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
 

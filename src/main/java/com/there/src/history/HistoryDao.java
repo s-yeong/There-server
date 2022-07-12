@@ -81,4 +81,26 @@ public class HistoryDao {
                 ), selectHistoryListParam);
     }
 
+    // 히스토리 작성 API - 히스토리 작성 함수(이미지 제외)
+    public int insertHistory(int userIdx, PostHistoryReq postHistoryReq){
+        String insertHistoryQuery = "insert into History(userIdx, postIdx, title, content) VALUES (?,?,?,?)";;
+        Object[] insertHistoryParams = new Object[] {userIdx, postHistoryReq.getPostIdx(), postHistoryReq.getTitle(), postHistoryReq.getContent()};
+        this.jdbcTemplate.update(insertHistoryQuery,
+                insertHistoryParams);
+        String lastInsertIdxQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
+    }
+
+    // 히스토리 작성 API - 히스토리 이미지 작성 함수
+    public int insertHistoryPicture(int historyIdx, PostHistoryPicturesReq postHistoryPicturesReq){
+        String insertHistoryPicturesQuery = "insert into historyPicture(historyIdx, imgUrl) VALUES (?,?);";
+        Object []insertHistoryPicturesParams = new Object[] {historyIdx, postHistoryPicturesReq.getImgUrl()};
+        this.jdbcTemplate.update(insertHistoryPicturesQuery,
+                insertHistoryPicturesParams);
+
+        String lastInsertIdxQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
+    }
+
+
 }
