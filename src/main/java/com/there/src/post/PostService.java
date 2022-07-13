@@ -39,6 +39,17 @@ public class PostService {
         }
     }
 
+    // 게시글 수정
+    public void updatePosts(PatchPostsReq patchPostsReq) throws BaseException {
+        try {
+            int result = postDao.updatePosts(patchPostsReq);
+            // 삭제 확인 (0 : 실패 / 1 : 성공)
+            if (result == 0) throw new BaseException(DATABASE_ERROR);
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     // 게시글 삭제
     public void deletePosts(int postIdx) throws BaseException {
@@ -52,17 +63,5 @@ public class PostService {
             throw new BaseException(DATABASE_ERROR);
         }
 
-    }
-
-    // 게시글 수정
-    public void updatePosts(PatchPostsReq patchPostsReq) throws BaseException {
-        try {
-            int result = postDao.updatePosts(patchPostsReq);
-            // 삭제 확인 (0 : 실패 / 1 : 성공)
-            if (result == 0) throw new BaseException(DATABASE_ERROR);
-        }
-        catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
     }
 }

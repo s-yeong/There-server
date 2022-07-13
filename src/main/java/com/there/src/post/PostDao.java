@@ -36,15 +36,6 @@ public class PostDao {
         return this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
     }
 
-    // 게시물 삭제
-    public int deletePosts(int postIdx) {
-
-        String deletePostQuery = "UPDATE Post SET status = 'INACTIVE' WHERE postIdx = ?";
-        int deletePostParams = postIdx;
-
-        return this.jdbcTemplate.update(deletePostQuery, postIdx);
-    }
-
     // 게시물 수정
     public int updatePosts(PatchPostsReq patchPostsReq) {
 
@@ -55,6 +46,14 @@ public class PostDao {
 
     }
 
+    // 게시물 삭제
+    public int deletePosts(int postIdx) {
+
+        String deletePostQuery = "UPDATE Post SET status = 'INACTIVE' WHERE postIdx = ?";
+        int deletePostParams = postIdx;
+
+        return this.jdbcTemplate.update(deletePostQuery, postIdx);
+    }
 
 
 }

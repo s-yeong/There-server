@@ -46,22 +46,7 @@ public class PostController {
 
     }
 
-    // 게시글 삭제
-    @ResponseBody
-    @PatchMapping("postIdx/{postIdx}")
-    public BaseResponse<String> deletePosts(@PathVariable("postIdx") int postIdx) {
-
-        try {
-            postService.deletePosts(postIdx);
-            String result = "게시글 삭제를 성공했습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-
-    }
-
-    // 개시굴 수정
+    // 게시글 수정
     @ResponseBody
     @PatchMapping("")
     public BaseResponse<String> updatePosts(@RequestBody PatchPostsReq patchPostsReq) {
@@ -77,5 +62,19 @@ public class PostController {
 
     }
 
+    // 게시글 삭제
+    @ResponseBody
+    @PatchMapping("postIdx/{postIdx}")
+    public BaseResponse<String> deletePosts(@PathVariable("postIdx") int postIdx) {
+
+        try {
+            postService.deletePosts(postIdx);
+            String result = "게시글 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
 
 }
