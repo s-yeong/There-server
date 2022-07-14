@@ -1,8 +1,6 @@
 package com.there.src.history;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
-import com.there.config.BaseResponseStatus;
+import com.there.src.history.cofig.*;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
