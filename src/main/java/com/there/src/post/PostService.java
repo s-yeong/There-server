@@ -2,6 +2,10 @@ package com.there.src.post;
 
 import com.there.config.BaseException;
 import com.there.config.BaseResponseStatus;
+import com.there.src.like.model.PatchLikeReq;
+import com.there.src.post.model.PatchPostsReq;
+import com.there.src.post.model.PostPostsReq;
+import com.there.src.post.model.PostPostsRes;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,29 +20,48 @@ public class PostService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PostDao postDao;
-    private final PostProvider PostProvider;
     private final JwtService jwtService;
 
     @Autowired
-    public PostService(PostDao postDao, PostProvider postProvider, JwtService jwtService) {
+    public PostService(PostDao postDao, JwtService jwtService) {
         this.postDao = postDao;
-        this.PostProvider = postProvider;
         this.jwtService = jwtService;
 
     }
 
-    public void deletePost(int postIdx) throws BaseException {
+    // 게시글 생성
+    public PostPostsRes createPosts(int userIdx, PostPostsReq postPostsReq) throws BaseException {
+        try {
+            int postIdx = postDao.createPosts(userIdx, postPostsReq);
+            return new PostPostsRes(postIdx);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 게시글 수정
+    public void updatePosts(PatchPostsReq patchPostsReq) throws BaseException {
+        try {
+            int result = postDao.updatePosts(patchPostsReq);
+            // 삭제 확인 (0 : 실패 / 1 : 성공)
+            if (result == 0) throw new BaseException(DATABASE_ERROR);
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 게시글 삭제
+    public void deletePosts(int postIdx) throws BaseException {
 
         try {
-            int result = postDao.deletePost(postIdx);
+            int result = postDao.deletePosts(postIdx);
             // 삭제 확인 (0 : 실패 / 1 : 성공)
-            if (result == 0) throw new BaseException(DELETE_FAIL_POST);
+            if (result == 0) throw new BaseException(DATABASE_ERROR);
         }
         catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
 
     }
-
-
 }

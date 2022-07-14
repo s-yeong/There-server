@@ -2,8 +2,9 @@ package com.there.src.post.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class GetPostsReq {
 }
