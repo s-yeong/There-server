@@ -1,8 +1,5 @@
 package com.there.src.post;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponseStatus;
-import com.there.src.like.model.PatchLikeReq;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;

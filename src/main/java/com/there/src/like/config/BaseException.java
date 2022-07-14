@@ -1,4 +1,4 @@
-package com.there.config;
+package com.there.src.like.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

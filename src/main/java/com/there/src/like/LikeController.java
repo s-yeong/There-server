@@ -1,7 +1,5 @@
 package com.there.src.like;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
 import com.there.src.like.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;

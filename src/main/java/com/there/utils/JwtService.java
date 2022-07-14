@@ -1,7 +1,6 @@
 package com.there.utils;
 
 
-import com.there.config.BaseException;
 import com.there.config.secret.Secret;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

@@ -1,4 +1,4 @@
-package com.there.src.history.cofig;
+package com.there.src.post.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.there.src.history.cofig.BaseResponseStatus.SUCCESS;
+import static com.there.src.post.config.BaseResponseStatus.SUCCESS;
 
 @Getter
 @AllArgsConstructor

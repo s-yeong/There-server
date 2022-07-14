@@ -1,6 +1,5 @@
 package com.there.src.like;
 
-import com.there.config.BaseException;
 import com.there.src.like.model.DeleteLikeReq;
 import com.there.src.like.model.PostLikeReq;
 import com.there.src.like.model.PostLikeRes;

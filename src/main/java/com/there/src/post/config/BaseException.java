@@ -1,4 +1,4 @@
-package com.there.src.history.cofig;
+package com.there.src.post.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

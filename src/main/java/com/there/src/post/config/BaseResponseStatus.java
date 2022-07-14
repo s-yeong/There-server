@@ -1,4 +1,4 @@
-package com.there.config;
+package com.there.src.post.config;
 
 import lombok.Getter;
 

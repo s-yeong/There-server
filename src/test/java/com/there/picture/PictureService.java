@@ -1,6 +1,5 @@
 package com.there.picture;
 
-import com.there.config.BaseException;
 import com.there.picture.model.PostPictureReq;
 import com.there.picture.model.PostPictureRes;
 import com.there.src.picture.model.*;
