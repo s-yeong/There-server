@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PatchPostsReq {
 
-    private int postIdx;
     private String ImgUrl;
     private String content;
 

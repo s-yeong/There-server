@@ -1,5 +1,6 @@
 package com.there.src.like;
 
+import com.there.src.like.config.BaseException;
 import com.there.src.like.model.DeleteLikeReq;
 import com.there.src.like.model.PostLikeReq;
 import com.there.src.like.model.PostLikeRes;
@@ -7,7 +8,7 @@ import com.there.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.src.like.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class LikeService {
@@ -22,9 +23,9 @@ public class LikeService {
     }
     
     // 좋아요 및 감정표현 생성
-    public PostLikeRes createLikes(PostLikeReq postLikeReq) throws BaseException {
+    public PostLikeRes createLikes(int userIdx, PostLikeReq postLikeReq) throws BaseException {
         try {
-            int likesIdx = likeDao.createLikes(postLikeReq);
+            int likesIdx = likeDao.createLikes(userIdx, postLikeReq);
             return new PostLikeRes(likesIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
@@ -42,9 +43,9 @@ public class LikeService {
     }
 
     // 좋아요 및 감정표현 삭제
-    public void deleteLikes(DeleteLikeReq deleteLikeReq) throws BaseException {
+    public void deleteLikes(int likesIdx,DeleteLikeReq deleteLikeReq) throws BaseException {
         try {
-            int result = likeDao.deleteLikes(deleteLikeReq);
+            int result = likeDao.deleteLikes(likesIdx, deleteLikeReq);
             if (result == 0) throw new BaseException(DATABASE_ERROR);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

@@ -21,10 +21,10 @@ public class LikeDao {
     }
 
     // 좋아요 및 감정표현 생성
-    public int createLikes(PostLikeReq postLikeReq) {
+    public int createLikes(int userIdx, PostLikeReq postLikeReq) {
 
         String insertLikeQuery = "insert into postLikes (userIdx, postIdx, emotion) values (?, ?, ?);";
-        Object[] insertLikeParams = new Object[]{postLikeReq.getUserIdx(), postLikeReq.getPostIdx(), postLikeReq.getEmotion()};
+        Object[] insertLikeParams = new Object[]{userIdx, postLikeReq.getPostIdx(), postLikeReq.getEmotion()};
         String lastinsertIdxQuery = "select last_insert_id()";
 
         this.jdbcTemplate.update(insertLikeQuery, insertLikeParams);
@@ -52,10 +52,12 @@ public class LikeDao {
     }
 
     // 좋아요 및 감정표현 삭제
-    public int deleteLikes(DeleteLikeReq deleteLikeReq) {
-        String insertLikeQuery = "delete from postLikes where userIdx = ? and postIdx = ?;";
-        Object[] insertLikeParams = new Object[]{deleteLikeReq.getUserIdx(), deleteLikeReq.getPostIdx()};
+    public int deleteLikes(int likesIdx,DeleteLikeReq deleteLikeReq) {
+        String insertLikeQuery = "delete from postLikes where likeIdx = ? ;";
+        int insertLikeParams = likesIdx;
 
         return this.jdbcTemplate.update(insertLikeQuery, insertLikeParams);
     }
+
+
 }

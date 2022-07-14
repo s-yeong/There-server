@@ -1,5 +1,7 @@
 package com.there.src.like;
 
+import com.there.src.like.config.BaseException;
+import com.there.src.like.config.BaseResponse;
 import com.there.src.like.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.there.src.like.config.BaseResponseStatus.*;
 
 @Api
 @RestController
@@ -28,21 +32,33 @@ public class LikeController {
         this.jwtService = jwtService;
     }
 
-    // 좋아요 및 감정표현 생성
+    /**
+     * 좋아요 및 감정표현 생성 API
+     * /lieks/users/:userIdx
+     */
     @ResponseBody
-    @PostMapping("")
-    public BaseResponse<PostLikeRes> createLikes(@RequestBody PostLikeReq postLikeReq) {
+    @PostMapping("/users/{usedIdx}")
+    public BaseResponse<PostLikeRes> createLikes(@PathVariable("userIdx")int userIdx, @RequestBody PostLikeReq postLikeReq) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        // User 권한 확인
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
         try {
-            PostLikeRes postLikeRes = likeService.createLikes(postLikeReq);
+            PostLikeRes postLikeRes = likeService.createLikes(userIdx, postLikeReq);
             return new BaseResponse<>(postLikeRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    // 좋아요 및 감정표현 조회
+    /**
+     * 좋아요 및 감정표현 조회 API
+     * likes/posts/:postIdx
+     */
     @ResponseBody
-    @GetMapping("/{postIdx}")
+    @GetMapping("posts/{postIdx}")
     public BaseResponse<List<GetLikeRes>> selectLikes(@PathVariable("postIdx")int postIdx) {
         try {
             List<GetLikeRes> getLikes = likeProvider.retrieveLikes(postIdx);
@@ -52,13 +68,22 @@ public class LikeController {
         }
     }
 
-    // 좋아요 및 감정표현 수정
+    /**
+     * 좋아요 및 감정표현 수정 API
+     * likes/users/:userIdx/post/:postIdx
+     */
     @ResponseBody
-    @PatchMapping("/update")
-    public BaseResponse<String> updateLikes(@RequestBody PatchLikeReq patchLikeReq) {
+    @PatchMapping("/users/{userIdx}/posts/{postIdx}")
+    public BaseResponse<String> updateLikes
+    (@PathVariable("userIdx") int userIdx, @PathVariable("postIdx") int postIdx, @RequestBody PatchLikeReq patchLikeReq) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        // User 권한 확인
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
         try {
-            likeService.updateLikes(patchLikeReq.getUserIdx(), patchLikeReq.getPostIdx(), patchLikeReq.getEmotion());
+            likeService.updateLikes(userIdx, postIdx, patchLikeReq.getEmotion());
             String result = "변경 완료";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -67,14 +92,17 @@ public class LikeController {
 
     }
 
-    // 좋아요 및 감정표현 삭제
+    /**
+     * 좋아요 및 감정표현 삭제 API
+     * likes/:likesIdx
+     */
     @ResponseBody
-    @DeleteMapping("/delete")
-    public BaseResponse<String> deleteLikes(@RequestBody DeleteLikeReq deleteLikeReq) {
-
+    @DeleteMapping("/{likesIdx}")
+    public BaseResponse<String> deleteLikes
+    (@PathVariable("likesIdx")int likesIdx, @RequestBody DeleteLikeReq deleteLikeReq) {
         try {
-            likeService.deleteLikes(deleteLikeReq);
-            String result = "좋아요 및 감정표현 삭제 완료";
+            likeService.deleteLikes(likesIdx, deleteLikeReq);
+            String result = "삭제 완료";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

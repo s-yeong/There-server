@@ -1,5 +1,4 @@
-package com.there.picture.model;
-
+package com.there.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PatchHistoryPicturesReq {
-
-    private String imgUrl;
-
+public class BaseException extends Exception {
+    private BaseResponseStatus status;
 }

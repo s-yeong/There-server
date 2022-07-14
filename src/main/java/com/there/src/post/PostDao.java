@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
-
 @Repository
 public class PostDao {
 
@@ -32,11 +30,36 @@ public class PostDao {
         return this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
     }
 
-    // 게시물 수정
-    public int updatePosts(PatchPostsReq patchPostsReq) {
+    /**
+     * 게시물 수정
+     * 1. 이미지, 콘텐츠 수정
+     * 2. 이미지 수정
+     * 3. 콘텐츠 수정
+     *
+     */
+
+    public int updatePosts(int postIdx, PatchPostsReq patchPostsReq) {
 
         String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), patchPostsReq.getPostIdx()};
+        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
+
+        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
+
+    }
+
+    public int updatepostsImgUrl(int postIdx, PatchPostsReq patchPostsReq) {
+
+        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
+        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
+
+        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
+
+    }
+
+    public int updatepostsContent(int postIdx, PatchPostsReq patchPostsReq) {
+
+        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
+        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
 
         return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
 
