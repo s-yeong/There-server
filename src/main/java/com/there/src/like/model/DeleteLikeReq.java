@@ -1,11 +1,14 @@
-package com.there.src.post.model;
+package com.there.src.like.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-public class PostPostsRes {
+@NoArgsConstructor
+public class DeleteLikeReq {
+
+    private int userIdx;
     private int postIdx;
+
 }

@@ -1,4 +1,5 @@
-package com.there.src.post.model;
+package com.there.src.like.model;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PatchPostsReq {
+public class PatchLikeReq {
 
+    private int userIdx;
     private int postIdx;
-    private String ImgUrl;
-    private String content;
+    private int emotion;
 
 }
