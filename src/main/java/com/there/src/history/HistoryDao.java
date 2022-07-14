@@ -111,6 +111,58 @@ public class HistoryDao {
 
     }
 
+    // 히스토리 수정 화면 조회 함수
+    public GetHistoryScreenRes selectModifyHistory(int historyIdx){
+        String selectModifyHistoryQuery = "select h.historyIdx, h.title, h.content\n" +
+                "from History as h\n" +
+                "where h.historyIdx = ?;";
+        int selectModifyHistoryParam = historyIdx;
+        return this.jdbcTemplate.queryForObject(selectModifyHistoryQuery,
+                (rs, rowNum) -> new GetHistoryScreenRes(
+                        rs.getInt("historyIdx"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        getHistoryPicturesRes = this.jdbcTemplate.query("select hp.pictureIdx as pictureIdx, hp.imgUrl as imgUrl\n" +
+                                        "from historyPicture as hp\n" +
+                                        "    join History as h on h.historyIdx = hp.historyIdx\n" +
+                                        "where h.historyIdx = ? and hp.liked_ip = 'ACTIVE';",
+                                (rk, rownum) -> new GetHistoryPicturesRes(
+                                        rk.getInt("pictureIdx"),
+                                        rk.getString("imgUrl")
+                                ), rs.getInt("historyIdx"))
+                ), selectModifyHistoryParam);
+    }
+
+    // 히스토리 수정 API - 히스토리 수정 함수(이미지 제외)
+    public int updateHistory(int historyIdx, PatchHistoryReq patchHistoryReq){
+        String updateHistoryQuery = "update History set title=?,content=? where historyIdx = ?;\n" ;
+        Object []updateHistoryParams = new Object[] {patchHistoryReq.getTitle(), patchHistoryReq.getContent(), historyIdx};
+        return this.jdbcTemplate.update(updateHistoryQuery,
+                updateHistoryParams);
+
+    }
+
+    // 히스토리 수정 API - 히스토리 이미지 삭제 함수
+    public int deleteHistoryPictures(int historyIdx){
+        String deleteHistoryPicturesQuery = "delete from historyPicture where historyIdx = ?;";
+        Object []deleteHistoryPicturesParams = new Object[] {historyIdx};
+        return this.jdbcTemplate.update(deleteHistoryPicturesQuery,
+                deleteHistoryPicturesParams);
+
+    }
+
+    // 히스토리 수정 API - 히스토리 이미지 작성 함수
+    public int updateHistoryPicture(int historyIdx, PatchHistoryPicturesReq patchHistoryPicturesReq){
+        String insertHistoryPicturesQuery = "insert into historyPicture(historyIdx, imgUrl) VALUES (?,?);";
+        Object []insertHistoryPicturesParams = new Object[] {historyIdx, patchHistoryPicturesReq.getImgUrl()};
+        this.jdbcTemplate.update(insertHistoryPicturesQuery,
+                insertHistoryPicturesParams);
+
+        String lastInsertIdxQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdxQuery, int.class);
+    }
+
+
     // 유저 체크 함수
     public int checkUserExist(int userIdx){
         String checkUserExistQuery = "select exists(select userIdx\n" +
@@ -149,6 +201,19 @@ public class HistoryDao {
 
     }
 
+    // 게시물 유저 체크 함수
+    public int checkUserPostExist(int userIdx, int postIdx){
+        String checkUserHistoryExistQuery = "select exists(\n" +
+                "    select p.postIdx, u.userIdx\n" +
+                "    from Post as p\n" +
+                "        join User as u on u.userIdx = p.userIdx\n" +
+                "    where u.userIdx=? and p.postIdx = ?);" ;
+        Object []checkUserHistoryExistParams = new Object[] {userIdx, postIdx};
+        return this.jdbcTemplate.queryForObject(checkUserHistoryExistQuery,
+                int.class,
+                checkUserHistoryExistParams);
+
+    }
 
 
 }

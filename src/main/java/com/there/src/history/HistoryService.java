@@ -33,11 +33,16 @@ public class HistoryService {
 
         try{
 
+            // 이 게시물이 userIdx가 맞는지
+            if(historyProvider.checkUserPostExist(userIdx, postHistoryReq.getPostIdx()) == 0){
+                throw new BaseException(USERS_POSTS_INVALID_ID);
+            }
+
             // 히스토리 DB에서 생성시 히스토리 식별자 Dao에서 가져옴
             int historyIdx = historyDao.insertHistory(userIdx, postHistoryReq);
 
-            for(int i = 0; i < postHistoryReq.getPostHistoryPicturesReq().size(); i++){
-                historyDao.insertHistoryPicture(historyIdx, postHistoryReq.getPostHistoryPicturesReq().get(i));
+            for(int i = 0; i < postHistoryReq.getPostHistoryPictures().size(); i++){
+                historyDao.insertHistoryPicture(historyIdx, postHistoryReq.getPostHistoryPictures().get(i));
             }
 
             return new PostHistoryRes(historyIdx);
@@ -73,10 +78,45 @@ public class HistoryService {
                 throw new BaseException(DELETE_FAIL_HISTORY);
             }
 
-        }
-        catch (Exception exception) {
-            System.out.println(exception);
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
+    // 히스토리 수정
+    public void modifyHistory(int userIdx, int historyIdx, PatchHistoryReq patchHistoryReq) throws BaseException {
+
+        try{
+            if(historyProvider.checkUserExist(userIdx) == 0){
+                throw new BaseException(USERS_EMPTY_USER_ID);
+            }
+
+            if(historyProvider.checkHistoryExist(historyIdx) == 0){
+                throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
+            }
+
+            // 이 히스토리의 userIdx가 맞는지
+            if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
+                throw new BaseException(USERS_HISTORYS_INVALID_ID);
+            }
+
+            int updateResult = historyDao.updateHistory(historyIdx, patchHistoryReq);
+            int deletePicturesResult = historyDao.deleteHistoryPictures(historyIdx);
+
+            for(int i = 0; i < patchHistoryReq.getPatchHistoryPictures().size(); i++){
+                historyDao.updateHistoryPicture(historyIdx, patchHistoryReq.getPatchHistoryPictures().get(i));
+            }
+
+            if(updateResult == 0 || deletePicturesResult == 0){
+                throw new BaseException(MODIFY_FAIL_HISTORY);
+            }
+
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

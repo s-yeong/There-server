@@ -7,16 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostHistoryReq {
+public class PatchHistoryReq {
 
-    private int postIdx;
+
     private String title;
     private String content;
 
-    private List<PostHistoryPicturesReq> postHistoryPictures;  // 기록물 이미지 리스트
+    private List<PatchHistoryPicturesReq> patchHistoryPictures;
 
 }

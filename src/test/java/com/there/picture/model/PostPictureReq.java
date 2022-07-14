@@ -1,16 +1,16 @@
-package com.there.src.history.model;
+package com.there.picture.model;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostHistoryPicturesReq {
+public class PostPictureReq {
 
+    private int historyIdx;
     private String imgUrl;
 
 }

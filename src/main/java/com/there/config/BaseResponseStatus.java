@@ -25,8 +25,16 @@ public enum BaseResponseStatus {
     // ******** ethan ********
     // users
     USERS_EMPTY_USER_ID(false,2010, "유저 아이디 값을 확인해주세요."),
-    USERS_HISTORYS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
+    USERS_POSTS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
+    USERS_HISTORYS_INVALID_ID(false,2012, "해당 유저가 아닙니다."),
     HISTORYS_EMPTY_HISTORY_ID(false, 2030, "히스토리 아이디 값을 확인해주세요."),
+
+    // histors
+    HISTORYS_EMPTY_TITLES(false,2050,"히스토리 제목을 입력해주세요."),
+    HISTORYS_INVALID_TITLES(false, 2051, "히스토리 제목의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_CONTENTS(false,2052,"히스토리 내용을 입력해주세요."),
+    HISTORYS_INVALID_CONTENTS(false, 2053, "히스토리 내용의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
 
     /**
      * 3000 : Response 오류
@@ -36,6 +44,7 @@ public enum BaseResponseStatus {
 
     // ******** ethan ********
     DELETE_FAIL_HISTORY(false, 3030,"히스토리 삭제를 실패하였습니다."),
+    MODIFY_FAIL_HISTORY(false, 3030,"히스토리 수정을 실패하였습니다."),
 
 
     /**
