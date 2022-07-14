@@ -61,7 +61,7 @@ public class PostController {
      * posts/{postIdx}/users/:userIdx
      */
     @ResponseBody
-    @PatchMapping("/{postIdx}/users/{userIdx}")
+    @PatchMapping("change/{postIdx}/users/{userIdx}")
     public BaseResponse<String> updatePosts
     (@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx, @RequestBody PatchPostsReq patchPostsReq) throws com.there.config.BaseException {
 
@@ -85,7 +85,7 @@ public class PostController {
      * posts/{postIdx}/users/:userIdx
      */
     @ResponseBody
-    @PatchMapping("/{postIdx}/users/{userIdx}")
+    @PatchMapping("deletion/{postIdx}/users/{userIdx}")
     public BaseResponse<String> deletePosts
     (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
 
