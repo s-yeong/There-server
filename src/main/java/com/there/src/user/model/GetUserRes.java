@@ -16,4 +16,7 @@ public class GetUserRes {
 
     private String info;
 
+    private int followerIdx;
+    private int followeeIdx;
+
 }

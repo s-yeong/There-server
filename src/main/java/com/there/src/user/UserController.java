@@ -76,12 +76,11 @@ public class UserController {
         try{
 
 
-            /*
             int userIdxByJwt = jwtService.getUserIdx();
             GetUserFeedRes getUserFeed=userProvider.retrieveUserFeed(userIdx,userIdxByJwt);
-            */
 
-            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);
+
+           /* GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);*/
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

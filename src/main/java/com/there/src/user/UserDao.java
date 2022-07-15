@@ -22,7 +22,17 @@ public class UserDao {
     }
 
     public GetUserRes getUsersByIdx(int userIdx){
-        String getUsersByIdxQuery = "select * from User where userIdx=?";
+        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info,followingCount, followeeCount\n" +
+                "from User\n" +
+                "    left join(select followeeIdx, count(followeeIdx) as followingCount\n" +
+                "        from Follow\n" +
+                "        where status ='ACTIVE'\n" +
+                "        group by followeeIdx) f on f.followeeIdx = User.userIdx\n" +
+                "    left join(select followerIdx, count(followerIdx) as followeeCount\n" +
+                "        from Follow\n" +
+                "        where status ='ACTIVE'\n" +
+                "        group by followerIdx) f1 on f1.followerIdx = User.userIdx\n" +
+                "where User.userIdx =?;";
         int getUsersByIdxParams = userIdx;
         return this.jdbcTemplate.queryForObject(getUsersByIdxQuery,
                 (rs, rowNum) -> new GetUserRes(
@@ -30,7 +40,9 @@ public class UserDao {
                         rs.getString("name"),
                         rs.getString("nickName"),
                         rs.getString("email"),
-                        rs.getString("info")),
+                        rs.getString("info"),
+                        rs.getInt("followingCount"),
+                        rs.getInt("followeeCount")),
                 getUsersByIdxParams);
     }
 
