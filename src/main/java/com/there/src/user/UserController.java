@@ -151,4 +151,57 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 프로필 수정
+     * [PATCH] /users/{userIdx}
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}")
+    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestBody PatchUserReq patchUserReq){
+        if(patchUserReq.getNickName() ==null) {
+            return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
+        }
+        if(patchUserReq.getProfileImgUrl() == null){
+            return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
+        }
+        if(patchUserReq.getName() == null){
+            return new BaseResponse<>(POST_USER_EMPTY_NAME);
+        }
+        if(patchUserReq.getInfo() == null){
+            return new BaseResponse<>(POST_USER_EMPTY_INFO);
+        }
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            userService.modifyProfile(userIdx, patchUserReq);
+            String result ="회원정보 수정을 완료하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 회원 삭제
+     * [PATCH] /{userIdx}/status
+     */
+    @ResponseBody
+    @PatchMapping("/{userIdx}/status")
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx){
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            userService.deleteUser(userIdx);
+
+            String result = "삭제되었습니다.";
+            return new BaseResponse<>(result);
+        } catch(BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

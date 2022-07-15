@@ -2,7 +2,10 @@ package com.there.src.user;
 
 
 import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+
+import static com.there.config.BaseResponseStatus.*;
+
+
 import com.there.src.user.model.*;
 import com.there.utils.AES256;
 import com.there.utils.JwtService;
@@ -12,9 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
-
-import static com.there.config.BaseResponseStatus.*;
-
 
 
 @Service
@@ -83,6 +83,34 @@ public class UserService {
                 throw new BaseException(DATABASE_ERROR);
             }
         }
+
+    // 유저 프로필 수정
+    public void modifyProfile(int userIdx, PatchUserReq patchUserReq) throws BaseException{
+        if(userProvider.checkUserExist(userIdx) == 0) {
+            throw new BaseException(USERS_EMPTY_USER_ID);
+        }
+         try {
+             int result = userDao.updateProfile(userIdx, patchUserReq);
+             if (result == 0) {
+                 throw new BaseException(MODIFY_FAIL_USERNAME);
+             }
+         }catch (Exception exception) {
+             throw new BaseException(DATABASE_ERROR);
+         }
+    }
+
+    // 회원 삭제
+    public void deleteUser(int userIdx) throws BaseException{
+        try{
+            int result = userDao.updateUserStatus(userIdx);
+            if(result == 0) {
+                throw new BaseException(DELETE_FAIL_USER);
+            }
+        } catch(Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
 }
 

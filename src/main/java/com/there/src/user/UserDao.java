@@ -79,6 +79,7 @@ public class UserDao {
         );
     }
 
+    // 회원가입
     public int createUser(PostJoinReq postJoinReq) {
         String createUserQuery = "insert into User(email, password, name ) VALUES (?, ?, ?)";
         Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getName()};
@@ -88,6 +89,7 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
     }
 
+    // 이메일 확인
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select email from User where email = ?)";
         String checkEmailParams = email;
@@ -96,6 +98,7 @@ public class UserDao {
                 checkEmailParams);
 
     }
+
     // 회원 확인
     public int checkUserExist(int userIdx){
         String checkUserExistQuery = "select exists(select userIdx from User where userIdx = ?)";
@@ -109,5 +112,21 @@ public class UserDao {
         String checkJwtQuery = "select exist(select userIdx from User where userIdx =?)";
         int checkJwtParams = userIdx;
         return this.jdbcTemplate.queryForObject(checkJwtQuery, int.class , checkJwtParams);
+    }
+
+    // 회원 정보 수정
+    public int updateProfile(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set nickName =?, profileImgUrl =?, name=?, info=? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getProfileImgUrl(), patchUserReq.getName(),
+                patchUserReq.getInfo(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+
+    // 회원 삭제
+    public int updateUserStatus(int userIdx){
+        String deleteUserQuery = "update User set status ='INACTIVE' where userIdx =?";
+        Object[] deleteUserParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(deleteUserQuery, deleteUserParams);
     }
 }
