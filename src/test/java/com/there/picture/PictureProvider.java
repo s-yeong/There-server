@@ -1,4 +1,4 @@
-package com.there.src.post;
+package com.there.picture;
 
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -7,18 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PostProvider {
+public class PictureProvider {
+
+    private final PictureDao pictureDao;
+    private final JwtService jwtService;
+
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final PostDao postDao;
-    private final JwtService jwtService;
-
     @Autowired
-    public PostProvider(PostDao postDao, JwtService jwtService) {
-        this.postDao = postDao;
+    public PictureProvider(PictureDao pictureDao, JwtService jwtService) {
+        this.pictureDao = pictureDao;
         this.jwtService = jwtService;
     }
+
 
 
 

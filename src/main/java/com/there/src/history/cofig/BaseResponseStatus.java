@@ -1,4 +1,4 @@
-package com.there.config;
+package com.there.src.history.cofig;
 
 import lombok.Getter;
 
@@ -22,30 +22,30 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    // ******** ethan ********
+    // users
+    USERS_EMPTY_USER_ID(false,2010, "유저 아이디 값을 확인해주세요."),
+    USERS_POSTS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
+    USERS_HISTORYS_INVALID_ID(false,2012, "해당 유저가 아닙니다."),
+    HISTORYS_EMPTY_HISTORY_ID(false, 2030, "히스토리 아이디 값을 확인해주세요."),
 
-    // [POST] /users
-    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력하세요."),
-    POST_USERS_EMPTY_PASSWORD(false, 2012, "비밀번호를 입력하세요."),
-    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
-    POST_USERS_EXIST_PASSWORD(false, 2017, "중복된 이메일입니다."),
+    // histors
+    HISTORYS_EMPTY_TITLES(false,2050,"히스토리 제목을 입력해주세요."),
+    HISTORYS_INVALID_TITLES(false, 2051, "히스토리 제목의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_CONTENTS(false,2052,"히스토리 내용을 입력해주세요."),
+    HISTORYS_INVALID_CONTENTS(false, 2053, "히스토리 내용의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
 
-
-    // [PATCH] /users
-    POST_USER_EMPTY_NAME(false, 2020, "이름을 입력해주세요."),
-    POST_USER_EMPTY_NICKNAME(false, 2021, "닉네임을 입력해주세요."),
-    POST_USER_EMPTY_PROFILEIMG(false, 2020, "프로필 사진을 등록해주세요."),
-    POST_USER_EMPTY_INFO(false, 2020, "소개를 입력해주세요."),
 
     /**
      * 3000 : Response 오류
      */
-
-    USERS_EMPTY_USER_ID(false, 3001, "없는 아이디입니다."),
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
-    DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
-    FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
 
+    // ******** ethan ********
+    DELETE_FAIL_HISTORY(false, 3030,"히스토리 삭제를 실패하였습니다."),
+    MODIFY_FAIL_HISTORY(false, 3030,"히스토리 수정을 실패하였습니다."),
 
     /**
      * 4000 : Database, Server 오류
@@ -53,10 +53,8 @@ public enum BaseResponseStatus {
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
-    DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
 
 
-    MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
