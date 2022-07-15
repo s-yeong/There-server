@@ -17,9 +17,9 @@ public class FollowDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public int follow(PostFollowReq postFollowReq){
-        String FollowQuery = "insert into Follow (followerIdx,followeeIdx) values (?, ?);";
-        Object[] FollowParams = new Object[]{postFollowReq.getFollowerIdx(), postFollowReq.getFolloweeIdx() };
+    public int follow(int followeeIdx, PostFollowReq postFollowReq){
+        String FollowQuery = "insert into Follow (followeeIdx, followerIdx) values (?,?);";
+        Object[] FollowParams = new Object[]{followeeIdx, postFollowReq.getFollowerIdx()};
         String lastinsertIdxQuery = "select last_insert_id()";
 
         this.jdbcTemplate.update(FollowQuery, FollowParams);

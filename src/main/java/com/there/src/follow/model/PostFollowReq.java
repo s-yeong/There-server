@@ -9,14 +9,14 @@ import lombok.Setter;
 public class PostFollowReq {
 
     private int followerIdx;
-    private int followeeIdx;
+
 
     public PostFollowReq(){
 
     }
 
-    public PostFollowReq(int followerIdx, int followeeIdx) {
+    public PostFollowReq(int followerIdx) {
         this.followerIdx = followerIdx;
-        this.followeeIdx = followeeIdx;
+
     }
 }

@@ -5,6 +5,7 @@ import com.there.config.BaseException;
 import com.there.config.BaseResponse;
 import com.there.src.follow.model.PostFollowReq;
 import com.there.src.follow.model.PostFollowRes;
+import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,13 @@ public class FollowController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final FollowService followService;
     private final FollowProvider followProvider;
+    private final JwtService jwtService;
 
     @Autowired
-    public FollowController(FollowProvider followProvider, FollowService followService) {
+    public FollowController(FollowProvider followProvider, FollowService followService, JwtService jwtService) {
         this.followProvider = followProvider;
         this.followService = followService;
+        this.jwtService = jwtService;
     }
 
     // 팔로우
@@ -31,7 +34,9 @@ public class FollowController {
     @PostMapping("")
     public BaseResponse<PostFollowRes> follow(@RequestBody PostFollowReq postFollowReq) {
         try {
-            PostFollowRes postFollowRes = followService.follow(postFollowReq);
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            PostFollowRes postFollowRes = followService.follow(userIdxByJwt, postFollowReq);
             return new BaseResponse<>(postFollowRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

@@ -26,9 +26,9 @@ public class FollowService {
     }
 
     // 팔로우
-    public PostFollowRes follow(PostFollowReq postFollowReq) throws BaseException{
+    public PostFollowRes follow(int followeeIdx, PostFollowReq postFollowReq) throws BaseException{
         try {
-            int follow = followDao.follow(postFollowReq);
+            int follow = followDao.follow(followeeIdx, postFollowReq);
             return new PostFollowRes(follow);
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
