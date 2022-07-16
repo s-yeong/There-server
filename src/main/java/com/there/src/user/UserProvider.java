@@ -1,8 +1,8 @@
 package com.there.src.user;
 
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+import com.there.src.user.config.BaseException;
+import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.GetUserFeedRes;
 import com.there.src.user.model.GetUserPostsRes;
 import com.there.src.user.model.GetUserRes;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.config.BaseResponseStatus.*;
+import static com.there.src.user.config.BaseResponseStatus.*;
 
 
 @Service
@@ -54,7 +54,6 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
 
 
     public GetUserRes getUsersByIdx(int userIdx) throws BaseException{

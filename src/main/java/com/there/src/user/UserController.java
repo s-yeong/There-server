@@ -1,7 +1,8 @@
 package com.there.src.user;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+import com.there.src.user.config.*;
+import com.there.src.user.config.BaseException;
+import com.there.src.user.config.BaseResponse;
 import com.there.src.post.model.Post;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import static com.there.config.BaseResponseStatus.*;
+import static com.there.src.user.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
 
 
@@ -75,12 +76,10 @@ public class UserController {
     public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx){
         try{
 
-
             int userIdxByJwt = jwtService.getUserIdx();
             GetUserFeedRes getUserFeed=userProvider.retrieveUserFeed(userIdx,userIdxByJwt);
 
 
-           /* GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);*/
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));

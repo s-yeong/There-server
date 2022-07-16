@@ -1,6 +1,5 @@
-package com.there.config;
+package com.there.src.user.config;
 
-import com.there.config.BaseResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BaseException extends Exception {
+public class BaseException extends Exception{
     private BaseResponseStatus status;
 }

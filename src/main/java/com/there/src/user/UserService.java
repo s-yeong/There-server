@@ -1,9 +1,8 @@
 package com.there.src.user;
 
-
-import com.there.config.BaseException;
-
-import static com.there.config.BaseResponseStatus.*;
+import com.there.src.user.config.BaseException;
+import com.there.src.user.config.*;
+import static com.there.src.user.config.BaseResponseStatus.*;
 
 
 import com.there.src.user.model.*;
@@ -110,8 +109,6 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-
 }
 
 

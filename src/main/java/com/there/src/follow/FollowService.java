@@ -1,6 +1,6 @@
 package com.there.src.follow;
 
-import com.there.config.BaseException;
+import com.there.src.user.config.BaseException;
 import com.there.src.follow.model.PostFollowReq;
 import com.there.src.follow.model.PostFollowRes;
 import com.there.utils.JwtService;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.src.user.config.BaseResponseStatus.DATABASE_ERROR;
 @Service
 public class FollowService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -26,14 +26,13 @@ public class FollowService {
     }
 
     // 팔로우
-    public PostFollowRes follow(int followeeIdx, PostFollowReq postFollowReq) throws BaseException{
+     public PostFollowRes follow(int followeeIdx, PostFollowReq postFollowReq) throws BaseException{
         try {
             int follow = followDao.follow(followeeIdx, postFollowReq);
             return new PostFollowRes(follow);
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
-
     }
 
     // 언팔로우

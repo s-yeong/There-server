@@ -1,8 +1,8 @@
 package com.there.src.follow;
 
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+import com.there.src.user.config.BaseException;
+import com.there.src.user.config.BaseResponse;
 import com.there.src.follow.model.PostFollowReq;
 import com.there.src.follow.model.PostFollowRes;
 import com.there.utils.JwtService;
@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Api
+import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.src.user.config.BaseResponseStatus.INVALID_USER_JWT;
+
 @RestController
 @RequestMapping("/follow")
 public class FollowController {
