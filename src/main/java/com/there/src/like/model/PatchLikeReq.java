@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PatchLikeReq {
 
-    private int userIdx;
-    private int postIdx;
     private int emotion;
 
 }

@@ -1,7 +1,7 @@
 package com.there.src.post;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+import com.there.src.post.config.BaseException;
+import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import static com.there.src.post.config.BaseResponseStatus.*;
 
 @Api
 @RestController
@@ -29,15 +31,23 @@ public class PostController {
         this.jwtService = jwtService;
     }
 
-    // 게시글 생성
+    /**
+    * 게시글 생성 API
+    * posts/users/:userIdx
+    */
     @ResponseBody
-    @PostMapping("")
-    public BaseResponse<PostPostsRes> createPosts(@RequestBody PostPostsReq postPostsReq) {
+    @PostMapping("/users/{userIdx}")
+    public BaseResponse<PostPostsRes> createPosts
+    (@PathVariable("userIdx")int userIdx ,@RequestBody PostPostsReq postPostsReq) throws com.there.config.BaseException {
         try {
 
-            //int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx();
 
-            PostPostsRes postPostsRes = postService.createPosts(1, postPostsReq);
+            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+            if (postPostsReq.getImgUrl() == null) return new BaseResponse<>(EMPTY_IMGURL);
+            if (postPostsReq.getContent() == null) return new BaseResponse<>(EMPTY_CONTENT);
+
+            PostPostsRes postPostsRes = postService.createPosts(userIdx, postPostsReq);
             return new BaseResponse<>(postPostsRes);
 
         } catch (BaseException exception) {
@@ -46,13 +56,21 @@ public class PostController {
 
     }
 
-    // 게시글 수정
+    /**
+     * 게시글 수정 API
+     * posts/{postIdx}/users/:userIdx
+     */
     @ResponseBody
-    @PatchMapping("")
-    public BaseResponse<String> updatePosts(@RequestBody PatchPostsReq patchPostsReq) {
+    @PatchMapping("change/{postIdx}/users/{userIdx}")
+    public BaseResponse<String> updatePosts
+    (@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx, @RequestBody PatchPostsReq patchPostsReq) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
         try {
-            postService.updatePosts(patchPostsReq);
+            postService.updatePosts(postIdx, patchPostsReq);
             String result = "게시글 수정을 성공했습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
@@ -62,10 +80,18 @@ public class PostController {
 
     }
 
-    // 게시글 삭제
+    /**
+     * 게시글 삭제 API
+     * posts/{postIdx}/users/:userIdx
+     */
     @ResponseBody
-    @PatchMapping("postIdx/{postIdx}")
-    public BaseResponse<String> deletePosts(@PathVariable("postIdx") int postIdx) {
+    @PatchMapping("deletion/{postIdx}/users/{userIdx}")
+    public BaseResponse<String> deletePosts
+    (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
         try {
             postService.deletePosts(postIdx);
