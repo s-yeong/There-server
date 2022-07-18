@@ -1,10 +1,7 @@
-package com.there.config;
+package com.there.src.user.config;
 
 import lombok.Getter;
 
-/**
- * 에러 코드 관리
- */
 @Getter
 public enum BaseResponseStatus {
     /**
