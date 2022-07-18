@@ -1,5 +1,6 @@
 package com.there.src.post;
 
+import com.there.config.*;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.PatchPostsReq;
@@ -77,7 +78,6 @@ public class PostController {
             return new BaseResponse<>((exception.getStatus()));
         }
 
-
     }
 
     /**
@@ -102,5 +102,4 @@ public class PostController {
         }
 
     }
-
 }
