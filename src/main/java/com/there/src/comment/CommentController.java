@@ -1,7 +1,9 @@
 package com.there.src.comment;
 
+
 import com.there.src.comment.config.BaseException;
 import com.there.src.comment.config.BaseResponse;
+import com.there.src.comment.model.GetCommentListRes;
 import com.there.src.comment.model.PostCommentReq;
 import com.there.src.comment.model.PostCommentRes;
 import com.there.utils.JwtService;
@@ -10,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.there.src.comment.config.BaseResponseStatus.*;
 
@@ -53,5 +57,17 @@ public class CommentController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
+
+    /** 댓글 리스트 조회 API
+     * comments.:commentIdx
+     */
+    @ResponseBody
+    @GetMapping("{postIdx}")
+    public BaseResponse<List<GetCommentListRes>> getCommentList(@PathVariable("postIdx") int postIdx)
+            throws com.there.config.BaseException {
+        List<GetCommentListRes> getCommentListResList = commentProvider.retrieveComment(postIdx);
+        return new BaseResponse<>(getCommentListResList);
+
     }
 }
