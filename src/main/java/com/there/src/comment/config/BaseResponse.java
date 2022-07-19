@@ -3,7 +3,6 @@ package com.there.src.comment.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.there.src.post.config.BaseResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

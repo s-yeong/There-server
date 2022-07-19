@@ -1,2 +1,10 @@
-package com.there.src.comment.model;public class PostCommentRes {
+package com.there.src.comment.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class PostCommentRes {
+    private int commentIdx;
 }
