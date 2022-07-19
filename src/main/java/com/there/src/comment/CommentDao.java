@@ -43,4 +43,20 @@ public class CommentDao {
                 rs.getString("created_At")
         ), selectCommentParam);
     }
+
+    // 댓글 삭제
+    public int deleteComment(int commentIdx) {
+        String deleteCommentQuery = "update Comment SET status = 'DELETED' where commentIdx = ?;";
+        int deleteCommentParam = commentIdx;
+        return this.jdbcTemplate.update(deleteCommentQuery,
+                deleteCommentParam);
+    }
+
+    public int checkUserCommentExist(int userIdx, int commentIdx) {
+        String checkUserCommentExistQuery = "select exists(select c.commentIdx, u.userIdx\n" +
+                "    from Comment as c join User as u on u.userIdx = c.userIdx\n" +
+                "    where u.userIdx =? and c.commentIdx=?);";
+        Object []checkUserCommentExistParam = new Object[] {userIdx, commentIdx};
+        return this.jdbcTemplate.queryForObject(checkUserCommentExistQuery, int.class, checkUserCommentExistParam);
+    }
 }

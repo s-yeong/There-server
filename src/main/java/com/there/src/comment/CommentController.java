@@ -60,7 +60,7 @@ public class CommentController {
     }
 
     /** 댓글 리스트 조회 API
-     * comments.:commentIdx
+     * comments/:commentIdx
      */
     @ResponseBody
     @GetMapping("{postIdx}")
@@ -69,5 +69,20 @@ public class CommentController {
         List<GetCommentListRes> getCommentListResList = commentProvider.retrieveComment(postIdx);
         return new BaseResponse<>(getCommentListResList);
 
+    }
+
+    /**
+     * 댓글 삭제 API
+     * comments/:commentIdx/status
+     */
+    @ResponseBody
+    @PatchMapping("/{commentIdx}/status")
+    public BaseResponse<String> deleteComment(@PathVariable ("commentIdx") int commentIdx)
+            throws com.there.config.BaseException, BaseException {
+        int userIdxByJwt = jwtService.getUserIdx();
+        commentService.deleteComment(userIdxByJwt, commentIdx);
+
+        String result ="댓글이 삭제되었습니다. ";
+        return new BaseResponse<>(result);
     }
 }

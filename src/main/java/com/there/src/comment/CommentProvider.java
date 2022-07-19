@@ -35,4 +35,11 @@ public class CommentProvider {
         }
 
     }
+    public int checkUserCommentExist(int userIdx, int commentIdx) throws BaseException {
+        try {
+            return commentDao.checkUserCommentExist(userIdx, commentIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
