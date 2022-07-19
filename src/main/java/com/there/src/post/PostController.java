@@ -1,8 +1,10 @@
 package com.there.src.post;
 
 import com.there.config.*;
+import com.there.src.history.model.GetHistoryListRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
+import com.there.src.post.model.GetPostListRes;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
@@ -12,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 
@@ -101,5 +105,16 @@ public class PostController {
             return new BaseResponse<>((exception.getStatus()));
         }
 
+    }
+
+    @ResponseBody
+    @GetMapping("random")
+    public BaseResponse<List<GetPostListRes>> getRandomPostList(){
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrievePosts();
+            return new BaseResponse<>(getPostListRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 }

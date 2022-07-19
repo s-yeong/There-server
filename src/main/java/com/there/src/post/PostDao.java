@@ -1,5 +1,6 @@
 package com.there.src.post;
 
+import com.there.src.post.model.GetPostListRes;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class PostDao {
@@ -74,5 +76,17 @@ public class PostDao {
         return this.jdbcTemplate.update(deletePostQuery, postIdx);
     }
 
+    // 랜덤 게시물 리스트 조회
+    public List<GetPostListRes> selectRandomPostList() {
+        String selectRandomPostListQuery = "select imgUrl, content, created_At, likeCount\n" +
+                "from Post order by rand() limit 100;";
+        return this.jdbcTemplate.query(selectRandomPostListQuery,
+                (rs, rowNum) -> new GetPostListRes(
+                        rs.getString("imgUrl"),
+                        rs.getString("content"),
+                        rs.getString("created_At"),
+                        rs.getInt("likeCount")
+                ));
+    }
 
 }
