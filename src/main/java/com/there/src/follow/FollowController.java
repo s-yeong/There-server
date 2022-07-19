@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
-import static com.there.src.user.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
 @RequestMapping("/follow")
@@ -34,7 +32,7 @@ public class FollowController {
     // 팔로우
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostFollowRes> follow(@RequestBody PostFollowReq postFollowReq) {
+    public BaseResponse<PostFollowRes> follow(@RequestBody PostFollowReq postFollowReq) throws com.there.config.BaseException {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
 
@@ -48,7 +46,8 @@ public class FollowController {
     // 언팔로우
     @ResponseBody
     @PatchMapping("/{followIdx}/status")
-    public BaseResponse<String> unfollow(@PathVariable("followIdx")int followIdx){
+    public BaseResponse<String> unfollow(@PathVariable("followIdx")int followIdx) {
+
         try {
             followService.unfollow(followIdx);
             String result = "팔로우 취소되었습니다.";

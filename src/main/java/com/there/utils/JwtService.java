@@ -1,6 +1,6 @@
 package com.there.utils;
 
-import com.there.src.user.config.BaseException;
+import com.there.config.*;
 import com.there.config.secret.Secret;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 @Service
 public class JwtService {
     /*

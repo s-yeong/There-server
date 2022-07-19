@@ -2,7 +2,6 @@ package com.there.src.user;
 
 
 import com.there.src.user.config.BaseException;
-import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.GetUserFeedRes;
 import com.there.src.user.model.GetUserPostsRes;
 import com.there.src.user.model.GetUserRes;
