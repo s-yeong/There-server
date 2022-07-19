@@ -79,7 +79,12 @@ public class PostDao {
     // 랜덤 게시물 리스트 조회
     public List<GetPostListRes> selectRandomPostList() {
         String selectRandomPostListQuery = "select imgUrl, content, created_At, likeCount\n" +
-                "from Post order by rand() limit 100;";
+                "from Post\n" +
+                "left join(select postIdx, count(postIdx) as likeCount\n" +
+                "    from postLike\n" +
+                "    group by postIdx) u on u.postIdx = Post.postIdx\n" +
+                "where status ='ACTIVE'\n" +
+                "order by rand() limit 100;";
         return this.jdbcTemplate.query(selectRandomPostListQuery,
                 (rs, rowNum) -> new GetPostListRes(
                         rs.getString("imgUrl"),
@@ -89,4 +94,21 @@ public class PostDao {
                 ));
     }
 
+    // 인기글 리스트 조회
+    public List<GetPostListRes> selectRankingPostList() {
+        String selectRankingPostListQuery = "select imgUrl, content, created_At, likeCount\n" +
+                "from Post\n" +
+                "left join(select postIdx, count(postIdx) as likeCount\n" +
+                "    from postLike\n" +
+                "    group by postIdx) u on u.postIdx = Post.postIdx\n" +
+                "where status ='ACTIVE'\n" +
+                "order by likeCount desc;";
+        return this.jdbcTemplate.query(selectRankingPostListQuery,
+                (rk, rowNum) -> new GetPostListRes(
+                        rk.getString("imgUrl"),
+                        rk.getString("content"),
+                        rk.getString("created_At"),
+                        rk.getInt("likeCount")
+                ));
+    }
 }

@@ -117,4 +117,14 @@ public class PostController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+    @ResponseBody
+    @GetMapping("ranking")
+    public BaseResponse<List<GetPostListRes>> getRankingPostList(){
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrieveRankingPosts();
+            return new BaseResponse<>(getPostListRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

@@ -37,4 +37,15 @@ public class PostProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 인기글 게시글 리스트 조회
+    public List<GetPostListRes> retrieveRankingPosts() throws BaseException {
+        try{
+            List<GetPostListRes> getPostListResList = postDao.selectRankingPostList();
+            return getPostListResList;
+        } catch(Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
