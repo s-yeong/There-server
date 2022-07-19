@@ -1,6 +1,8 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.*;
+import com.there.src.history.cofig.BaseException;
+import com.there.src.history.cofig.BaseResponse;
+import com.there.src.history.cofig.BaseResponseStatus;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -75,14 +77,12 @@ public class HistoryController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostHistoryRes> createHistory(@RequestBody PostHistoryReq postHistoryReq) {
+    public BaseResponse<PostHistoryRes> createHistory(@RequestBody PostHistoryReq postHistoryReq) throws com.there.config.BaseException{
 
 
         try {
 
-            // 유저 로그인 API 작성 완료시 주석해제
-            // int userIdxByJwt = jwtService.getUserIdx();
-            int userIdxByJwt = 1;
+            int userIdxByJwt = jwtService.getUserIdx();
 
             if(postHistoryReq.getTitle() == null){
                 return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_TITLES);
@@ -120,14 +120,11 @@ public class HistoryController {
      */
     @ResponseBody
     @PatchMapping("/{historyIdx}/status")
-    public BaseResponse<String> deleteHistory(@PathVariable ("historyIdx") int historyIdx) {
+    public BaseResponse<String> deleteHistory(@PathVariable ("historyIdx") int historyIdx) throws com.there.config.BaseException{
 
         try {
 
-            // 유저 로그인 API 작성 완료시 주석해제
-            // int userIdxByJwt = jwtService.getUserIdx();
-            //historyService.deleteHistory(userIdxByJwt, historyIdx);
-            int userIdxByJwt = 1;   // 유저 로그인 API 작성 완료시 삭제
+            int userIdxByJwt = jwtService.getUserIdx();
             historyService.deleteHistory(userIdxByJwt, historyIdx);
 
             String result = "히스토리가 삭제되었습니다.";
@@ -146,12 +143,10 @@ public class HistoryController {
     // 히스토리 조회와 분리한 이유는 히스토리의 주인만 수정해야하기 떄문
     @ResponseBody
     @GetMapping("/modify/{historyIdx}")
-    public BaseResponse<GetHistoryScreenRes> getModifyHistory(@PathVariable("historyIdx")int historyIdx) {
+    public BaseResponse<GetHistoryScreenRes> getModifyHistory(@PathVariable("historyIdx")int historyIdx) throws com.there.config.BaseException{
         try {
-            // 유저 로그인 API 작성 완료시 주석해제
-            // int userIdxByJwt = jwtService.getUserIdx();
-            //historyService.deleteHistory(userIdxByJwt, historyIdx);
-            int userIdxByJwt = 1;   // 유저 로그인 API 작성 완료시 삭제
+
+            int userIdxByJwt = jwtService.getUserIdx();
             GetHistoryScreenRes getHistoryScreenRes = historyProvider.findModifyHistory(userIdxByJwt, historyIdx);
             return new BaseResponse<>(getHistoryScreenRes);
 
@@ -171,7 +166,7 @@ public class HistoryController {
 
     @ResponseBody
     @PatchMapping("/modify/{historyIdx}")
-    public BaseResponse<String> modifyHistory(@PathVariable ("historyIdx") int historyIdx, @RequestBody PatchHistoryReq patchHistoryReq) {
+    public BaseResponse<String> modifyHistory(@PathVariable ("historyIdx") int historyIdx, @RequestBody PatchHistoryReq patchHistoryReq) throws com.there.config.BaseException{
 
         try {
 
@@ -195,11 +190,7 @@ public class HistoryController {
                 return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_IMGURL);
             }
 
-            // 유저 로그인 API 작성 완료시 주석해제
-            // int userIdxByJwt = jwtService.getUserIdx();
-            //historyService.deleteHistory(userIdxByJwt, historyIdx);
-            int userIdxByJwt = 1;   // 유저 로그인 API 작성 완료시 삭제
-
+            int userIdxByJwt = jwtService.getUserIdx();
             historyService.modifyHistory(userIdxByJwt, historyIdx, patchHistoryReq);
 
             String result = "히스토리가 수정되었습니다.";
