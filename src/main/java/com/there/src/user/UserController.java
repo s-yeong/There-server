@@ -1,9 +1,8 @@
 package com.there.src.user;
 
-import com.there.src.user.config.*;
+
 import com.there.src.user.config.BaseException;
 import com.there.src.user.config.BaseResponse;
-import com.there.src.post.model.Post;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +11,6 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import static com.there.src.user.config.BaseResponseStatus.*;
@@ -73,13 +71,10 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
-    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx){
+    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx)throws com.there.config.BaseException{
         try{
-
             int userIdxByJwt = jwtService.getUserIdx();
             GetUserFeedRes getUserFeed=userProvider.retrieveUserFeed(userIdx,userIdxByJwt);
-
-
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -126,7 +121,7 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/join")
-    public BaseResponse<PostJoinRes> createUser(@RequestBody PostJoinReq postJoinReq){
+    public BaseResponse<PostJoinRes> createUser(@RequestBody PostJoinReq postJoinReq) {
         try{
             if(postJoinReq.getEmail() == null)
             {
@@ -157,7 +152,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestBody PatchUserReq patchUserReq){
+    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestBody PatchUserReq patchUserReq) throws com.there.config.BaseException{
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
@@ -189,7 +184,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx){
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException{
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if(userIdx != userIdxByJwt){
