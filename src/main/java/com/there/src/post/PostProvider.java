@@ -30,8 +30,8 @@ public class PostProvider {
     // 랜덤 게시글 리스트 조회
     public List<GetPostListRes> retrievePosts() throws BaseException {
         try {
-            List<GetPostListRes> getPostListResList = postDao.selectRandomPostList();
-            return getPostListResList;
+            List<GetPostListRes> getPostListRes = postDao.selectRandomPostList();
+            return getPostListRes;
         } catch (Exception exception){
             System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
@@ -41,9 +41,23 @@ public class PostProvider {
     // 인기글 게시글 리스트 조회
     public List<GetPostListRes> retrieveRankingPosts() throws BaseException {
         try{
-            List<GetPostListRes> getPostListResList = postDao.selectRankingPostList();
-            return getPostListResList;
+            List<GetPostListRes> getPostListRes = postDao.selectRankingPostList();
+            return getPostListRes;
         } catch(Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 감정별 리스트 조회
+    public List<GetPostListRes> retrievePostList(int emotion) throws BaseException{
+        try {
+
+            List<GetPostListRes> getPostListRes = postDao.selectCoolPostList(emotion);
+
+            return getPostListRes;
+
+        } catch(Exception exception){
             System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }

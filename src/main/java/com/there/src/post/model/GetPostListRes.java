@@ -11,5 +11,5 @@ public class GetPostListRes {
     private String imgUrl;
     private String content;
     private String created_At;
-    private int likeCount;
+
 }

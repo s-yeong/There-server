@@ -1,8 +1,6 @@
 package com.there.src.post;
 
-import com.there.src.post.model.GetPostListRes;
-import com.there.src.post.model.PatchPostsReq;
-import com.there.src.post.model.PostPostsReq;
+import com.there.src.post.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -78,7 +76,7 @@ public class PostDao {
 
     // 랜덤 게시물 리스트 조회
     public List<GetPostListRes> selectRandomPostList() {
-        String selectRandomPostListQuery = "select imgUrl, content, created_At, likeCount\n" +
+        String selectRandomPostListQuery = "select imgUrl, content, created_At\n" +
                 "from Post\n" +
                 "left join(select postIdx, count(postIdx) as likeCount\n" +
                 "    from postLike\n" +
@@ -89,14 +87,14 @@ public class PostDao {
                 (rs, rowNum) -> new GetPostListRes(
                         rs.getString("imgUrl"),
                         rs.getString("content"),
-                        rs.getString("created_At"),
-                        rs.getInt("likeCount")
+                        rs.getString("created_At")
+
                 ));
     }
 
     // 인기글 리스트 조회
     public List<GetPostListRes> selectRankingPostList() {
-        String selectRankingPostListQuery = "select imgUrl, content, created_At, likeCount\n" +
+        String selectRankingPostListQuery = "select imgUrl, content, created_At\n" +
                 "from Post\n" +
                 "left join(select postIdx, count(postIdx) as likeCount\n" +
                 "    from postLike\n" +
@@ -107,8 +105,24 @@ public class PostDao {
                 (rk, rowNum) -> new GetPostListRes(
                         rk.getString("imgUrl"),
                         rk.getString("content"),
-                        rk.getString("created_At"),
-                        rk.getInt("likeCount")
+                        rk.getString("created_At")
                 ));
+    }
+
+    // 감정별 리스트 조회
+    //  emotion = 0 멋짐
+    public List<GetPostListRes> selectCoolPostList(int emotion) {
+        String selectCoolPostListQuery = "select imgUrl, content, created_At\n" +
+                "from Post\n" +
+                "    left join postLike on Post.postIdx = postLike.postIdx\n" +
+                "    where emotion = ? and status = 'ACTIVE'\n" +
+                "    group by Post.postIdx;";
+        int selectCoolPostListParam = emotion;
+        return this.jdbcTemplate.query(selectCoolPostListQuery,
+                (rk, rowNum) -> new GetPostListRes(
+                        rk.getString("imgUrl"),
+                        rk.getString("content"),
+                        rk.getString("created_At")
+                ), selectCoolPostListParam);
     }
 }

@@ -4,10 +4,7 @@ import com.there.config.*;
 import com.there.src.history.model.GetHistoryListRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
-import com.there.src.post.model.GetPostListRes;
-import com.there.src.post.model.PatchPostsReq;
-import com.there.src.post.model.PostPostsReq;
-import com.there.src.post.model.PostPostsRes;
+import com.there.src.post.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -127,4 +124,22 @@ public class PostController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 감정별 게시글 리스트 조회 API
+     * /posts/emotion/:emotion
+     */
+    @ResponseBody
+    @GetMapping("emotion/{emotion}")
+    public BaseResponse<List<GetPostListRes>> getEmotionPostList(@PathVariable("emotion") int emotion) {
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrievePostList(emotion);
+            return new BaseResponse<>(getPostListRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
 }
