@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ChatContent {
+public class MessagechatContentRes {
 
-    private int contentIdx;
     private int roomIdx;
+    private String senderId;
+    private String receiverId;
     private String content;
     private String created_At;
-    private String status;
 
 }
