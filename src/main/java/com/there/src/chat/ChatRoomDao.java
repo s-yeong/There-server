@@ -1,9 +1,6 @@
 package com.there.src.chat;
 
-import com.there.src.chat.model.ChatContent;
-import com.there.src.chat.model.PostChatRoomRes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +27,11 @@ public class ChatRoomDao {
 
     }
 
+    public int getRoomIdx(int senderIdx, int receiverIdx) {
 
+        String getRoomIdxQuery = "select roomIdx from chatRoom where sendIdx = ? and receiverIdx = ?";
+        Object[] getRoomIdxParams = new Object[]{senderIdx, receiverIdx};
 
-
+        return this.jdbcTemplate.queryForObject(getRoomIdxQuery, int.class, getRoomIdxParams);
+    }
 }
