@@ -13,3 +13,15 @@ spring:
   sql:
     init:
       platform: mysql
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAVAK5CW4BL5OH7U4A
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: there-s3-bucket
+    stack:
+      auto: false
