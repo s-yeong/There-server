@@ -5,6 +5,7 @@ import com.there.src.post.model.PostPostsReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
@@ -27,8 +28,32 @@ public class PostDao {
         this.jdbcTemplate.update(createPostsQuery, createPostsParams);
 
         String lastPostsIdxQuery = "select last_insert_id()";
-        return this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
+
+        // 해시태그 생성
+        int postIdx = this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
+        System.out.println(postIdx);
+        for(int i = 0; i < postPostsReq.getHashtag().length; i++){
+
+            String start = "START TRANSACTION";
+            String insertHashtagQuery = "insert into Tag(name) values(?)";
+            String insertPostTagQuery = "insert into PostTag(postIdx, tagIdx) values(?, last_insert_id())";
+            String end = "COMMIT";
+
+            String insertHashtagParam = postPostsReq.getHashtag()[i];
+            Object[] insertPostTagParams = new Object[]{postIdx};
+
+            this.jdbcTemplate.update(start);
+            this.jdbcTemplate.update(insertHashtagQuery,insertHashtagParam);
+            this.jdbcTemplate.update(insertPostTagQuery, insertPostTagParams);
+            this.jdbcTemplate.update(end);
+
+        }
+
+        return postIdx;
+
+
     }
+
 
     /**
      * 게시물 수정

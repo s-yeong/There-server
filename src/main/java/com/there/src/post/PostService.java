@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 
@@ -30,11 +31,14 @@ public class PostService {
     /**
      * 게시글 생성
      */
+    @Transactional(rollbackFor = Exception.class)
     public PostPostsRes createPosts(int userIdx, PostPostsReq postPostsReq) throws BaseException {
         try {
             int postIdx = postDao.createPosts(userIdx, postPostsReq);
+
             return new PostPostsRes(postIdx);
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
