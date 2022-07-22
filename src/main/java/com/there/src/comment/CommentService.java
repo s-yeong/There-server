@@ -2,6 +2,7 @@ package com.there.src.comment;
 
 
 import com.there.src.comment.config.BaseException;
+import com.there.src.comment.model.PatchCommentReq;
 import com.there.src.comment.model.PostCommentReq;
 import com.there.src.comment.model.PostCommentRes;
 import com.there.utils.JwtService;
@@ -52,5 +53,22 @@ public class CommentService {
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    // 댓글 수정
+    public void updateComment( int commentIdx, PatchCommentReq patchCommentReq) throws BaseException {
+
+        int result = 0;
+
+        try{
+            if (patchCommentReq.getContent() != null){
+                result = commentDao.updateComment(commentIdx, patchCommentReq);
+            }
+
+            if (result == 0) throw new BaseException(UPDATE_FAIL_COMMENT);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 }

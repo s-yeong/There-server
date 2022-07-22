@@ -1,6 +1,7 @@
 package com.there.src.comment;
 
 import com.there.src.comment.model.GetCommentListRes;
+import com.there.src.comment.model.PatchCommentReq;
 import com.there.src.comment.model.PostCommentReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -50,6 +51,13 @@ public class CommentDao {
         int deleteCommentParam = commentIdx;
         return this.jdbcTemplate.update(deleteCommentQuery,
                 deleteCommentParam);
+    }
+
+    //댓글 수정
+    public int updateComment(int commentIdx, PatchCommentReq patchCommentReq){
+        String updateCommentQuery = "update Comment set content =? where commentIdx =?";
+        Object[] updateCommentParam = new Object[]{patchCommentReq.getContent(), commentIdx};
+        return this.jdbcTemplate.update(updateCommentQuery, updateCommentParam);
     }
 
     public int checkUserCommentExist(int userIdx, int commentIdx) {
