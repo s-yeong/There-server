@@ -36,6 +36,19 @@ public class PostService {
         try {
             int postIdx = postDao.createPosts(userIdx, postPostsReq);
 
+            // 해시태그 생성
+            if(postPostsReq.getHashtag()!=null) {
+                for (String hashtag : postPostsReq.getHashtag()) {
+                    int tagIdx = postDao.checkTagName(hashtag);
+
+                    if (tagIdx == 0) {
+                        postDao.insertTag(postIdx, hashtag);
+                    } else {
+                        postDao.insertIsTag(postIdx, tagIdx);
+                    }
+                }
+            }
+
             return new PostPostsRes(postIdx);
         } catch (Exception exception) {
             System.out.println(exception);
@@ -51,6 +64,7 @@ public class PostService {
      *  Content 수정
      *
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updatePosts(int postIdx, PatchPostsReq patchPostsReq) throws BaseException {
         int result = 0;
 

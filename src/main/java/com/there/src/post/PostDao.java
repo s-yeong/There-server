@@ -29,30 +29,45 @@ public class PostDao {
         this.jdbcTemplate.update(createPostsQuery, createPostsParams);
 
         String lastPostsIdxQuery = "select last_insert_id()";
-
-        // 해시태그 생성
-        int postIdx = this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
-        for(int i = 0; i < postPostsReq.getHashtag().length; i++){
-
-            String start = "START TRANSACTION";
-            String insertHashtagQuery = "insert into Tag(name) values(?)";
-            String insertPostTagQuery = "insert into PostTag(postIdx, tagIdx) values(?, last_insert_id())";
-            String end = "COMMIT";
-
-            String insertHashtagParam = postPostsReq.getHashtag()[i];
-            Object[] insertPostTagParams = new Object[]{postIdx};
-
-            this.jdbcTemplate.update(start);
-            this.jdbcTemplate.update(insertHashtagQuery,insertHashtagParam);
-            this.jdbcTemplate.update(insertPostTagQuery, insertPostTagParams);
-            this.jdbcTemplate.update(end);
-
-        }
-
-        return postIdx;
-
+        return this.jdbcTemplate.queryForObject(lastPostsIdxQuery, int.class);
 
     }
+
+    // db Tag 테이블 name 체크
+    public int checkTagName(String hashtag){
+        String checkTagNameExistQuery="select exists(select tagIdx from Tag where name=?)";
+        String checkTagNameQuery="select tagIdx from Tag where name=?";
+        if(this.jdbcTemplate.queryForObject(checkTagNameExistQuery, int.class,hashtag)==1){
+            return this.jdbcTemplate.queryForObject(checkTagNameQuery,int.class,hashtag);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    // tagIdx = 0 => name이 db에 없는 경우
+    public void insertTag(int postIdx, String hashtag){
+
+        String start = "START TRANSACTION";
+        String insertHashtagQuery = "insert into Tag(name) values(?)";
+        String insertPostTagQuery = "insert into PostTag(postIdx, tagIdx) values(?, last_insert_id())";
+        String end = "COMMIT";
+
+        this.jdbcTemplate.update(start);
+        this.jdbcTemplate.update(insertHashtagQuery,hashtag);
+        this.jdbcTemplate.update(insertPostTagQuery, postIdx);
+        this.jdbcTemplate.update(end);
+    }
+
+    // tagIdx = 1 => name이 db에 있는 경우
+    public void  insertIsTag(int postIdx, int tagIdx){
+
+        String insertPostTagQuery = "insert into PostTag(postIdx, tagIdx) values(?, ?)";
+        Object[] insertPostTagParams = new Object[]{postIdx, tagIdx};
+
+        this.jdbcTemplate.update(insertPostTagQuery,insertPostTagParams);
+    }
+
 
 
     /**
@@ -99,6 +114,8 @@ public class PostDao {
         return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
 
     }
+
+
     public int updatepostsImgUrlContent(int postIdx, PatchPostsReq patchPostsReq) {
 
         String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
@@ -135,6 +152,7 @@ public class PostDao {
 
         return this.jdbcTemplate.update(deletePostQuery, postIdx);
     }
+
 
 
 }
