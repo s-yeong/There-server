@@ -2,9 +2,9 @@ package com.there.src.chat;
 
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
-import com.there.src.chat.model.ChatContent;
+import com.there.src.chat.model.MessagechatContentReq;
+import com.there.src.chat.model.MessagechatContentRes;
 import com.there.src.chat.model.PostChatRoomRes;
-import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +46,24 @@ public class ChatController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
+
+    /**
+     * Message 전송 API
+     * app/chat/content/{sendIdx}/{receiverIdx}
+     */
+    @MessageMapping("content/{sendIdx}/{receiverIdx}")
+    public void createContent
+    (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
+     @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
+
+            // 생성 된 Content 가져오기
+            int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
+            MessagechatContentRes messagechatContentRes = chatContentService.getChatContent(senderIdx, receiverIdx, contentIdx);
+
+            // Content 전달
+            messagingTemplate.convertAndSendToUser
+                    (messagechatContentRes.getSenderId(), "/queue/message", messagechatContentRes);
     }
 
 }
