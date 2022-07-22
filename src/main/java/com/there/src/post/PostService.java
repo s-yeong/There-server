@@ -45,16 +45,21 @@ public class PostService {
 
     /**
      * 게시글 수정
+     *  ImgUrl, Content, Hashtag 수정
      *  ImgUrl, Content 수정
      *  ImgUrl 수정
      *  Content 수정
+     *
      */
     public void updatePosts(int postIdx, PatchPostsReq patchPostsReq) throws BaseException {
         int result = 0;
 
         try {
-            if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null) {
+            if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null && patchPostsReq.getHashtag() != null){
                 result = postDao.updatePosts(postIdx, patchPostsReq);
+            }
+            else if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null) {
+                result = postDao.updatepostsImgUrlContent(postIdx, patchPostsReq);
             }
             else if (patchPostsReq.getImgUrl() != null) {
                 result = postDao.updatepostsImgUrl(postIdx, patchPostsReq);
@@ -66,6 +71,7 @@ public class PostService {
             if (result == 0) throw new BaseException(UPDATE_FAIL_POST); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
