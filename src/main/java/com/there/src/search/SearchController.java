@@ -2,6 +2,7 @@ package com.there.src.search;
 
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
+import com.there.src.search.model.GetPopularSearchRes;
 import com.there.src.search.model.GetSearchByAccountRes;
 import com.there.src.search.model.GetSearchByHashtagRes;
 import com.there.utils.JwtService;
@@ -66,6 +67,29 @@ public class SearchController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+
+    /**
+     * 해시태그 인기 게시물 검색 API
+     * [GET] /search/hashtag/{tagIdx}/popular
+     */
+
+    // 인기 - #해시태그에 해당하는 게시물 리스트
+    @ResponseBody
+    @GetMapping("/hashtag/{tagIdx}/popular")
+    public BaseResponse<List<GetPopularSearchRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
+        try{
+
+            List<GetPopularSearchRes> getPopularSearchRes = searchProvider.retrievePopularPost(tagIdx);
+            return new BaseResponse<>(getPopularSearchRes);
+
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.there.src.search;
 
 import com.there.config.BaseException;
+import com.there.src.search.model.GetPopularSearchRes;
 import com.there.src.search.model.GetSearchByAccountRes;
 import com.there.src.search.model.GetSearchByHashtagRes;
 import com.there.utils.JwtService;
@@ -48,10 +49,20 @@ public class SearchProvider {
             return getSearchByHashtag;
         }
         catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
 
+    }
+
+    // 해시태그 인기 게시물 검색
+    public List<GetPopularSearchRes> retrievePopularPost(int tagIdx) throws BaseException {
+        try{
+            List<GetPopularSearchRes> getPopularSearch = searchDao.selectPopularPost(tagIdx);
+            return getPopularSearch;
+        }
+        catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
 

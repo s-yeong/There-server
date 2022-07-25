@@ -1,5 +1,6 @@
 package com.there.src.search;
 
+import com.there.src.post.model.GetPostListRes;
 import com.there.src.search.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,14 +44,33 @@ public class SearchDao {
                 "    join PostTag as pt on pt.tagIdx = t.tagIdx\n" +
                 "where name like concat('%', ?,'%')\n" +
                 "group by tagIdx;";
-        String selectHashtagListParams = hashtag;
+        String selectHashtagListParam = hashtag;
 
         return this.jdbcTemplate.query(selectHashtagListQuery,
                 (rs, rowNum) -> new GetSearchByHashtagRes(
                         rs.getInt("tagIdx"),
                         rs.getString("name"),
                         rs.getString("postCount")
-                ), selectHashtagListParams);
+                ), selectHashtagListParam);
+    }
+
+    // 해시태그 인기 게시물 검색 (좋아요 순)
+    public List<GetPopularSearchRes> selectPopularPost(int tagIdx){
+        String selectPopularPostQuery = "select p.postIdx, p.imgUrl\n" +
+                "from Post as p\n" +
+                "    left join(select postIdx, count(postIdx) as likeCount\n" +
+                "from postLike\n" +
+                "group by postIdx) as pl on pl.postIdx = p.postIdx\n" +
+                "    join PostTag as pt on pt.postIdx = p.postIdx\n" +
+                "where p.status = 'ACTIVE' and pt.tagIdx = ?\n" +
+                "order by likeCount desc;";
+        int selectPopularPostParam = tagIdx;
+
+        return this.jdbcTemplate.query(selectPopularPostQuery,
+                (rs, rowNum) -> new GetPopularSearchRes(
+                        rs.getInt("postIdx"),
+                        rs.getString("imgUrl")
+                ), selectPopularPostParam);
     }
 
 }
