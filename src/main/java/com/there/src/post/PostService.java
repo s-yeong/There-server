@@ -1,6 +1,7 @@
 package com.there.src.post;
 
 import com.there.src.post.config.BaseException;
+import com.there.src.post.model.GetPostListRes;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 

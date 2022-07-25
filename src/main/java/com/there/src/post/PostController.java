@@ -1,17 +1,18 @@
 package com.there.src.post;
 
 import com.there.config.*;
+import com.there.src.history.model.GetHistoryListRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
-import com.there.src.post.model.PatchPostsReq;
-import com.there.src.post.model.PostPostsReq;
-import com.there.src.post.model.PostPostsRes;
+import com.there.src.post.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 
@@ -102,4 +103,43 @@ public class PostController {
         }
 
     }
+
+    @ResponseBody
+    @GetMapping("random")
+    public BaseResponse<List<GetPostListRes>> getRandomPostList(){
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrievePosts();
+            return new BaseResponse<>(getPostListRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+    @ResponseBody
+    @GetMapping("ranking")
+    public BaseResponse<List<GetPostListRes>> getRankingPostList(){
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrieveRankingPosts();
+            return new BaseResponse<>(getPostListRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 감정별 게시글 리스트 조회 API
+     * /posts/emotion/:emotion
+     */
+    @ResponseBody
+    @GetMapping("emotion/{emotion}")
+    public BaseResponse<List<GetPostListRes>> getEmotionPostList(@PathVariable("emotion") int emotion) {
+        try {
+            List<GetPostListRes> getPostListRes = postProvider.retrievePostList(emotion);
+            return new BaseResponse<>(getPostListRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
 }
