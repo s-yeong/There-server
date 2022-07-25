@@ -1,13 +1,8 @@
 package com.there.src.chat;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
-import com.there.src.chat.model.GetChatRoomRes;
-import com.there.src.chat.model.MessagechatContentReq;
-import com.there.src.chat.model.MessagechatContentRes;
-import com.there.src.chat.model.PostChatRoomRes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.there.src.chat.config.*;
+import com.there.src.chat.model.*;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -51,17 +46,32 @@ public class ChatController {
         }
     }
 
+    /**
+     * ChatRoom 조회 API
+     * /char/user/{userIdx}
+     */
     @ResponseBody
     @GetMapping("/user/{userIdx}")
-    public BaseResponse<List<GetChatRoomRes>> getChatRooms(@PathVariable("userIdx")int userIdx) {
+    public BaseResponse<List<GetChatRoomRes>> getChatRooms(@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+        List<GetChatRoomRes> getChatRoomResList = chatRoomProvider.retrieveChatRoom(userIdx);
+        return new BaseResponse<>(getChatRoomResList);
+    }
+
+    /**
+     * ChatRoom 삭제 API
+     * /char/room/{roomIdx}
+     */
+    @ResponseBody
+    @PatchMapping("/room/{roomIdx}")
+    public BaseResponse<String> deleteChatRooms(@PathVariable("roomIdx")int roomIdx) {
         try {
-            List<GetChatRoomRes> getChatRoomResList = chatRoomProvider.retrieveChatRoom(userIdx);
-            return new BaseResponse<>(getChatRoomResList);
+            chatRoomService.deleteChatRoom(roomIdx);
+            String result = "채팅방 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
-
 
 
     /**
@@ -71,7 +81,7 @@ public class ChatController {
     @MessageMapping("content/{sendIdx}/{receiverIdx}")
     public void createContent
     (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
-     @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
+     @Payload MessagechatContentReq messagechatContentReq) throws com.there.config.BaseException {
 
             // 생성 된 Content 가져오기
             int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);

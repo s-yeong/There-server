@@ -51,4 +51,12 @@ public class ChatRoomDao {
     }
 
 
+    public int deleteChatRoom(int roomIdx) {
+
+        String deleteChatRoomQuery = "UPDATE ChatRoom SET status = 'INACTIVE' WHERE roomIdx = ?";
+        int deletePostParams = roomIdx;
+
+        return this.jdbcTemplate.update(deleteChatRoomQuery, roomIdx);
+
+    }
 }

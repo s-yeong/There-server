@@ -22,7 +22,7 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
-    // Chat
+
 
 
     /**
@@ -40,6 +40,7 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
 
     // Chat
+    DELETE_FAIL_CHATROOM(false, 4010, "채팅방 삭제를 실패하였습니다."),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4020, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4021, "비밀번호 복호화에 실패하였습니다.");

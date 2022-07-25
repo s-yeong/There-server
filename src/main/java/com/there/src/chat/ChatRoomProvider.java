@@ -22,7 +22,9 @@ public class ChatRoomProvider {
         this.chatRoomDao = chatRoomDao;
     }
 
-
+    /**
+     * 채팅방 목록 조회
+     */
     public List<GetChatRoomRes> retrieveChatRoom(int userIdx) throws BaseException {
 
         List<GetChatRoomRes> getChatRoomResList = chatRoomDao.selectChatRoomList(userIdx);
