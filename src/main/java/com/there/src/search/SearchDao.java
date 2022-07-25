@@ -1,6 +1,5 @@
 package com.there.src.search;
 
-import com.there.src.post.model.GetPostListRes;
 import com.there.src.search.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,8 +54,8 @@ public class SearchDao {
     }
 
     // 해시태그 인기 게시물 검색 (좋아요 순)
-    public List<GetPopularSearchRes> selectPopularPost(int tagIdx){
-        String selectPopularPostQuery = "select p.postIdx, p.imgUrl\n" +
+    public List<GetSearchPostsByHashtagRes> selectPopularPosts(int tagIdx){
+        String selectPopularPostsQuery = "select p.postIdx, p.imgUrl\n" +
                 "from Post as p\n" +
                 "    left join(select postIdx, count(postIdx) as likeCount\n" +
                 "from postLike\n" +
@@ -64,13 +63,28 @@ public class SearchDao {
                 "    join PostTag as pt on pt.postIdx = p.postIdx\n" +
                 "where p.status = 'ACTIVE' and pt.tagIdx = ?\n" +
                 "order by likeCount desc;";
-        int selectPopularPostParam = tagIdx;
+        int selectPopularPostsParam = tagIdx;
 
-        return this.jdbcTemplate.query(selectPopularPostQuery,
-                (rs, rowNum) -> new GetPopularSearchRes(
+        return this.jdbcTemplate.query(selectPopularPostsQuery,
+                (rs, rowNum) -> new GetSearchPostsByHashtagRes(
                         rs.getInt("postIdx"),
                         rs.getString("imgUrl")
-                ), selectPopularPostParam);
+                ), selectPopularPostsParam);
     }
 
+    // 해시태그 최근 게시물 검색 (최근 게시물 생성 기준)
+    public List<GetSearchPostsByHashtagRes> selectRecentPosts(int tagIdx){
+        String selectRecentPostsQuery = "select p.postIdx, p.imgUrl\n" +
+                "from Post as p\n" +
+                "    join PostTag as pt on pt.postIdx = p.postIdx\n" +
+                "where p.status = 'ACTIVE' and pt.tagIdx = ?\n" +
+                "order by created_At desc;";
+        int selectRecentPostsParam = tagIdx;
+
+        return this.jdbcTemplate.query(selectRecentPostsQuery,
+                (rs, rowNum) -> new GetSearchPostsByHashtagRes(
+                        rs.getInt("postIdx"),
+                        rs.getString("imgUrl")
+                ), selectRecentPostsParam);
+    }
 }

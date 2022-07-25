@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetPopularSearchRes {
+public class GetSearchPostsByHashtagRes {
 
     private int postIdx;
     private String imgUrl;

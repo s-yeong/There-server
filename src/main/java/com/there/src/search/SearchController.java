@@ -2,7 +2,7 @@ package com.there.src.search;
 
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
-import com.there.src.search.model.GetPopularSearchRes;
+import com.there.src.search.model.GetSearchPostsByHashtagRes;
 import com.there.src.search.model.GetSearchByAccountRes;
 import com.there.src.search.model.GetSearchByHashtagRes;
 import com.there.utils.JwtService;
@@ -77,11 +77,30 @@ public class SearchController {
     // 인기 - #해시태그에 해당하는 게시물 리스트
     @ResponseBody
     @GetMapping("/hashtag/{tagIdx}/popular")
-    public BaseResponse<List<GetPopularSearchRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
+    public BaseResponse<List<GetSearchPostsByHashtagRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
         try{
 
-            List<GetPopularSearchRes> getPopularSearchRes = searchProvider.retrievePopularPost(tagIdx);
-            return new BaseResponse<>(getPopularSearchRes);
+            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrievePopularPost(tagIdx);
+            return new BaseResponse<>(getSearchPostsByHashtagRes);
+
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+    /**
+     * 해시태그 최근 게시물 검색 API
+     * [GET} /search/hashtag/{tagIdx}/recent
+     */
+
+    @ResponseBody
+    @GetMapping("/hashtag/{tagIdx}/recent")
+    public BaseResponse<List<GetSearchPostsByHashtagRes>> getRecentSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
+        try{
+
+            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrieveRecentPost(tagIdx);
+            return new BaseResponse<>(getSearchPostsByHashtagRes);
 
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
