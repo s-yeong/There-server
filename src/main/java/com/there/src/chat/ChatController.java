@@ -2,6 +2,7 @@ package com.there.src.chat;
 
 import com.there.src.chat.config.*;
 import com.there.src.chat.model.*;
+import com.there.utils.JwtService;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
+
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
@@ -18,14 +21,17 @@ public class ChatController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final JwtService jwtService;
+
     private final ChatContentService chatContentService;
     private final ChatContentProvider chatContentProvider;
     private final ChatRoomService chatRoomService;
     private final ChatRoomProvider chatRoomProvider;
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatContentProvider chatContentProvider, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, JwtService jwtService, ChatContentService chatContentService, ChatContentProvider chatContentProvider, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
         this.messagingTemplate = messagingTemplate;
+        this.jwtService = jwtService;
         this.chatContentService = chatContentService;
         this.chatContentProvider = chatContentProvider;
         this.chatRoomService = chatRoomService;
@@ -81,11 +87,11 @@ public class ChatController {
     @MessageMapping("content/{sendIdx}/{receiverIdx}")
     public void createContent
     (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
-     @Payload MessagechatContentReq messagechatContentReq) throws com.there.config.BaseException {
+     @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
 
             // 메시지 생성 후 가져오기
             int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
-            MessagechatContentRes messagechatContentRes = chatContentService.getChatContent(senderIdx, receiverIdx, contentIdx);
+            MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
 
             // Content 전달
             // user/{receiverId}/queue/message
@@ -112,5 +118,23 @@ public class ChatController {
     /**
      * Content 삭제 API
      */
+    @ResponseBody
+    @PatchMapping("deletion/{contentIdx}/users/{userIdx}")
+    public BaseResponse<String> deletechatContent
+    (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
+        try {
+            chatContentService.deleteChatContent(contentIdx);
+            String result = "메세지 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        } \
+
+    }
 
 }

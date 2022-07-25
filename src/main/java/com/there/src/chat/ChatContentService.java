@@ -1,6 +1,6 @@
 package com.there.src.chat;
 
-import com.there.config.*;
+import com.there.src.chat.config.*;
 import com.there.src.chat.model.MessagechatContentReq;
 import com.there.src.chat.model.MessagechatContentRes;
 import org.slf4j.Logger;
@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.src.chat.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.src.chat.config.BaseResponseStatus.DELETE_FAIL_CHATCONTENT;
 
 @Service
 public class ChatContentService {
@@ -40,13 +41,13 @@ public class ChatContentService {
 
     }
 
-    /**
-     * 메시지 가져오기
-     */
-    public MessagechatContentRes getChatContent(int senderIdx, int receiverIdx, int contentIdx) throws BaseException {
-
-        MessagechatContentRes result = chatContentDao.getChatContent(senderIdx, receiverIdx, contentIdx);
-        return result;
-
+    public void deleteChatContent(int contentIdx) throws BaseException {
+        try {
+            int result = chatContentDao.deleteChatContent(contentIdx);
+            if (result == 0) throw new BaseException(DELETE_FAIL_CHATCONTENT); // 삭제 확인 (0 : 실패 / 1 : 성공)
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }

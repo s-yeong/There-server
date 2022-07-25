@@ -63,4 +63,11 @@ public class ChatContentDao {
                 rs.getString("content"),
                 rs.getString("created_At")),selectChatContentParams);
     }
+
+    public int deleteChatContent(int contentIdx) {
+        String deleteChatContentQuery = "UPDATE chatContent SET status = 'INACTIVE' WHERE contentIdx = ?";
+        int deleteChatContentParams = contentIdx;
+
+        return this.jdbcTemplate.update(deleteChatContentQuery, deleteChatContentParams);
+    }
 }

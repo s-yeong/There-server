@@ -2,6 +2,7 @@ package com.there.src.chat;
 
 import com.there.src.chat.config.*;
 import com.there.src.chat.model.GetChatContentRes;
+import com.there.src.chat.model.MessagechatContentRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,16 @@ public class ChatContentProvider {
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
+
+    }
+
+    /**
+     * 메시지 가져오기
+     */
+    public MessagechatContentRes getChatContent(int senderIdx, int receiverIdx, int contentIdx) {
+
+        MessagechatContentRes result = chatContentDao.getChatContent(senderIdx, receiverIdx, contentIdx);
+        return result;
 
     }
 }
