@@ -31,10 +31,11 @@ public class ChatRoomDao {
 
     // 해당 User의 채팅방 목록 조회
     public List<GetChatRoomRes> selectChatRoomList(int userIdx) {
-        String getChatRoomListQuery = "select  nickName, profileImgUrl\n" +
+        String getChatRoomListQuery = "sselect  u.nickName, u.profileImgUrl\n" +
                 "from    User u\n" +
                 "where   u.userIdx in (select  receiverIdx\n" +
-                "                      from    chatRoom c left join User U on c.senderIdx = ? and U.userIdx = ?);";
+                "                      from    chatRoom c, User u\n" +
+                "                      where   c.senderIdx = ? and u.userIdx = ?);";
         int getChatRoomListParams = userIdx;
 
         return this.jdbcTemplate.query(getChatRoomListQuery, (rs, rowNum) -> new GetChatRoomRes(
@@ -42,6 +43,17 @@ public class ChatRoomDao {
                 rs.getString("profileImgUrl")), getChatRoomListParams);
     }
 
+    // 채팅방 삭제
+    public int deleteChatRoom(int roomIdx) {
+
+        String deleteChatRoomQuery = "UPDATE ChatRoom SET status = 'INACTIVE' WHERE roomIdx = ?";
+        int deletePostParams = roomIdx;
+
+        return this.jdbcTemplate.update(deleteChatRoomQuery, roomIdx);
+
+    }
+
+    // chatRoom 가져오기
     public int selectRoomIdx(int senderIdx, int receiverIdx) {
 
         String getRoomIdxQuery = "select roomIdx from chatRoom where sendIdx = ? and receiverIdx = ?";
@@ -51,12 +63,4 @@ public class ChatRoomDao {
     }
 
 
-    public int deleteChatRoom(int roomIdx) {
-
-        String deleteChatRoomQuery = "UPDATE ChatRoom SET status = 'INACTIVE' WHERE roomIdx = ?";
-        int deletePostParams = roomIdx;
-
-        return this.jdbcTemplate.update(deleteChatRoomQuery, roomIdx);
-
-    }
 }

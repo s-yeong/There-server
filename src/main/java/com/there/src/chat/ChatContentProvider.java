@@ -1,0 +1,37 @@
+package com.there.src.chat;
+
+import com.there.src.chat.config.*;
+import com.there.src.chat.model.GetChatContentRes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.there.src.chat.config.BaseResponseStatus.DATABASE_ERROR;
+
+@Service
+public class ChatContentProvider {
+
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ChatContentDao chatContentDao;
+
+    @Autowired
+    public ChatContentProvider(ChatContentDao chatContentDao) {
+        this.chatContentDao = chatContentDao;
+    }
+
+    /**
+     * 채팅방 콘텐츠 조회
+     */
+    public List<GetChatContentRes> retrieveChatContent(int roomIdx, int senderIdx, int receiverIdx) throws BaseException {
+        try {
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx, senderIdx, receiverIdx);
+            return getChatContentList;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+}

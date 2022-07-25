@@ -1,5 +1,6 @@
 package com.there.src.chat;
 
+import com.there.src.chat.model.GetChatContentRes;
 import com.there.src.chat.model.MessagechatContentReq;
 import com.there.src.chat.model.MessagechatContentRes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class ChatContentDao {
@@ -17,6 +19,9 @@ public class ChatContentDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    /**
+     * 메세시 생성
+     */
     public int createContent(int roomIdx, MessagechatContentReq messagechatContentReq) {
         String createRoomQuery = "insert into chatRoom (roomIdx, content) values (?, ?);";
         Object[] createRoomParams = new Object[]{roomIdx, messagechatContentReq.getContent()};
@@ -28,6 +33,9 @@ public class ChatContentDao {
 
     }
 
+    /**
+     * 메시지 가져오기
+     */
     public MessagechatContentRes getChatContent(int senderIdx, int receiverIdx, int contentIdx) {
 
         String getChatContentQuery = "select c.roomIdx, s.nickName, r.nickName, c.content, c.created_At\n" +
@@ -43,5 +51,16 @@ public class ChatContentDao {
                     rs.getString("receiverId"),
                     rs.getString("content"),
                     rs.getString("created_At")), getChatContentParams);
+    }
+
+    public List<GetChatContentRes> selectChatContentList(int roomIdx, int senderIdx, int receiverIdx) {
+        String selectChatContentQuery = "select  content, created_At\n" +
+                "from    chatContent\n" +
+                "where   roomIdx = ? and status = 'ACTIVE';";
+        int selectChatContentParams = roomIdx;
+
+        return this.jdbcTemplate.query(selectChatContentQuery, (rs, rowNum) ->  new GetChatContentRes(
+                rs.getString("content"),
+                rs.getString("created_At")),selectChatContentParams);
     }
 }

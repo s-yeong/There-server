@@ -19,14 +19,15 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatContentService chatContentService;
+    private final ChatContentProvider chatContentProvider;
     private final ChatRoomService chatRoomService;
     private final ChatRoomProvider chatRoomProvider;
 
     @Autowired
-    public ChatController
-            (SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatContentProvider chatContentProvider, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
         this.messagingTemplate = messagingTemplate;
         this.chatContentService = chatContentService;
+        this.chatContentProvider = chatContentProvider;
         this.chatRoomService = chatRoomService;
         this.chatRoomProvider = chatRoomProvider;
     }
@@ -73,7 +74,6 @@ public class ChatController {
         }
     }
 
-
     /**
      * Message 전송 API
      * app/chat/content/{sendIdx}/{receiverIdx}
@@ -83,7 +83,7 @@ public class ChatController {
     (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
      @Payload MessagechatContentReq messagechatContentReq) throws com.there.config.BaseException {
 
-            // 생성 된 Content 가져오기
+            // 메시지 생성 후 가져오기
             int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
             MessagechatContentRes messagechatContentRes = chatContentService.getChatContent(senderIdx, receiverIdx, contentIdx);
 
@@ -92,5 +92,25 @@ public class ChatController {
             messagingTemplate.convertAndSendToUser
                     (messagechatContentRes.getReceiverId(), "/queue/message", messagechatContentRes);
     }
+
+    /**
+     * Content 조회 API
+     */
+    @ResponseBody
+    @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
+    public BaseResponse<List<GetChatContentRes>> getChatContent
+    (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
+
+        try {
+            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx, receiverIdx);
+            return new BaseResponse<>(getChatContentList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * Content 삭제 API
+     */
 
 }

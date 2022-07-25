@@ -24,7 +24,9 @@ public class ChatContentService {
         this.chatContentDao = chatContentDao;
     }
 
-    // 메세지 생성
+    /**
+     * 메시지 생성
+     */
     public int createContent
             (int senderIdx, int receiverIdx, MessagechatContentReq messagechatContentReq) throws BaseException {
 
@@ -38,6 +40,9 @@ public class ChatContentService {
 
     }
 
+    /**
+     * 메시지 가져오기
+     */
     public MessagechatContentRes getChatContent(int senderIdx, int receiverIdx, int contentIdx) throws BaseException {
 
         MessagechatContentRes result = chatContentDao.getChatContent(senderIdx, receiverIdx, contentIdx);
