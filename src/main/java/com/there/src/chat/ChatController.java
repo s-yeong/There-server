@@ -133,8 +133,7 @@ public class ChatController {
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
-        } \
-
+        }
     }
 
 }
