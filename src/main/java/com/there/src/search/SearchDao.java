@@ -36,4 +36,23 @@ public class SearchDao {
                 ), selectAccountListParams);
     }
 
+    // 해시태그 검색
+    public List<GetSearchByHashtagRes> selectHashtagList(String hashtag){
+        String selectTagIdxQuery = "select tagIdx from Tag where name = ?;";
+        String selectHashtagListQuery = "select t.tagIdx as tagIdx, t.name as hashtag, if(postCount is null, 0, postCount) as postCount\n" +
+                "from Tag as t\n" +
+                "    left join (select tagIdx, count(postIdx) as postCount\n" +
+                "    from PostTag where tagIdx = ?) pt on pt.tagIdx = t.tagIdx\n" +
+                "where t.tagIdx = ?;";
+
+        int tagIdx = this.jdbcTemplate.queryForObject(selectTagIdxQuery, int.class, hashtag);
+        Object[] selectHashtagListParams = new Object[] {tagIdx, tagIdx};
+        return this.jdbcTemplate.query(selectHashtagListQuery,
+                (rs, rowNum) -> new GetSearchByHashtagRes(
+                        rs.getInt("tagIdx"),
+                        rs.getString("hashtag"),
+                        rs.getString("postCount")
+                ), selectHashtagListParams);
+    }
+
 }

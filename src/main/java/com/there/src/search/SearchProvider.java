@@ -2,6 +2,7 @@ package com.there.src.search;
 
 import com.there.config.BaseException;
 import com.there.src.search.model.GetSearchByAccountRes;
+import com.there.src.search.model.GetSearchByHashtagRes;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,19 @@ public class SearchProvider {
             return getSearchByAccount;
         }
         catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    // 해시태그 검색 API
+    public List<GetSearchByHashtagRes> retrieveByHashtag(String hashtag) throws BaseException {
+        try{
+            List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(hashtag);
+            return getSearchByHashtag;
+        }
+        catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
 
