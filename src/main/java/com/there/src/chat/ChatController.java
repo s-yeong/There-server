@@ -2,6 +2,7 @@ package com.there.src.chat;
 
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
+import com.there.src.chat.model.GetChatRoomRes;
 import com.there.src.chat.model.MessagechatContentReq;
 import com.there.src.chat.model.MessagechatContentRes;
 import com.there.src.chat.model.PostChatRoomRes;
@@ -11,10 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
@@ -25,12 +25,15 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatContentService chatContentService;
     private final ChatRoomService chatRoomService;
+    private final ChatRoomProvider chatRoomProvider;
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatRoomService chatRoomService) {
+    public ChatController
+            (SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
         this.messagingTemplate = messagingTemplate;
         this.chatContentService = chatContentService;
         this.chatRoomService = chatRoomService;
+        this.chatRoomProvider = chatRoomProvider;
     }
 
     /**
@@ -48,6 +51,19 @@ public class ChatController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/user/{userIdx}")
+    public BaseResponse<List<GetChatRoomRes>> getChatRooms(@PathVariable("userIdx")int userIdx) {
+        try {
+            List<GetChatRoomRes> getChatRoomResList = chatRoomProvider.retrieveChatRoom(userIdx);
+            return new BaseResponse<>(getChatRoomResList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
+
     /**
      * Message 전송 API
      * app/chat/content/{sendIdx}/{receiverIdx}
@@ -62,8 +78,9 @@ public class ChatController {
             MessagechatContentRes messagechatContentRes = chatContentService.getChatContent(senderIdx, receiverIdx, contentIdx);
 
             // Content 전달
+            // user/{receiverId}/queue/message
             messagingTemplate.convertAndSendToUser
-                    (messagechatContentRes.getSenderId(), "/queue/message", messagechatContentRes);
+                    (messagechatContentRes.getReceiverId(), "/queue/message", messagechatContentRes);
     }
 
 }

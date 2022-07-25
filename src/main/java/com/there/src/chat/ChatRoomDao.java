@@ -1,10 +1,12 @@
 package com.there.src.chat;
 
+import com.there.src.chat.model.GetChatRoomRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class ChatRoomDao {
@@ -27,11 +29,26 @@ public class ChatRoomDao {
 
     }
 
-    public int getRoomIdx(int senderIdx, int receiverIdx) {
+    // 해당 User의 채팅방 목록 조회
+    public List<GetChatRoomRes> selectChatRoomList(int userIdx) {
+        String getChatRoomListQuery = "select  nickName, profileImgUrl\n" +
+                "from    User u\n" +
+                "where   u.userIdx in (select  receiverIdx\n" +
+                "                      from    chatRoom c left join User U on c.senderIdx = ? and U.userIdx = ?);";
+        int getChatRoomListParams = userIdx;
+
+        return this.jdbcTemplate.query(getChatRoomListQuery, (rs, rowNum) -> new GetChatRoomRes(
+                rs.getString("nickName"),
+                rs.getString("profileImgUrl")), getChatRoomListParams);
+    }
+
+    public int selectRoomIdx(int senderIdx, int receiverIdx) {
 
         String getRoomIdxQuery = "select roomIdx from chatRoom where sendIdx = ? and receiverIdx = ?";
         Object[] getRoomIdxParams = new Object[]{senderIdx, receiverIdx};
 
         return this.jdbcTemplate.queryForObject(getRoomIdxQuery, int.class, getRoomIdxParams);
     }
+
+
 }

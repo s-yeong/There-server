@@ -29,9 +29,9 @@ public class ChatContentService {
             (int senderIdx, int receiverIdx, MessagechatContentReq messagechatContentReq) throws BaseException {
 
         try {
-            int roomIdx = chatRoomDao.getRoomIdx(senderIdx, receiverIdx);
-            int chatIdx = chatContentDao.createContent(roomIdx, messagechatContentReq);
-            return chatIdx;
+            int roomIdx = chatRoomDao.selectRoomIdx(senderIdx, receiverIdx);
+            int contentIdx = chatContentDao.createContent(roomIdx, messagechatContentReq);
+            return contentIdx;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

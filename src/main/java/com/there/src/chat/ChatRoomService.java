@@ -1,11 +1,14 @@
 package com.there.src.chat;
 
 import com.there.config.BaseException;
+import com.there.src.chat.model.GetChatRoomRes;
 import com.there.src.chat.model.PostChatRoomRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.there.config.BaseResponseStatus.*;
 
@@ -23,11 +26,12 @@ public class ChatRoomService {
     public PostChatRoomRes createRoom(int senderIdx, int receiverIdx) throws BaseException {
 
         try {
-            int roodIdx = chatRoomDao.createRoom(senderIdx, receiverIdx);
+            int roodIdx = chatRoomDao.selectRoomIdx(senderIdx, receiverIdx);
             return new PostChatRoomRes(roodIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
 
     }
+
 }
