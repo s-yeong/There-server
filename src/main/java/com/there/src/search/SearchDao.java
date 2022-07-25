@@ -23,9 +23,9 @@ public class SearchDao {
 
     // 계정 검색
     public List<GetSearchByAccountRes> selectAccountList(String account){
-        String selectAccountListQuery = "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and nickName = ?\n" +
+        String selectAccountListQuery = "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and nickName like concat('%', ?,'%')\n" +
                 "UNION\n" +
-                "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and name = ?;";
+                "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and name like concat('%', ?,'%');";
         Object[] selectAccountListParams = new Object[] {account, account};
         return this.jdbcTemplate.query(selectAccountListQuery,
                 (rs, rowNum) -> new GetSearchByAccountRes(
@@ -38,19 +38,17 @@ public class SearchDao {
 
     // 해시태그 검색
     public List<GetSearchByHashtagRes> selectHashtagList(String hashtag){
-        String selectTagIdxQuery = "select tagIdx from Tag where name = ?;";
-        String selectHashtagListQuery = "select t.tagIdx as tagIdx, t.name as hashtag, if(postCount is null, 0, postCount) as postCount\n" +
+        String selectHashtagListQuery = "select t.tagIdx as tagIdx, t.name as name, count(pt.postIdx) as postCount\n" +
                 "from Tag as t\n" +
-                "    left join (select tagIdx, count(postIdx) as postCount\n" +
-                "    from PostTag where tagIdx = ?) pt on pt.tagIdx = t.tagIdx\n" +
-                "where t.tagIdx = ?;";
+                "    join PostTag as pt on pt.tagIdx = t.tagIdx\n" +
+                "where name like concat('%', ?,'%')\n" +
+                "group by tagIdx;";
+        String selectHashtagListParams = hashtag;
 
-        int tagIdx = this.jdbcTemplate.queryForObject(selectTagIdxQuery, int.class, hashtag);
-        Object[] selectHashtagListParams = new Object[] {tagIdx, tagIdx};
         return this.jdbcTemplate.query(selectHashtagListQuery,
                 (rs, rowNum) -> new GetSearchByHashtagRes(
                         rs.getInt("tagIdx"),
-                        rs.getString("hashtag"),
+                        rs.getString("name"),
                         rs.getString("postCount")
                 ), selectHashtagListParams);
     }

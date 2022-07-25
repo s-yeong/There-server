@@ -42,8 +42,6 @@ public class SearchController {
     public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) throws com.there.config.BaseException{
         try{
 
-            int userIdxByJwt = jwtService.getUserIdx();
-
              List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(account);
             return new BaseResponse<>(getSearchByAccountRes);
 
@@ -53,15 +51,13 @@ public class SearchController {
     }
 
     /**
-     * 태그 검색 API
+     * 해시태그 검색 API - 게시물 태그로 사용되지 않은 것들은 검색되지 않음
      * [GET] /search/hashtag?hashTag=
      */
     @ResponseBody
     @GetMapping("/hashtag")
-    public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) throws BaseException{
+    public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) throws com.there.config.BaseException{
         try{
-
-//            int userIdxByJwt = jwtService.getUserIdx();
 
             List<GetSearchByHashtagRes> getSearchByHashtagRes = searchProvider.retrieveByHashtag(hashtag);
             return new BaseResponse<>(getSearchByHashtagRes);
