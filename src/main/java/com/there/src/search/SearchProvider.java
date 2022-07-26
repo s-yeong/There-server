@@ -1,15 +1,15 @@
 package com.there.src.search;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.there.config.BaseException;
-import com.there.src.search.model.GetSearchPostsByHashtagRes;
-import com.there.src.search.model.GetSearchByAccountRes;
-import com.there.src.search.model.GetSearchByHashtagRes;
+import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
@@ -28,6 +28,33 @@ public class SearchProvider {
     public SearchProvider(SearchDao searchDao, JwtService jwtService) {
         this.searchDao = searchDao;
         this.jwtService = jwtService;
+    }
+
+    // 최근 검색 기록 API
+    public List<GetRecentSearchListRes> retrieveRecentSearches(int userIdx) throws BaseException {
+        try{
+            List<GetRecentSearchRes> getRecentSearch = searchDao.selectRecentSearches(userIdx);
+            List<GetRecentSearchListRes> getRecentSearchList = searchDao.selectRecentSearchIdx(userIdx);
+
+            for(int i = 0; i < getRecentSearch.size(); i++){
+
+                if(getRecentSearch.get(i).getTagOrAccount().equals("Tag")){
+                    GetSearchByHashtagRes getSearchByHashtagRes = searchDao.selectHashtag(getRecentSearch.get(i).getTagOrUserIdx());
+                    getRecentSearchList.get(i).setGetSearchByHashtagRes(getSearchByHashtagRes);
+
+                }
+
+                else if(getRecentSearch.get(i).getTagOrAccount().equals("Account")){
+                    GetSearchByAccountRes getSearchByAccountRes = searchDao.selectAccount(getRecentSearch.get(i).getTagOrUserIdx());
+                    getRecentSearchList.get(i).setGetSearchByAccountRes(getSearchByAccountRes);
+                }
+            }
+            return getRecentSearchList;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
     // 계정 검색 API
@@ -55,7 +82,7 @@ public class SearchProvider {
     }
 
     // 해시태그 인기 게시물 검색
-    public List<GetSearchPostsByHashtagRes> retrievePopularPost(int tagIdx) throws BaseException {
+    public List<GetSearchPostsByHashtagRes> retrievePopularPosts(int tagIdx) throws BaseException {
         try{
             List<GetSearchPostsByHashtagRes> getSearchPostsByHashtag = searchDao.selectPopularPosts(tagIdx);
             return getSearchPostsByHashtag;
@@ -67,7 +94,7 @@ public class SearchProvider {
 
     // 해시태그 최근 게시물 검색
 
-    public List<GetSearchPostsByHashtagRes> retrieveRecentPost(int tagIdx) throws BaseException {
+    public List<GetSearchPostsByHashtagRes> retrieveRecentPosts(int tagIdx) throws BaseException {
         try{
             List<GetSearchPostsByHashtagRes> getSearchPostByHashtag = searchDao.selectRecentPosts(tagIdx);
             return getSearchPostByHashtag;

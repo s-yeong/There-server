@@ -20,6 +20,87 @@ public class SearchDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    /**
+     * 최근 검색 기록
+     * 1. 검색 기록
+     * 2. 검색 기록 searchIdx 가져오기
+     * 3. 해시태그인 경우
+     * 4. 계정인 경우
+     */
+    // 최근 검색 기록
+    public List<GetRecentSearchRes> selectRecentSearches(int userIdx){
+        String selectRecentSearchesQuery = "select s.searchIdx, s.tagOrUserIdx, s.tagOrAccount, s.created_At as createdAt\n" +
+                "from Search as s\n" +
+                "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
+                "where us.userIdx=? and s.tagOrAccount = 'Tag'\n" +
+                "UNION\n" +
+                "select s.searchIdx, s.tagOrUserIdx, s.tagOrAccount, s.created_At as createdAt\n" +
+                "from Search as s\n" +
+                "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
+                "where us.userIdx=? and s.tagOrAccount = 'Account'\n" +
+                "order by createdAt desc;";
+        Object[] selectRecentSearchesParam = new Object[]{userIdx, userIdx};
+        return this.jdbcTemplate.query(selectRecentSearchesQuery,
+                (rs, rowNum) -> new GetRecentSearchRes(
+                        rs.getInt("searchIdx"),
+                        rs.getInt("tagOrUserIdx"),
+                        rs.getString("tagOrAccount"),
+                        rs.getString("createdAt")
+                ), selectRecentSearchesParam);
+    }
+
+    // 최근 검색 기록 - searchIdx값만 가져오기
+    public List<GetRecentSearchListRes> selectRecentSearchIdx(int userIdx){
+        String selectRecentSearchIdxQuery = "select s.searchIdx, s.created_At\n" +
+                "from Search as s\n" +
+                "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
+                "where us.userIdx=? and s.tagOrAccount = 'Tag'\n" +
+                "UNION\n" +
+                "select s.searchIdx, s.created_At\n" +
+                "from Search as s\n" +
+                "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
+                "where us.userIdx=? and s.tagOrAccount = 'Account'\n" +
+                "order by created_At desc;";
+        Object[] selectRecentSearchIdxParam = new Object[]{userIdx, userIdx};
+        return this.jdbcTemplate.query(selectRecentSearchIdxQuery,
+                (rs,rowNum) -> new GetRecentSearchListRes(
+                        rs.getInt("searchIdx"),
+                        null,
+                        null
+                ), selectRecentSearchIdxParam);
+
+    }
+
+    
+    // 최근 검색 기록 - 해시태그인 경우
+    public GetSearchByHashtagRes selectHashtag(int tagIdx){
+        String selectHashtagQuery = "select t.tagIdx as tagIdx, t.name as name, count(pt.postIdx) as postCount\n" +
+                "from Tag as t\n" +
+                "    join PostTag as pt on pt.tagIdx = t.tagIdx\n" +
+                "where t.tagIdx = ?\n" +
+                "group by tagIdx;";
+        int selectHashtagParam = tagIdx;
+        return this.jdbcTemplate.queryForObject(selectHashtagQuery,
+                (rs, rowNum) -> new GetSearchByHashtagRes(
+                        rs.getInt("tagIdx"),
+                        rs.getString("name"),
+                        rs.getString("postCount")
+                ), selectHashtagParam);
+    }
+
+    // 최근 검색 기록 - 계정인 경우
+    public GetSearchByAccountRes selectAccount(int userIdx){
+        String selectAccountQuery = "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and userIdx = ?;";
+        int selectAccountParam = userIdx;
+        return this.jdbcTemplate.queryForObject(selectAccountQuery,
+                (rs, rowNum) -> new GetSearchByAccountRes(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("nickName"),
+                        rs.getString("profileImgUrl")
+                ), selectAccountParam);
+    }
+
 
     // 계정 검색
     public List<GetSearchByAccountRes> selectAccountList(String account){

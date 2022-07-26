@@ -1,10 +1,9 @@
 package com.there.src.search;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
-import com.there.src.search.model.GetSearchPostsByHashtagRes;
-import com.there.src.search.model.GetSearchByAccountRes;
-import com.there.src.search.model.GetSearchByHashtagRes;
+import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.there.src.post.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
 @RequestMapping("/search")
@@ -33,6 +34,23 @@ public class SearchController {
         this.jwtService = jwtService;
     }
 
+    /**
+     * 최근 검색 기록 API
+     *
+     */
+    @ResponseBody
+    @GetMapping("/recent")
+    public BaseResponse<List<GetRecentSearchListRes>> getRecentSearch() throws com.there.config.BaseException{
+      try{
+          int userIdxByJwt = jwtService.getUserIdx();
+          List<GetRecentSearchListRes> getRecentSearchListRes = searchProvider.retrieveRecentSearches(userIdxByJwt);
+          return new BaseResponse<>((getRecentSearchListRes));
+      } catch (BaseException exception) {
+          return new BaseResponse<>((exception.getStatus()));
+      }
+
+    }
+
 
     /**
      * 계정 검색 API
@@ -44,6 +62,7 @@ public class SearchController {
         try{
 
              List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(account);
+
             return new BaseResponse<>(getSearchByAccountRes);
 
         } catch (BaseException exception) {
@@ -80,7 +99,7 @@ public class SearchController {
     public BaseResponse<List<GetSearchPostsByHashtagRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
         try{
 
-            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrievePopularPost(tagIdx);
+            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrievePopularPosts(tagIdx);
             return new BaseResponse<>(getSearchPostsByHashtagRes);
 
         } catch (BaseException exception){
@@ -99,7 +118,7 @@ public class SearchController {
     public BaseResponse<List<GetSearchPostsByHashtagRes>> getRecentSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
         try{
 
-            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrieveRecentPost(tagIdx);
+            List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrieveRecentPosts(tagIdx);
             return new BaseResponse<>(getSearchPostsByHashtagRes);
 
         } catch (BaseException exception){
