@@ -51,6 +51,23 @@ public class SearchController {
 
     }
 
+    /**
+     * 최근 검색 삭제 API
+     */
+    @DeleteMapping("/recent/{searchIdx}")
+    public BaseResponse<String> deleteRecentSearch(@PathVariable("searchIdx") int searchIdx) throws com.there.config.BaseException{
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            searchService.deleteRecentSearch(userIdxByJwt, searchIdx);
+
+            String result = "삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 
     /**
      * 계정 검색 API

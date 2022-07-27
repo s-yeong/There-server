@@ -101,6 +101,16 @@ public class SearchDao {
                 ), selectAccountParam);
     }
 
+    // 최근 검색 삭제
+    public int deleteRecentSearch(int searchIdx){
+
+        String deleteRecentSearchQuery ="delete us, s\n" +
+                "from UserSearch as us\n" +
+                "    join Search as s on s.searchIdx = us.searchIdx\n" +
+                "where us.searchIdx=?;";
+        int deleteRecentSearchParam = searchIdx;
+        return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
+    }
 
     // 계정 검색
     public List<GetSearchByAccountRes> selectAccountList(String account){
