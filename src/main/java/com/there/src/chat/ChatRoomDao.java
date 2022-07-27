@@ -1,6 +1,7 @@
 package com.there.src.chat;
 
-import com.there.src.chat.model.GetChatRoomRes;
+import com.there.src.chat.model.GetRoomInfoRes;
+import com.there.src.chat.model.GetUserInfoRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import java.util.List;
 public class ChatRoomDao {
 
     private JdbcTemplate jdbcTemplate;
+    private GetUserInfoRes getUserInfoList;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -29,18 +31,35 @@ public class ChatRoomDao {
 
     }
 
-    // 해당 User의 채팅방 목록 조회
-    public List<GetChatRoomRes> selectChatRoomList(int userIdx) {
-        String getChatRoomListQuery = "sselect  u.nickName, u.profileImgUrl\n" +
+    // 채팅방 목록 조회
+    public List<GetRoomInfoRes> selectChatRoomList(int userIdx) {
+
+        String getChatRoomInfoQuery = "select      roomIdx, count(*) as count\n" +
+                "from        chatContent\n" +
+                "where       'check' = 0 and status = 'ACTIVE' and roomIdx in (select  roomIdx\n" +
+                "                                                              from    chatRoom\n" +
+                "                                                              where   senderIdx = ?)\n" +
+                "group by    roomIdx;";
+
+        String getUserInfoQuery = "select  nickName, profileImgUrl\n" +
                 "from    User u\n" +
-                "where   u.userIdx in (select  receiverIdx\n" +
-                "                      from    chatRoom c, User u\n" +
-                "                      where   c.senderIdx = ? and u.userIdx = ?);";
+                "where   u.userIdx in (select receiverIdx from chatRoom where senderIdx = ? and u.status = 'ACTIVE');";
+
+
         int getChatRoomListParams = userIdx;
 
-        return this.jdbcTemplate.query(getChatRoomListQuery, (rs, rowNum) -> new GetChatRoomRes(
-                rs.getString("nickName"),
-                rs.getString("profileImgUrl")), getChatRoomListParams);
+        return this.jdbcTemplate.query(getChatRoomInfoQuery, (rs, rowNum) -> new GetRoomInfoRes(
+
+                // roomIdx, 안 읽은 메시지 수
+                rs.getInt("roomIdx"),
+                rs.getInt("count"),
+
+                // 유저 정보
+                getUserInfoList = this.jdbcTemplate.queryForObject(getUserInfoQuery,
+                        (rk, rownum) -> new GetUserInfoRes(
+                                rk.getString("nickName"),
+                                rk.getString("profileImgUrl"))
+                        , getChatRoomListParams)), getChatRoomListParams);
     }
 
     // 채팅방 삭제

@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.chat.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.there.src.chat.config.BaseResponseStatus.DELETE_FAIL_CHATCONTENT;
+import static com.there.src.chat.config.BaseResponseStatus.*;
 
 @Service
 public class ChatContentService {
@@ -49,5 +48,16 @@ public class ChatContentService {
         catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public void checkChatContent(int userIdx) throws BaseException {
+        try {
+            int result = chatContentDao.checkChatContent(userIdx);
+            if (result == 0) throw new BaseException(CHECK_FAIL_CHATCONTENT); // 삭제 확인 (0 : 실패 / 1 : 성공)
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 }

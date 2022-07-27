@@ -70,4 +70,15 @@ public class ChatContentDao {
 
         return this.jdbcTemplate.update(deleteChatContentQuery, deleteChatContentParams);
     }
+
+    public int checkChatContent(int userIdx) {
+        String updateChatContentQuery = "UPDATE  chatContent\n" +
+                "SET     `check` = 1\n" +
+                "WHERE   status = 'ACTIVE' and roomIdx in (select  roomIdx\n" +
+                "                                          from    chatRoom\n" +
+                "                                          where   senderIdx = ?);";
+        int updateChatContentParams = userIdx;
+
+        return this.jdbcTemplate.update(updateChatContentQuery, updateChatContentParams);
+    }
 }

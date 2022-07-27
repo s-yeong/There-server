@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
+import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/chat")
@@ -55,18 +56,28 @@ public class ChatController {
 
     /**
      * ChatRoom 조회 API
-     * /char/user/{userIdx}
+     * /chat/room/user/{userIdx}
      */
     @ResponseBody
-    @GetMapping("/user/{userIdx}")
-    public BaseResponse<List<GetChatRoomRes>> getChatRooms(@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
-        List<GetChatRoomRes> getChatRoomResList = chatRoomProvider.retrieveChatRoom(userIdx);
-        return new BaseResponse<>(getChatRoomResList);
+    @GetMapping("room/user/{userIdx}")
+    public BaseResponse<List<GetRoomInfoRes>> getChatRooms
+    (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+        // 채팅방 조회
+        List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
+
+        // 메시지 확인 상태 변경
+        try {
+            chatContentService.checkChatContent(userIdx);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+        return new BaseResponse<>(getRoomInfoList);
     }
 
     /**
      * ChatRoom 삭제 API
-     * /char/room/{roomIdx}
+     * /chat/room/{roomIdx}
      */
     @ResponseBody
     @PatchMapping("/room/{roomIdx}")
@@ -81,10 +92,10 @@ public class ChatController {
     }
 
     /**
-     * Message 전송 API
-     * app/chat/content/{sendIdx}/{receiverIdx}
+     * Message 생성 및 전송 API
+     * /app/chat/{sendIdx}/{receiverIdx}
      */
-    @MessageMapping("content/{sendIdx}/{receiverIdx}")
+    @MessageMapping("/{sendIdx}/{receiverIdx}")
     public void createContent
     (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
      @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
@@ -93,14 +104,13 @@ public class ChatController {
             int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
             MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
 
-            // Content 전달
-            // user/{receiverId}/queue/message
-            messagingTemplate.convertAndSendToUser
-                    (messagechatContentRes.getReceiverId(), "/queue/message", messagechatContentRes);
+            // 메시지 전달 user/{receiverIdx}
+            messagingTemplate.convertAndSend
+                    (format("/user/%d", receiverIdx) , messagechatContentRes);
     }
 
     /**
-     * Content 조회 API
+     * Message 조회 API
      */
     @ResponseBody
     @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
@@ -113,10 +123,11 @@ public class ChatController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
 
     /**
-     * Content 삭제 API
+     * Message 삭제 API
      */
     @ResponseBody
     @PatchMapping("deletion/{contentIdx}/users/{userIdx}")
