@@ -20,14 +20,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
 
-        config.enableSimpleBroker( "/user");    // Sub
-        config.setApplicationDestinationPrefixes("/app");       // Client -> Server
-        config.setUserDestinationPrefix("/user");               // Server -> Client
+        // Sub
+        config.enableSimpleBroker( "/user");
+
+        // Client -> Server
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
+        // ws://localhost:8080:/ws
         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
 
     }

@@ -5,8 +5,10 @@ import com.there.src.chat.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,20 +95,23 @@ public class ChatController {
 
     /**
      * Message 생성 및 전송 API
-     * /app/chat/{sendIdx}/{receiverIdx}
+     * /app/chat/{sendIdx}/{receiverIdx} : Client 메시지 보내는 주소
+     * /user/{sendIdx}/{receiverIdx} : 채팅방 주소
      */
     @MessageMapping("/{sendIdx}/{receiverIdx}")
-    public void createContent
-    (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
+    @SendTo("/user/{sendIdx}/{receiverIdx}")
+    public MessagechatContentRes sendContent
+    (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
      @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
+
+            String receiverId = Integer.toString(receiverIdx);
 
             // 메시지 생성 후 가져오기
             int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
             MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
 
             // 메시지 전달 user/{receiverIdx}
-            messagingTemplate.convertAndSend
-                    (format("/user/%d", receiverIdx) , messagechatContentRes);
+            return messagechatContentRes;
     }
 
     /**
