@@ -3,6 +3,7 @@ package com.there.src.chat;
 import com.there.src.chat.config.*;
 import com.there.src.chat.model.*;
 import com.there.utils.JwtService;
+import io.swagger.annotations.Api;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
-import static java.lang.String.format;
 
+@Api
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
