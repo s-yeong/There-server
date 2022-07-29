@@ -58,8 +58,8 @@ public class HistoryDao {
     // 히스토리 리스트 조회 함수
     public List<GetHistoryListRes> selectHistoryList(int postIdx){
         String selectHistoryListQuery = "select h.historyIdx as historyIdx, h.title as title,\n" +
-                "       DATE(h.updated_At) as updatedAt,\n" +
-                "        CASE DAYOFWEEK(h.updated_At)\n" +
+                "       DATE(h.created_At) as createdAt,\n" +
+                "        CASE DAYOFWEEK(h.created_At)\n" +
                 "        WHEN '1' THEN '(일)'\n" +
                 "        WHEN '2' THEN '(월)'\n" +
                 "        WHEN '3' THEN '(화)'\n" +
@@ -76,7 +76,7 @@ public class HistoryDao {
                 (rs, rowNum) -> new GetHistoryListRes(
                         rs.getInt("historyIdx"),
                         rs.getString("title"),
-                        rs.getString("updatedAt"),
+                        rs.getString("createdAt"),
                         rs.getString("dayOfWeek")
                 ), selectHistoryListParam);
     }

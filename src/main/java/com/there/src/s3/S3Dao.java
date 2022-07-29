@@ -28,15 +28,6 @@ public class S3Dao {
         this.jdbcTemplate.update(uploadHistoryPictureQuery, uploadHistoryPictureParams);
     }
 
-    /**
-     * 히스토리 사진 삭제 (선택한 사진 삭제)
-     */
-    public void delHistoryPicture(int historyIdx, String del_picture) {
-        String delHistoryPictureQuery = "delete from historyPicture where historyIdx=? and imgUrl=?;";
-        Object[] delHistoryPictureParams = new Object[]{historyIdx, del_picture};
-
-        this.jdbcTemplate.update(delHistoryPictureQuery, delHistoryPictureParams);
-    }
 
     /**
      * 히스토리 사진 삭제 (사진 일괄 삭제)
@@ -46,15 +37,5 @@ public class S3Dao {
         this.jdbcTemplate.update(delHistoryPictureQuery, historyIdx);
     }
 
-    /**
-     * 히스토리 사진 체크
-     */
-    public int checkHistoryPicture(MultipartFile check_picture){
-        String checkHistoryPictureQuery = "select exists(select imgUrl\n" +
-                "from historyPicture\n" +
-                "where imgUrl = ?);";
-        MultipartFile checkHistoryPictureParam = check_picture;
-        return this.jdbcTemplate.queryForObject(checkHistoryPictureQuery,int.class,checkHistoryPictureParam);
-    }
 }
 

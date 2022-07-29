@@ -63,8 +63,6 @@ public class HistoryService {
             return new PostHistoryRes(historyIdx);
         }
         catch (Exception exception) {
-            System.out.println(exception);
-
             throw new BaseException(DATABASE_ERROR);
 
         }
@@ -138,7 +136,6 @@ public class HistoryService {
                     }
                 }
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
