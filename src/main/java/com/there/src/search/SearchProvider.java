@@ -1,6 +1,6 @@
 package com.there.src.search;
 
-import com.there.config.BaseException;
+import com.there.src.search.config.BaseException;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.src.search.config.BaseResponseStatus.DATABASE_ERROR;
 
 
 @Service
@@ -34,7 +34,6 @@ public class SearchProvider {
 
             List<GetRecentSearchListRes> getRecentSearchList = searchDao.selectRecentSearches(userIdx);
 
-
             return getRecentSearchList;
         }
         catch (Exception exception) {
@@ -52,6 +51,9 @@ public class SearchProvider {
             // 검색 기록
             if(checkSearchExist(keyword) == 0){
                 searchDao.insertSearch(userIdx, keyword);
+            }
+            else{
+                searchDao.updateSearch(keyword);
             }
             GetSearchByAllRes getSearchByAll = new GetSearchByAllRes(getSearchByAccount, getSearchByHashtag);
 
@@ -72,6 +74,10 @@ public class SearchProvider {
             if(checkSearchExist(account) == 0){
                 searchDao.insertSearch(userIdx, account);
             }
+            else{
+                searchDao.updateSearch(account);
+            }
+
             return getSearchByAccount;
         }
         catch (Exception exception) {
@@ -88,6 +94,9 @@ public class SearchProvider {
             // 검색 기록
             if(checkSearchExist(hashtag) == 0){
                 searchDao.insertSearch(userIdx, hashtag);
+            }
+            else{
+                searchDao.updateSearch(hashtag);
             }
             return getSearchByHashtag;
         }
@@ -125,6 +134,17 @@ public class SearchProvider {
 
             int result = searchDao.checkSearchExist(keyword);
             return result;
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 해당 유저 검색인지 체크
+    public int checkUserSearchExist(int userIdx, int searchIdx) throws BaseException {
+        try{
+            int result = searchDao.checkUserSearchExist(userIdx, searchIdx);
+            return result;
+
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

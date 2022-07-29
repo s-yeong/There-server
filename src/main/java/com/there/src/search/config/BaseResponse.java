@@ -1,4 +1,4 @@
-package com.there.src.search.cofig;
+package com.there.src.search.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

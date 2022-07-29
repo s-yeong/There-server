@@ -1,7 +1,7 @@
 package com.there.src.search;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
+import com.there.src.search.config.BaseException;
+import com.there.src.search.config.BaseResponse;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;

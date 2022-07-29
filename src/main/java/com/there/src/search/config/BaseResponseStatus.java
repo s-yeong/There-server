@@ -1,4 +1,4 @@
-package com.there.src.search.cofig;
+package com.there.src.search.config;
 
 import lombok.Getter;
 
@@ -22,12 +22,13 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
 
+    USERS_SEARCHES_INVALID_ID(false, 2100, "해당 유저의 최근 검색이 아닙니다."),
     /**
      * 3000 : Response 오류
      */
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
-
+    DELETE_FAIL_SEARCH(false, 3100, "최근 검색 삭제를 실패하였습니다."),
     /**
      * 4000 : Database, Server 오류
      */

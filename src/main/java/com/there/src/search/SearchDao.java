@@ -36,8 +36,7 @@ public class SearchDao {
     }
 
 
-
-    // 최근 검색 삭제
+    // 최근 검색어 삭제
     public int deleteRecentSearch(int searchIdx){
 
         String deleteRecentSearchQuery ="delete us, s\n" +
@@ -139,6 +138,24 @@ public class SearchDao {
         this.jdbcTemplate.update(insertSearchQuery, insertSearchParam);
         this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParam);
         this.jdbcTemplate.update(end);
+
+    }
+
+    // 검색 업데이트
+    public void updateSearch(String keyword){
+        String updateSearchQuery = "update Search SET updated_At = NOW() where content = ?;";
+        String updateSearchParam = keyword;
+        this.jdbcTemplate.update(updateSearchQuery, updateSearchParam);
+    }
+
+    // 해당 유저 검색 기록인지 체크
+    public int checkUserSearchExist(int userIdx, int searchIdx){
+        String checkUserSearchExistQuery = "select exists(select * from UserSearch where userIdx = ? and searchIdx = ?);";
+        Object[] checkUserSearchExistParams = new Object[] {userIdx, searchIdx};
+
+        return this.jdbcTemplate.queryForObject(checkUserSearchExistQuery,
+                int.class,
+                checkUserSearchExistParams);
 
     }
 
