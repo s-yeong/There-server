@@ -128,13 +128,17 @@ public class SearchDao {
     }
 
     // 검색 기록 체크
-    public int checkSearchExist(String keyword){
-        String checkSearchExistQuery = "select exists(select content from Search where content = ?);";
-        String checkSearchExistParam = keyword;
+    public int checkSearchExist(int userIdx, String keyword){
+        String checkSearchExistQuery = "select exists(\n" +
+                "select *\n" +
+                "from Search as s\n" +
+                "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
+                "where content = ? and userIdx = ?);";
+        Object[] checkSearchExistParams = new Object[] {keyword, userIdx};
 
         return this.jdbcTemplate.queryForObject(checkSearchExistQuery,
                 int.class,
-                checkSearchExistParam);
+                checkSearchExistParams);
     }
 
     // 검색 기록

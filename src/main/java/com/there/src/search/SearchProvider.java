@@ -49,7 +49,7 @@ public class SearchProvider {
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(keyword);
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(keyword);
             // 검색 기록
-            if(checkSearchExist(keyword) == 0){
+            if(checkSearchExist(userIdx, keyword) == 0){
                 searchDao.insertSearch(userIdx, keyword);
             }
             else{
@@ -71,7 +71,7 @@ public class SearchProvider {
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(account);
 
             // 검색 기록
-            if(checkSearchExist(account) == 0){
+            if(checkSearchExist(userIdx, account) == 0){
                 searchDao.insertSearch(userIdx, account);
             }
             else{
@@ -92,7 +92,7 @@ public class SearchProvider {
         try{
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(hashtag);
             // 검색 기록
-            if(checkSearchExist(hashtag) == 0){
+            if(checkSearchExist(userIdx, hashtag) == 0){
                 searchDao.insertSearch(userIdx, hashtag);
             }
             else{
@@ -129,10 +129,10 @@ public class SearchProvider {
     }
 
     // 검색 기록 체크 - 존재O : 1, 존재X : 0
-    public int checkSearchExist(String keyword) throws BaseException {
+    public int checkSearchExist(int userIdx, String keyword) throws BaseException {
         try{
 
-            int result = searchDao.checkSearchExist(keyword);
+            int result = searchDao.checkSearchExist(userIdx, keyword);
             return result;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
