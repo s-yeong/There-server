@@ -5,6 +5,9 @@ import com.there.config.BaseException;
 import com.there.config.BaseResponse;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +38,14 @@ public class SearchController {
     }
 
     /**
-     * 최근 검색 기록 API
+     * 최근 검색어 조회 API
      *
      */
+    @ApiOperation(value="최근 검색어 조회 API", notes="유저의 최근 검색 기록 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/recent")
     public BaseResponse<List<GetRecentSearchListRes>> getRecentSearch() throws com.there.config.BaseException{
@@ -52,8 +60,13 @@ public class SearchController {
     }
 
     /**
-     * 최근 검색 삭제 API
+     * 최근 검색어 삭제 API
      */
+    @ApiOperation(value="최근 검색어 삭제 API", notes="최근 검색 하나만 삭제")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @DeleteMapping("/recent/{searchIdx}")
     public BaseResponse<String> deleteRecentSearch(@PathVariable("searchIdx") int searchIdx) throws com.there.config.BaseException{
         try{
@@ -73,6 +86,11 @@ public class SearchController {
      * 계정 검색 API
      * [GET] /search/account?account=
      */
+    @ApiOperation(value="계정 검색 API", notes="ACTIVE한 계정만 검색")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/account")
     public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) throws com.there.config.BaseException{
@@ -88,9 +106,14 @@ public class SearchController {
     }
 
     /**
-     * 해시태그 검색 API - 게시물 태그로 사용되지 않은 것들은 검색되지 않음
+     * 해시태그 검색 API
      * [GET] /search/hashtag?hashTag=
      */
+    @ApiOperation(value="해시태그 검색 API", notes="게시물 태그로 사용되지 않은 해시태그는 검색되지 않음")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/hashtag")
     public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) throws com.there.config.BaseException{
@@ -106,11 +129,14 @@ public class SearchController {
 
 
     /**
-     * 해시태그 인기 게시물 검색 API
+     * 해시태그 인기 게시물 리스트 API
      * [GET] /search/hashtag/{tagIdx}/popular
      */
-
-    // 인기 - #해시태그에 해당하는 게시물 리스트
+    @ApiOperation(value="해시태그 인기 게시물 리스트 API", notes="#해시태그(tagIdx)에 해당하는 게시물 리스트")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/hashtag/{tagIdx}/popular")
     public BaseResponse<List<GetSearchPostsByHashtagRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
@@ -126,10 +152,14 @@ public class SearchController {
     }
 
     /**
-     * 해시태그 최근 게시물 검색 API
+     * 해시태그 최근 게시물 리스트 API
      * [GET} /search/hashtag/{tagIdx}/recent
      */
-
+    @ApiOperation(value="해시태그 최근 게시물 리스트 API", notes="#해시태그(tagIdx)에 해당하는 최근 게시물 리스트")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/hashtag/{tagIdx}/recent")
     public BaseResponse<List<GetSearchPostsByHashtagRes>> getRecentSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
