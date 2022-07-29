@@ -112,6 +112,7 @@ public class SearchDao {
         return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
     }
 
+
     // 계정 검색
     public List<GetSearchByAccountRes> selectAccountList(String account){
         String selectAccountListQuery = "select userIdx, name, nickName, profileImgUrl from User where status = 'ACTIVE' and nickName like concat('%', ?,'%')\n" +

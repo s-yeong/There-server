@@ -1,6 +1,5 @@
 package com.there.src.search;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
 import com.there.src.search.model.*;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static com.there.src.post.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
 @RequestMapping("/search")
@@ -81,6 +78,29 @@ public class SearchController {
         }
     }
 
+    /**
+     * 통합 검색 API(인기)
+     * [GET] /search/all?keyword=
+     *
+     */
+    @ApiOperation(value="통합 검색 API", notes="계정, 태그 모두 검색(인기탭)")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("/all")
+    public BaseResponse<GetSearchByAllRes> getSearch(@RequestParam String keyword) throws com.there.config.BaseException{
+        try{
+
+            GetSearchByAllRes getSearchByAllRes = searchProvider.retrieveByAll(keyword);
+
+            return new BaseResponse<>(getSearchByAllRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
     /**
      * 계정 검색 API

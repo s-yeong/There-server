@@ -1,6 +1,5 @@
 package com.there.src.search;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.there.config.BaseException;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
@@ -50,6 +48,23 @@ public class SearchProvider {
                 }
             }
             return getRecentSearchList;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    // 통합 검색 API
+    public GetSearchByAllRes retrieveByAll(String keyword) throws BaseException {
+        try{
+
+            List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(keyword);
+            List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(keyword);
+
+            GetSearchByAllRes getSearchByAll = new GetSearchByAllRes(getSearchByAccount, getSearchByHashtag);
+
+            return getSearchByAll;
         }
         catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
