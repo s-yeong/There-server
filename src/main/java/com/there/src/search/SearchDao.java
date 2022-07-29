@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -45,6 +46,17 @@ public class SearchDao {
                 "where us.searchIdx=?;";
         int deleteRecentSearchParam = searchIdx;
         return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
+    }
+
+    // 최근 검색어 모두 삭제
+    public int deleteAllRecentSearch(int userIdx){
+
+        String deleteAllRecentSearchQuery ="delete from us, s\n" +
+                "    using UserSearch as us\n" +
+                "    join Search as s on s.searchIdx = us.searchIdx\n" +
+                "where userIdx = ?;";
+        int deleteAllRecentSearchParam = userIdx;
+        return this.jdbcTemplate.update(deleteAllRecentSearchQuery, deleteAllRecentSearchParam);
     }
 
 

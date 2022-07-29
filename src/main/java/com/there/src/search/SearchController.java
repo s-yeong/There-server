@@ -36,6 +36,7 @@ public class SearchController {
 
     /**
      * 최근 검색어 조회 API
+     * [GET] /search/recent
      */
     @ApiOperation(value="최근 검색어 조회 API", notes="유저의 최근 검색 기록 조회")
     @ApiResponses({
@@ -57,6 +58,7 @@ public class SearchController {
 
     /**
      * 최근 검색어 삭제 API
+     * [DELETE] /search/recent/:searchIdx
      */
     @ApiOperation(value="최근 검색어 삭제 API", notes="최근 검색 하나만 삭제")
     @ApiResponses({
@@ -78,9 +80,31 @@ public class SearchController {
     }
 
     /**
+     * 최근 검색어 모두 삭제 API
+     * [DELETE] /search/recent/all
+     */
+    @ApiOperation(value="최근 검색어 모두 삭제 API", notes="최근 검색 모두 지우기")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @DeleteMapping("/recent/all")
+    public BaseResponse<String> deleteAllRecentSearch() throws com.there.config.BaseException{
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            searchService.deleteAllRecentSearch(userIdxByJwt);
+
+            String result = "삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
      * 통합 검색 API(인기)
      * [GET] /search/all?keyword=
-     *
      */
     @ApiOperation(value="통합 검색 API", notes="계정, 태그 모두 검색(인기탭)")
     @ApiResponses({
@@ -172,7 +196,7 @@ public class SearchController {
 
     /**
      * 해시태그 최근 게시물 리스트 API
-     * [GET} /search/hashtag/{tagIdx}/recent
+     * [GET] /search/hashtag/{tagIdx}/recent
      */
     @ApiOperation(value="해시태그 최근 게시물 리스트 API", notes="#해시태그(tagIdx)에 해당하는 최근 게시물 리스트")
     @ApiResponses({

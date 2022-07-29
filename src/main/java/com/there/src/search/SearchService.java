@@ -49,5 +49,21 @@ public class SearchService {
 
     }
 
+    // 최근 검색어 모두 삭제
+    public void deleteAllRecentSearch(int userIdx) throws BaseException, com.there.config.BaseException {
+
+        try{
+
+            int result = searchDao.deleteAllRecentSearch(userIdx);
+            if(result == 0){
+                throw new BaseException(DELETE_FAIL_SEARCH);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
 
 }
