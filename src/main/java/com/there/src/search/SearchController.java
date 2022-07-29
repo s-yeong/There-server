@@ -36,7 +36,6 @@ public class SearchController {
 
     /**
      * 최근 검색어 조회 API
-     *
      */
     @ApiOperation(value="최근 검색어 조회 API", notes="유저의 최근 검색 기록 조회")
     @ApiResponses({

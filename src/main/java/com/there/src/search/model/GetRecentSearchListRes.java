@@ -12,7 +12,8 @@ import lombok.Setter;
 public class GetRecentSearchListRes {
 
     private int searchIdx;
-    private GetSearchByAccountRes getSearchByAccountRes = null;
-    private GetSearchByHashtagRes getSearchByHashtagRes = null;
+    private String content;
+//    private GetSearchByAccountRes getSearchByAccountRes = null;
+//    private GetSearchByHashtagRes getSearchByHashtagRes = null;
 
 }

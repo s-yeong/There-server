@@ -28,25 +28,13 @@ public class SearchProvider {
         this.jwtService = jwtService;
     }
 
-    // 최근 검색 기록 API
+    // 최근 검색어 조회 API
     public List<GetRecentSearchListRes> retrieveRecentSearches(int userIdx) throws BaseException {
         try{
-            List<GetRecentSearchRes> getRecentSearch = searchDao.selectRecentSearches(userIdx);
-            List<GetRecentSearchListRes> getRecentSearchList = searchDao.selectRecentSearchIdx(userIdx);
 
-            for(int i = 0; i < getRecentSearch.size(); i++){
+            List<GetRecentSearchListRes> getRecentSearchList = searchDao.selectRecentSearches(userIdx);
 
-                if(getRecentSearch.get(i).getTagOrAccount().equals("Tag")){
-                    GetSearchByHashtagRes getSearchByHashtagRes = searchDao.selectHashtag(getRecentSearch.get(i).getTagOrUserIdx());
-                    getRecentSearchList.get(i).setGetSearchByHashtagRes(getSearchByHashtagRes);
 
-                }
-
-                else if(getRecentSearch.get(i).getTagOrAccount().equals("Account")){
-                    GetSearchByAccountRes getSearchByAccountRes = searchDao.selectAccount(getRecentSearch.get(i).getTagOrUserIdx());
-                    getRecentSearchList.get(i).setGetSearchByAccountRes(getSearchByAccountRes);
-                }
-            }
             return getRecentSearchList;
         }
         catch (Exception exception) {
