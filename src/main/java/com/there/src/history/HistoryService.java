@@ -51,7 +51,7 @@ public class HistoryService {
             if (MultipartFiles != null) {
                 for (int i = 0; i < MultipartFiles.size(); i++) {
 
-                    // s3에 업로드
+                    // s3 업로드
                     String s3path = "historyPicture/historyIdx : " + Integer.toString(historyIdx);
                     String imgPath = s3Service.uploadHistoryPicture(MultipartFiles.get(i), s3path);
 
@@ -63,6 +63,7 @@ public class HistoryService {
             return new PostHistoryRes(historyIdx);
         }
         catch (Exception exception) {
+            System.out.println(exception);
 
             throw new BaseException(DATABASE_ERROR);
 
@@ -81,7 +82,6 @@ public class HistoryService {
             throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
         }
 
-        // 이 히스토리의 userIdx가 맞는지
         if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
             throw new BaseException(USERS_HISTORYS_INVALID_ID);
         }
@@ -100,7 +100,7 @@ public class HistoryService {
 
 
 
-    // 히스토리 수정
+    // 히스토리 수정  
     @Transactional(rollbackFor = BaseException.class)
     public void modifyHistory(int userIdx, int historyIdx, PatchHistoryReq patchHistoryReq, List<MultipartFile> MultipartFiles)
             throws BaseException {
@@ -109,12 +109,9 @@ public class HistoryService {
             if(historyProvider.checkUserExist(userIdx) == 0){
                 throw new BaseException(USERS_EMPTY_USER_ID);
             }
-
             if(historyProvider.checkHistoryExist(historyIdx) == 0){
                 throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
             }
-
-            // 이 히스토리의 userIdx가 맞는지
             if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
                 throw new BaseException(USERS_HISTORYS_INVALID_ID);
             }
@@ -140,10 +137,8 @@ public class HistoryService {
                         s3Service.uploadHistoryPicture(imgPath, historyIdx);
                     }
                 }
-
-
-
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

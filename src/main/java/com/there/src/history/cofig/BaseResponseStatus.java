@@ -35,6 +35,7 @@ public enum BaseResponseStatus {
     HISTORYS_EMPTY_CONTENTS(false,2052,"히스토리 내용을 입력해주세요."),
     HISTORYS_INVALID_CONTENTS(false, 2053, "히스토리 내용의 글자 수를 확인해주세요"),
     HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
+    HISTORYS_MODIFY_NOTTHING(false,2055, "변경 사항이 없습니다."),
 
 
     /**

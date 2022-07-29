@@ -21,11 +21,11 @@ public class HistoryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 히스토리 조회 함수    - 기록물 사진 같은 경우 하나의 리스트가 칼럼으로 들어감   - updatedAt 기준으로 날짜 요일 조회
+    // 히스토리 조회 함수    - 기록물 사진 같은 경우 하나의 리스트가 칼럼으로 들어감   - createdAt 기준으로 날짜 요일 조회
     public GetHistoryRes selectHistory(int historyIdx){
         String selectHistoryQuery = "select h.historyIdx, h.title, h.content,\n" +
-                "      DATE(updated_At) as updatedAt,\n" +
-                "    CASE DAYOFWEEK(updated_At)\n" +
+                "      DATE(created_At) as createdAt,\n" +
+                "    CASE DAYOFWEEK(created_At)\n" +
                 "    WHEN '1' THEN '(일)'\n" +
                 "    WHEN '2' THEN '(월)'\n" +
                 "    WHEN '3' THEN '(화)'\n" +
@@ -42,7 +42,7 @@ public class HistoryDao {
                         rs.getInt("historyIdx"),
                         rs.getString("title"),
                         rs.getString("content"),
-                        rs.getString("updatedAt"),
+                        rs.getString("createdAt"),
                         rs.getString("dayOfWeek"),
                         getHistoryPicturesRes = this.jdbcTemplate.query("select hp.pictureIdx as pictureIdx, hp.imgUrl as imgUrl\n" +
                                         "from historyPicture as hp\n" +
@@ -125,13 +125,26 @@ public class HistoryDao {
 
     // 히스토리 수정 API - 히스토리 수정 함수(이미지 제외)
     public int updateHistory(int historyIdx, PatchHistoryReq patchHistoryReq){
-        String updateHistoryQuery = "update History set title=?,content=? where historyIdx = ?;\n" ;
-        Object []updateHistoryParams = new Object[] {patchHistoryReq.getTitle(), patchHistoryReq.getContent(), historyIdx};
-        return this.jdbcTemplate.update(updateHistoryQuery,
-                updateHistoryParams);
-
+        if(patchHistoryReq.getContent() != null && patchHistoryReq.getTitle() != null){
+            String updateHistoryQuery = "update History set title=?,content=? where historyIdx = ?;\n" ;
+            Object []updateHistoryParams = new Object[] {patchHistoryReq.getTitle(), patchHistoryReq.getContent(), historyIdx};
+            return this.jdbcTemplate.update(updateHistoryQuery,
+                    updateHistoryParams);
+        }
+        else if(patchHistoryReq.getTitle() != null){
+            String updateHistoryTitleQuery = "update History set title=? where historyIdx = ?;\n" ;
+            Object []updateHistoryTitleParams = new Object[] {patchHistoryReq.getTitle(), historyIdx};
+            return this.jdbcTemplate.update(updateHistoryTitleQuery,
+                    updateHistoryTitleParams);
+        }
+        else{
+            String updateHistoryContentQuery = "update History set content=? where historyIdx = ?;\n" ;
+            Object []updateHistoryContentParams = new Object[] {patchHistoryReq.getTitle(), historyIdx};
+            return this.jdbcTemplate.update(updateHistoryContentQuery,
+                    updateHistoryContentParams);
+        }
     }
-
+   
     // 유저 체크 함수
     public int checkUserExist(int userIdx){
         String checkUserExistQuery = "select exists(select userIdx\n" +
