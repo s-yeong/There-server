@@ -31,6 +31,10 @@ public class SearchService {
     // 최근 검색어 삭제
     public void deleteRecentSearch(int userIdx, int searchIdx) throws BaseException, com.there.config.BaseException {
 
+        if(searchProvider.checkUserExist(userIdx) == 0){
+            throw new BaseException(USERS_EMPTY_USER_ID);
+        }
+
         // 해당하는 유저의 검색 기록인지
         if(searchProvider.checkUserSearchExist(userIdx, searchIdx) == 0){
             throw new BaseException(USERS_SEARCHES_INVALID_ID);
@@ -51,6 +55,10 @@ public class SearchService {
 
     // 최근 검색어 모두 삭제
     public void deleteAllRecentSearch(int userIdx) throws BaseException, com.there.config.BaseException {
+
+        if(searchProvider.checkUserExist(userIdx) == 0){
+            throw new BaseException(USERS_EMPTY_USER_ID);
+        }
 
         try{
 

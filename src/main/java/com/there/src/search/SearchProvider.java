@@ -150,4 +150,12 @@ public class SearchProvider {
         }
     }
 
+    public int checkUserExist(int userIdx) throws BaseException {
+        try{
+            return searchDao.checkUserExist(userIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

@@ -171,4 +171,15 @@ public class SearchDao {
 
     }
 
+    // 유저 체크
+    public int checkUserExist(int userIdx){
+        String checkUserExistQuery = "select exists(select userIdx\n" +
+                "from User\n" +
+                "where userIdx = ?);" ;
+        int checkUserExistParam = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserExistQuery,
+                int.class,
+                checkUserExistParam);
+    }
+
 }
