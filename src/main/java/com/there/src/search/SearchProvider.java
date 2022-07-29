@@ -56,12 +56,15 @@ public class SearchProvider {
     }
 
     // 통합 검색 API
-    public GetSearchByAllRes retrieveByAll(String keyword) throws BaseException {
+    public GetSearchByAllRes retrieveByAll(int userIdx, String keyword) throws BaseException {
         try{
 
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(keyword);
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(keyword);
-
+            // 검색 기록
+            if(checkSearchExist(keyword) == 0){
+                searchDao.insertSearch(userIdx, keyword);
+            }
             GetSearchByAllRes getSearchByAll = new GetSearchByAllRes(getSearchByAccount, getSearchByHashtag);
 
             return getSearchByAll;
@@ -73,21 +76,31 @@ public class SearchProvider {
     }
 
     // 계정 검색 API
-    public List<GetSearchByAccountRes> retrieveByAccount(String account) throws BaseException {
+    public List<GetSearchByAccountRes> retrieveByAccount(int userIdx, String account) throws BaseException {
         try{
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(account);
+
+            // 검색 기록
+            if(checkSearchExist(account) == 0){
+                searchDao.insertSearch(userIdx, account);
+            }
             return getSearchByAccount;
         }
         catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
 
     }
 
     // 해시태그 검색 API
-    public List<GetSearchByHashtagRes> retrieveByHashtag(String hashtag) throws BaseException {
+    public List<GetSearchByHashtagRes> retrieveByHashtag(int userIdx, String hashtag) throws BaseException {
         try{
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(hashtag);
+            // 검색 기록
+            if(checkSearchExist(hashtag) == 0){
+                searchDao.insertSearch(userIdx, hashtag);
+            }
             return getSearchByHashtag;
         }
         catch (Exception exception) {
@@ -108,13 +121,23 @@ public class SearchProvider {
     }
 
     // 해시태그 최근 게시물 검색
-
     public List<GetSearchPostsByHashtagRes> retrieveRecentPosts(int tagIdx) throws BaseException {
         try{
             List<GetSearchPostsByHashtagRes> getSearchPostByHashtag = searchDao.selectRecentPosts(tagIdx);
             return getSearchPostByHashtag;
         }
         catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 검색 기록 체크 - 존재O : 1, 존재X : 0
+    public int checkSearchExist(String keyword) throws BaseException {
+        try{
+
+            int result = searchDao.checkSearchExist(keyword);
+            return result;
+        } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }

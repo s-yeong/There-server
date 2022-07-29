@@ -179,4 +179,31 @@ public class SearchDao {
                         rs.getString("imgUrl")
                 ), selectRecentPostsParam);
     }
+
+    // 검색 기록 체크
+    public int checkSearchExist(String keyword){
+        String checkSearchExistQuery = "select exists(select content from Search where content = ?);";
+        String checkSearchExistParam = keyword;
+
+        return this.jdbcTemplate.queryForObject(checkSearchExistQuery,
+                int.class,
+                checkSearchExistParam);
+    }
+
+    // 검색 기록
+    public void insertSearch(int userIdx, String keyword){
+        String start = "START TRANSACTION;";
+        String insertSearchQuery = "insert into Search(content) values(?);";
+        String insertUserSearchQuery = "insert into UserSearch(userIdx, searchIdx) values(?,last_insert_id());";
+        String end = "COMMIT;";
+        String insertSearchParam = keyword;
+        int insertUserSearchParam = userIdx;
+
+        this.jdbcTemplate.update(start);
+        this.jdbcTemplate.update(insertSearchQuery, insertSearchParam);
+        this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParam);
+        this.jdbcTemplate.update(end);
+
+    }
+
 }

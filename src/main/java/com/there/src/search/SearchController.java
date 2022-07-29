@@ -92,8 +92,8 @@ public class SearchController {
     @GetMapping("/all")
     public BaseResponse<GetSearchByAllRes> getSearch(@RequestParam String keyword) throws com.there.config.BaseException{
         try{
-
-            GetSearchByAllRes getSearchByAllRes = searchProvider.retrieveByAll(keyword);
+            int userIdxByJwt = jwtService.getUserIdx();
+            GetSearchByAllRes getSearchByAllRes = searchProvider.retrieveByAll(userIdxByJwt, keyword);
 
             return new BaseResponse<>(getSearchByAllRes);
 
@@ -115,8 +115,8 @@ public class SearchController {
     @GetMapping("/account")
     public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) throws com.there.config.BaseException{
         try{
-
-             List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(account);
+            int userIdxByJwt = jwtService.getUserIdx();
+            List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(userIdxByJwt, account);
 
             return new BaseResponse<>(getSearchByAccountRes);
 
@@ -138,8 +138,8 @@ public class SearchController {
     @GetMapping("/hashtag")
     public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) throws com.there.config.BaseException{
         try{
-
-            List<GetSearchByHashtagRes> getSearchByHashtagRes = searchProvider.retrieveByHashtag(hashtag);
+            int userIdxByJwt = jwtService.getUserIdx();
+            List<GetSearchByHashtagRes> getSearchByHashtagRes = searchProvider.retrieveByHashtag(userIdxByJwt, hashtag);
             return new BaseResponse<>(getSearchByHashtagRes);
 
         } catch (BaseException exception) {
