@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+
+</head>
+
+<div>
+    <h2> 결제 데모</h2>
+    <li>
+        <button id="iamportPayment" type="button"> 결제 테스트</button>
+    </li>
+</div>
+</body>
+</html>
+
+<script>
+    // 문서가 준비되면 제일 먼저 실행
+    $(document).ready(function(){$("#iamportPayment").click(function() {
+        payment(); //버튼 클릭하면 호출
+     });
+    })
+    // 버튼 클릭하면 실행
+    function iamportPayment() {
+        IMP.init('iamport');
+    // 아임포트 관리자 콘솔에서 확인한 '가맹점 식별 코드 입력
+    IMP.request_pay({
+    pg: "html.inicis", //pg사명 or pg사명.CID(잘못 입력할 경우, 기본 PG사 띄어짐
+    pay_method: "card",
+        merchant_uid:"iamport_test_id",
+        name: "상품",
+        amount: 100,
+        buyer_email:"wngml203@naver.com",
+        buyer_name: "송주희",
+        buyer_tel: "010-1234-5678" },
+        function(rsp) {
+            if (rsp.success) {
+                alert("[완료] imp_uid: "+ rsp.imp_uid+" / merchant_uid: " + rsp.merchant_uid);
+            } else {
+                alert("[실패] 코드("rsp.error_code+") / 메세지 (" + rsp.error_msg + ")");
+
+
+            }
+        });
+    }
+
+
+
+</script>
+
+
+</div>
+</body>
+</html>

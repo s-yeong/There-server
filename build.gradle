@@ -37,6 +37,8 @@ dependencies {
 
 	// Web
 	implementation ('org.springframework.boot:spring-boot-starter-web')
+	implementation ('org.springframework.boot:spring-boot-starter-thymeleaf')
+	implementation ('org.webjars:jquery-ui:1.11.4')
 
 	// Security, Authentication
 	implementation('org.springframework.boot:spring-boot-starter-security')
