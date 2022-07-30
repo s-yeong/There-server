@@ -102,16 +102,32 @@ public class PostDao {
                 "where status ='ACTIVE'\n" +
                 "order by likeCount desc;";
         return this.jdbcTemplate.query(selectRankingPostListQuery,
-                (rk, rowNum) -> new GetPostListRes(
-                        rk.getString("imgUrl"),
-                        rk.getString("content"),
-                        rk.getString("created_At")
+                (rs, rowNum) -> new GetPostListRes(
+                        rs.getString("imgUrl"),
+                        rs.getString("content"),
+                        rs.getString("created_At")
                 ));
     }
 
+    // 내가 팔로우한 구독자의 게시글 리스트 조회
+    public List<GetPostListRes> selectFollwerPostList(int userIdx) {
+        String selectFollowerPostListQuery = "select follower.imgUrl, follower.content, follower.created_At, follower.userIdx\n" +
+                "from Post follower\n" +
+                "left join Follow as followee on followee.followerIdx = follower.userIdx\n" +
+                "join Follow as f on f.followIdx = followee.followIdx\n" +
+                "and follower.status = 'ACTIVE'\n" +
+                "where followee.followeeIdx = ?";
+        int selectFollowerPostListParam = userIdx;
+        return this.jdbcTemplate.query(selectFollowerPostListQuery,
+                (rs, rowNum) -> new GetPostListRes(
+                        rs.getString("imgUrl"),
+                        rs.getString("content"),
+                        rs.getString("created_At")
+                ), selectFollowerPostListParam);
+
+    }
     // 감정별 리스트 조회
-    //  emotion = 0 멋짐
-    public List<GetPostListRes> selectCoolPostList(int emotion) {
+    public List<GetPostListRes> selectEmotionPostList(int emotion) {
         String selectCoolPostListQuery = "select imgUrl, content, created_At\n" +
                 "from Post\n" +
                 "    left join postLike on Post.postIdx = postLike.postIdx\n" +

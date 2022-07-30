@@ -49,11 +49,22 @@ public class PostProvider {
         }
     }
 
+    // 내가 팔로우한 구독자의 게시글 리스트 조회
+    public List<GetPostListRes> retrieveFollowerPosts(int userIdx) throws BaseException{
+        try {
+            List<GetPostListRes> getPostListRes = postDao.selectFollwerPostList(userIdx);
+            return getPostListRes;
+        } catch(Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     // 감정별 리스트 조회
-    public List<GetPostListRes> retrievePostList(int emotion) throws BaseException{
+    public List<GetPostListRes> retrieveEmotionPosts(int emotion) throws BaseException{
         try {
 
-            List<GetPostListRes> getPostListRes = postDao.selectCoolPostList(emotion);
+            List<GetPostListRes> getPostListRes = postDao.selectEmotionPostList(emotion);
 
             return getPostListRes;
 

@@ -1,7 +1,5 @@
 package com.there.src.post;
 
-import com.there.config.*;
-import com.there.src.history.model.GetHistoryListRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.*;
@@ -12,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 
@@ -104,6 +105,10 @@ public class PostController {
 
     }
 
+    /**
+     * 무작위(랜덤) 게시글 리스트 조회 API
+     * /posts/random
+     */
     @ResponseBody
     @GetMapping("random")
     public BaseResponse<List<GetPostListRes>> getRandomPostList(){
@@ -114,13 +119,39 @@ public class PostController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API
+     * /posts/rankingAndfollowerPostList
+     */
     @ResponseBody
-    @GetMapping("ranking")
-    public BaseResponse<List<GetPostListRes>> getRankingPostList(){
+    @GetMapping("rankingAndfollowerPostList")
+    public BaseResponse<Map<String, List<GetPostListRes>>> getRankingAndFollowerPostList() throws com.there.config.BaseException{
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrieveRankingPosts();
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            Map<String, List<GetPostListRes>> getPostListRes = new HashMap<>();
+            getPostListRes.put("인기글 리스트", postProvider.retrieveRankingPosts());
+            getPostListRes.put("팔로우 게시글 리스트", postProvider.retrieveFollowerPosts(userIdxByJwt));
+
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * 내가 팔로우한 구독자의 게시글 리스트 조회 API
+     * /posts/followerPostList
+     */
+    @ResponseBody
+    @GetMapping("followerPostList")
+    public BaseResponse<List<GetPostListRes>> getFollowerPostList() throws com.there.config.BaseException{
+        try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            List<GetPostListRes> getPostListRes = postProvider.retrieveFollowerPosts(userIdxByJwt);
+            return new BaseResponse<>(getPostListRes);
+        } catch(BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -133,7 +164,7 @@ public class PostController {
     @GetMapping("emotion/{emotion}")
     public BaseResponse<List<GetPostListRes>> getEmotionPostList(@PathVariable("emotion") int emotion) {
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrievePostList(emotion);
+            List<GetPostListRes> getPostListRes = postProvider.retrieveEmotionPosts(emotion);
             return new BaseResponse<>(getPostListRes);
 
         } catch (BaseException exception) {
