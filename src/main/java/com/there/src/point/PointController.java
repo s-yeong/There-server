@@ -48,6 +48,10 @@ public class PointController {
 
     }
 
+    /**
+     * 포인트 충전 직후 충전 내역 조회 API
+     * kakaoPay/kakaoPaySuccess
+     */
     @GetMapping("/kakaoPaySuccess")
     public String kakaoPaySuccess(@RequestParam("pg_token") String pg_token, Model model) {
         log.info("kakaoPaySuccess get............................................");
@@ -57,4 +61,5 @@ public class PointController {
 
         return null;
     }
+
 }
