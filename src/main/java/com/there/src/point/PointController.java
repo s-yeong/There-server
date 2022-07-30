@@ -30,7 +30,10 @@ public class PointController {
         this.jwtService = jwtService;
     }
 
-
+    /**
+     * 포인트 충전 API
+     * kakaoPay/:userIdx
+     */
     @ResponseBody
     @PostMapping("/kakaoPay/{userIdx}")
     public String kakaoPay(@PathVariable("userIdx") int userIdx, @RequestBody PostPointReq postpointReq)
@@ -50,13 +53,8 @@ public class PointController {
         log.info("kakaoPaySuccess get............................................");
         log.info("kakaoPaySuccess pg_token : " + pg_token);
 
-
-        /*KakaoPayApprovalVO kakao = kakaopay.kakaoPayInfo(pg_token);
-        pointService.chargePoint(kakao.getAmount());*/
-
         model.addAttribute("info", kakaopay.kakaoPayInfo(pg_token));
 
         return null;
     }
-
 }
