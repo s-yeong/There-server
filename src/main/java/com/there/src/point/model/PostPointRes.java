@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PostPointRes {
-    private int pointIdx;
+    private int amount;
 }

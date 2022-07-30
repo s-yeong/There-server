@@ -3,7 +3,7 @@ package com.there.src.point.model;
 import lombok.Data;
 
 import java.util.Date;
-
+// 응답 정보를 받기 위한
 @Data
 public class KakaoPayApprovalVO {
     //response
@@ -12,7 +12,14 @@ public class KakaoPayApprovalVO {
     private AmountVO amount;
     private CardVO card_info;
     private String item_name, item_code, payload;
-    private Integer quantity, tax_free_amount, vat_amount;
+    //private Integer quantity, tax_free_amount, vat_amount;
+    private Integer quantity;
     private Date created_at, approved_at;
 
+    public KakaoPayApprovalVO() {
+    }
+    public KakaoPayApprovalVO(AmountVO amount) {
+        this.amount = amount;
+
+    }
 }
