@@ -23,9 +23,8 @@ import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
 public class ChatController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final SimpMessagingTemplate messagingTemplate;
     private final JwtService jwtService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final ChatContentService chatContentService;
     private final ChatContentProvider chatContentProvider;
