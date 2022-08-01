@@ -12,7 +12,7 @@ public class GetHistoryListRes {
 
     private int historyIdx;
     private String title;
-    private String updatedAt;
+    private String createdAt;
     private String dayOfWeek;
 
 

@@ -1,6 +1,5 @@
 package com.there.src.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.there.config.BaseException;
@@ -83,7 +82,6 @@ public class S3Service {
     }
 
 
-
     /**
      * 히스토리 사진 업로드
      */
@@ -95,21 +93,6 @@ public class S3Service {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-    /**
-     * 히스토리 사진 삭제 (선택 삭제)
-     */
-/*
-    public void delHistoryPicture(int historyIdx, String[] del_picture) throws BaseException {
-        try {
-            for(int i=0;i<del_picture.length;i++) {
-                s3Dao.delHistoryPicture(historyIdx, del_picture[i]);
-            }
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-*/
 
 
     /**
