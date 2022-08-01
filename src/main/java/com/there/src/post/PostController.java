@@ -126,51 +126,19 @@ public class PostController {
      */
     @ResponseBody
     @GetMapping("rankingAndfollowerPostList")
-    public BaseResponse<Map<String, List<GetPostListRes>>> getRankingAndFollowerPostList() throws com.there.config.BaseException{
+    public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() throws com.there.config.BaseException{
         try {
             int userIdxByJwt = jwtService.getUserIdx();
 
             Map<String, List<GetPostListRes>> getPostListRes = new HashMap<>();
             getPostListRes.put("인기글 리스트", postProvider.retrieveRankingPosts());
-            getPostListRes.put("팔로우 게시글 리스트", postProvider.retrieveFollowerPosts(userIdxByJwt));
+            getPostListRes.put("팔로우 게시글 리스트",postProvider.retrieveFollowerPosts(userIdxByJwt));
+
 
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
-    }
-
-    /**
-     * 내가 팔로우한 구독자의 게시글 리스트 조회 API
-     * /posts/followerPostList
-     */
-    @ResponseBody
-    @GetMapping("followerPostList")
-    public BaseResponse<List<GetPostListRes>> getFollowerPostList() throws com.there.config.BaseException{
-        try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            List<GetPostListRes> getPostListRes = postProvider.retrieveFollowerPosts(userIdxByJwt);
-            return new BaseResponse<>(getPostListRes);
-        } catch(BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * 감정별 게시글 리스트 조회 API
-     * /posts/emotion/:emotion
-     */
-    @ResponseBody
-    @GetMapping("emotion/{emotion}")
-    public BaseResponse<List<GetPostListRes>> getEmotionPostList(@PathVariable("emotion") int emotion) {
-        try {
-            List<GetPostListRes> getPostListRes = postProvider.retrieveEmotionPosts(emotion);
-            return new BaseResponse<>(getPostListRes);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-
     }
 
 }
