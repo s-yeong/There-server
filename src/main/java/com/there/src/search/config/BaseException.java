@@ -1,4 +1,4 @@
-package com.there.src.chat.config;
+package com.there.src.search.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
