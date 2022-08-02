@@ -27,9 +27,9 @@ public class PointService {
     }
 
     // 포인트 충전
-    public PostPointRes chargePoint(int userIdx, int amount) throws BaseException {
+    public PostPointRes chargePoint(int userIdx, int amount, String tid) throws BaseException {
         try {
-            int pointIdx = pointDao.chargePoint(userIdx, amount);
+            int pointIdx = pointDao.chargePoint(userIdx, amount, tid);
             return new PostPointRes(pointIdx);
         } catch (Exception exception) {
             throw new BaseException(CREATE_FAIL_CHARGE_POINT);

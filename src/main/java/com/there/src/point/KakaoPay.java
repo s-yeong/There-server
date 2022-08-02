@@ -55,9 +55,11 @@ public class KakaoPay {
         params.add("quantity", "1");
         params.add("total_amount",Integer.toString(postpointReq.getAmount()));
         params.add("tax_free_amount", "100");
-        params.add("approval_url", "http://localhost:8080/kakaoPaySuccess");
+        params.add("approval_url", "http://localhost:8080/kakaoPaySuccess/"+userIdx);
         params.add("cancel_url", "http://localhost:8080/kakaoPayCancel");
         params.add("fail_url", "http://localhost:8080/kakaoPaySuccessFail");
+
+        System.out.println(userIdx);
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 
@@ -65,6 +67,7 @@ public class KakaoPay {
             kakaoPayReadyVO = restTemplate.postForObject(new URI(HOST + "/v1/payment/ready"), body, KakaoPayReadyVO.class);
 
             log.info("" + kakaoPayReadyVO);
+
 
             System.out.println("" + kakaoPayReadyVO.getNext_redirect_pc_url());
             return kakaoPayReadyVO.getNext_redirect_pc_url();
@@ -81,10 +84,11 @@ public class KakaoPay {
 
     }
 
-    public KakaoPayApprovalVO kakaoPayInfo(String pg_token) {
+    public KakaoPayApprovalVO kakaoPayInfo(String pg_token, int userIdx) {
 
         log.info("KakaoPayInfoVO............................................");
         log.info("-----------------------------");
+        System.out.println(kakaoPayReadyVO.getTid());
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -99,8 +103,9 @@ public class KakaoPay {
         params.add("cid", "TC0ONETIME");
         params.add("tid", kakaoPayReadyVO.getTid());
         params.add("partner_order_id", "1001");
-        params.add("partner_user_id", "26");
+        params.add("partner_user_id", String.valueOf(userIdx));
         params.add("pg_token", pg_token);
+
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 
@@ -108,10 +113,14 @@ public class KakaoPay {
             kakaoPayApprovalVO = restTemplate.postForObject(new URI(HOST + "/v1/payment/approve"), body, KakaoPayApprovalVO.class);
             log.info("" + kakaoPayApprovalVO);
 
-            Integer userIdx = parseInt(kakaoPayApprovalVO.getPartner_user_id());
-            Integer amount = kakaoPayApprovalVO.getAmount().getTotal();
+            System.out.println(kakaoPayReadyVO.getTid());
 
-            pointDao.chargePoint(userIdx, amount);
+            Integer Idx = parseInt(kakaoPayApprovalVO.getPartner_user_id());
+            Integer amount = kakaoPayApprovalVO.getAmount().getTotal();
+            String tid = kakaoPayApprovalVO.getTid();
+
+            System.out.println(userIdx);
+            pointDao.chargePoint(Idx, amount, tid);
 
             System.out.println("결제 성공하였습니다. ");
 

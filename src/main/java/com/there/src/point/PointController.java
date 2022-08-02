@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static com.there.src.point.config.BaseResponseStatus.*;
+import static java.lang.Integer.parseInt;
 
 
 @Log
@@ -38,7 +39,7 @@ public class PointController {
     }
 
     /**
-     * 포인트 충전 API
+     * 내 포인트 충전 API
      * kakaoPay/:userIdx
      */
     @ResponseBody
@@ -54,17 +55,22 @@ public class PointController {
         return "redirect:" + kakaopay.kakaoPayReady(userIdx, postpointReq);
 
     }
+/*
+    @ResponseBody
+    @PostMapping("/kakaoPay/{userIdx}")*/
 
     /**
      * 포인트 충전 직후 충전 내역 조회 API
      * kakaoPaySuccess
      */
-    @GetMapping("/kakaoPaySuccess")
-    public String kakaoPaySuccess(@RequestParam("pg_token") String pg_token, Model model) {
+    @GetMapping("/kakaoPaySuccess/{userIdx}")
+    public String kakaoPaySuccess(@RequestParam("pg_token") String pg_token, Model model, @PathVariable("userIdx") int userIdx) {
         log.info("kakaoPaySuccess get............................................");
         log.info("kakaoPaySuccess pg_token : " + pg_token);
 
-        model.addAttribute("info", kakaopay.kakaoPayInfo(pg_token));
+        System.out.println(userIdx);
+
+        model.addAttribute("info", kakaopay.kakaoPayInfo(pg_token, userIdx));
 
         return null;
     }

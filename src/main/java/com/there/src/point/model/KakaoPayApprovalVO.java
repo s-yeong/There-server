@@ -22,4 +22,6 @@ public class KakaoPayApprovalVO {
         this.amount = amount;
 
     }
+
+
 }
