@@ -30,14 +30,22 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
+    /**
+     * S3Uplodar
+     * 1. uploadeFiles
+     * 2. uploade
+     * 3. putS3
+     * 4. removeNewFile
+     * 5. convert
+     * 6. removeFolder
+     */
 
-    public String uploadHistoryPicture(MultipartFile multipartFile, String dirName) throws IOException {
+    public String uploadFiles(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
-
-        return uploadHistoryPicture(uploadFile, dirName);
+        return upload(uploadFile, dirName);
     }
     // S3로 파일 업로드하기
-    public String uploadHistoryPicture(File uploadFile, String dirName) {
+    public String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         removeNewFile(uploadFile);
@@ -106,5 +114,16 @@ public class S3Service {
         }
     }
 
-    
+    /**
+     * 유저 프로필 사진업로드
+     */
+    public void uploadUserProfileImg(String imgPath, int userIdx) throws BaseException {
+        try{
+            s3Dao.uploadUserProfileImg(imgPath, userIdx);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }

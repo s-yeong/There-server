@@ -22,7 +22,7 @@ public class UserDao {
     }
 
     public GetUserRes getUsersByIdx(int userIdx){
-        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info,followingCount, followeeCount\n" +
+        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info, imgUrl, followingCount, followeeCount\n" +
                 "from User\n" +
                 "    left join(select followeeIdx, count(followeeIdx) as followingCount\n" +
                 "        from Follow\n" +
@@ -41,6 +41,7 @@ public class UserDao {
                         rs.getString("nickName"),
                         rs.getString("email"),
                         rs.getString("info"),
+                        rs.getString("imgUrl"),
                         rs.getInt("followingCount"),
                         rs.getInt("followeeCount")),
                 getUsersByIdxParams);
