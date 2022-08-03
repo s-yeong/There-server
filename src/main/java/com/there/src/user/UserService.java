@@ -102,7 +102,7 @@ public class UserService {
         }
 
          try {
-             if (MultipartFile != null) {
+             if (MultipartFile.isEmpty() != false) {
                  if(MultipartFile.size() > 1){
                      throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
                  }

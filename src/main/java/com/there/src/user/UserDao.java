@@ -121,8 +121,8 @@ public class UserDao {
 
     // 회원 정보 수정
     public int updateProfile(int userIdx, PatchUserReq patchUserReq){
-        String updateUserNameQuery= "update User set nickName =?, profileImgUrl =?, name=?, info=? where userIdx =?";
-        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getProfileImgUrl(), patchUserReq.getName(),
+        String updateUserNameQuery= "update User set nickName =?, name=?, info=? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getName(),
                 patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
