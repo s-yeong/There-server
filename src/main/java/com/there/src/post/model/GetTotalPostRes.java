@@ -9,8 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetPostListRes {
-    private String imgUrl;
-    private String name;
-
+public class GetTotalPostRes {
+    private GetPostRes getPostRes;
+    private List<GetPostTagRes> getPostTagist;
 }
