@@ -3,10 +3,12 @@ package com.there.src.portfolio;
 import com.there.src.portfolio.config.*;
 import com.there.src.portfolio.model.PostPortfolioReq;
 import com.there.src.portfolio.model.PostPortfolioRes;
+import com.there.src.portfolio.model.PostPostInPortfolioRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static com.there.src.portfolio.config.BaseResponseStatus.CREATE_FAIL_PORTFOLIO;
+import static com.there.src.portfolio.config.BaseResponseStatus.CREATE_FAIL_POSTINPORTFOLIO;
 
 @Service
 public class PortfolioService {
@@ -29,4 +31,21 @@ public class PortfolioService {
             throw new BaseException(CREATE_FAIL_PORTFOLIO);
         }
     }
+
+    /**
+     * Portfolio 내 Post 추가
+     * @param portfolioIdx
+     * @param postIdx
+     * @return
+     * @throws BaseException
+     */
+    public PostPostInPortfolioRes createPostInPortfolio(int portfolioIdx, int postIdx) throws BaseException {
+        try {
+            int contentIdx = portfolioDao.createPostInPortfolio(portfolioIdx, postIdx);
+            return new PostPostInPortfolioRes(contentIdx);
+        } catch (Exception exception) {
+            throw new BaseException(CREATE_FAIL_POSTINPORTFOLIO);
+        }
+    }
+
 }
