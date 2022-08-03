@@ -7,8 +7,7 @@ import com.there.src.portfolio.model.PostPostInPortfolioRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.portfolio.config.BaseResponseStatus.CREATE_FAIL_PORTFOLIO;
-import static com.there.src.portfolio.config.BaseResponseStatus.CREATE_FAIL_POSTINPORTFOLIO;
+import static com.there.src.portfolio.config.BaseResponseStatus.*;
 
 @Service
 public class PortfolioService {
@@ -48,4 +47,23 @@ public class PortfolioService {
         }
     }
 
+    public void deletePortfolio(int portfolioIdx) throws BaseException {
+        try {
+            int result = portfolioDao.deletePortfolio(portfolioIdx);
+            if (result == 0) throw new BaseException(DELETE_FAIL_PORTFOLIO); // 삭제 확인 (0 : 실패 / 1 : 성공)
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void deletePostInPortfolio(int contentIdx) throws BaseException {
+        try {
+            int result = portfolioDao.deletePostInPortfolio(contentIdx);
+            if (result == 0) throw new BaseException(DELETE_FAIL_POSTINPORTFOLIO); // 삭제 확인 (0 : 실패 / 1 : 성공)
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

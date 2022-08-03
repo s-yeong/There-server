@@ -107,13 +107,48 @@ public class PortfolioController {
      */
     @ResponseBody
     @GetMapping("/{portfolioIdx}")
-    public BaseResponse<List<GetPortfolioRes>> getPortfolios(@PathVariable("portfolioIdx") int portfolioIdx) throws com.there.config.BaseException {
-
-        List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
-
-        return new BaseResponse<>(PortfolioListRes);
+    public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) {
+        try {
+            List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
+            return new BaseResponse<>(PortfolioListRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
 
     }
 
+    /**
+     * Portfolio 삭제 API
+     * @param portfolioIdx
+     * @return
+     */
+    @ResponseBody
+    @PatchMapping("/{portfolioIdx}")
+    public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) {
+        try {
+            portfolioService.deletePortfolio(portfolioIdx);
+            String result = "포트폴리오 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /**
+     * Portfolio 내 Post 삭제 API
+     * @param contentIdx
+     * @return
+     */
+    @ResponseBody
+    @PatchMapping("/{contentIdx}")
+    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
+        try {
+            portfolioService.deletePostInPortfolio(contentIdx);
+            String result = "포트폴리오 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 }

@@ -90,4 +90,23 @@ public class PortfolioDao {
                 rs.getString("ImgUrl")), getPortfolioParams);
 
     }
+
+    /**
+     * Portfolio 삭제 API
+     * @param portfolioIdx
+     * @return
+     */
+    public int deletePortfolio(int portfolioIdx) {
+        String deletePortfolioQuery = "UPDATE Portfolio SET status = 'INACTIVE' WHERE portfolioIdx = ?";
+        int deletePortfolioParams = portfolioIdx;
+
+        return this.jdbcTemplate.update(deletePortfolioQuery, deletePortfolioParams);
+    }
+
+    public int deletePostInPortfolio(int contentIdx) {
+        String deletePortfolioQuery = "DELETE FROM Portfolio_Post WHERE contentIdx = ?";
+        int deletePortfolioParams = contentIdx;
+
+        return this.jdbcTemplate.update(deletePortfolioQuery, deletePortfolioParams);
+    }
 }

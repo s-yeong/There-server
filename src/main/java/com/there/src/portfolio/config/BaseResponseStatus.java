@@ -44,6 +44,8 @@ public enum BaseResponseStatus {
     GET_FAIL_LIST(false, 4011, "리스트 조회를 실패하였습니다."),
     CREATE_FAIL_POSTINPORTFOLIO(false, 4012, "포스트 추가를 실패하였습니다."),
     GET_FAIL_PORTFOLIO(false, 4013, "포트폴리오 조회를 실패하였습니다."),
+    DELETE_FAIL_PORTFOLIO(false, 4014, "포트폴리오 삭제를 실패하였습니다."),
+    DELETE_FAIL_POSTINPORTFOLIO(false, 4015, "포슽 삭제를 실패하였습니다."),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4020, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4021, "비밀번호 복호화에 실패하였습니다.");
