@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @Service
 public class UserService {
@@ -94,15 +96,20 @@ public class UserService {
 
     // 유저 프로필 수정
     @Transactional(rollbackFor = BaseException.class)
-    public void modifyProfile(int userIdx, PatchUserReq patchUserReq, MultipartFile multipartFile) throws BaseException{
+    public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFile) throws BaseException{
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
+
          try {
-             if (multipartFile != null) {
+             if (MultipartFile != null) {
+                 if(MultipartFile.size() > 1){
+                     throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+                 }
+
                      // s3 업로드
                      String s3path = "User/userIdx : " + Integer.toString(userIdx);
-                     String imgPath = s3Service.uploadFiles(multipartFile, s3path);
+                     String imgPath = s3Service.uploadFiles(MultipartFile.get(0), s3path);
 
                      // db 업로드
                      s3Service.uploadUserProfileImg(imgPath, userIdx);

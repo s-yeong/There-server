@@ -160,7 +160,7 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
-                                              @RequestPart(value = "images", required = false) MultipartFile MultipartFile)
+                                              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFile)
             throws IOException, com.there.config.BaseException{
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -169,9 +169,9 @@ public class UserController {
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
-        if(patchUserReq.getProfileImgUrl() == null){
+        /*if(patchUserReq.getProfileImgUrl() == null){
             return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
-        }
+        }*/
         if(patchUserReq.getName() == null){
             return new BaseResponse<>(POST_USER_EMPTY_NAME);
         }
