@@ -1,6 +1,9 @@
 package com.there.src.user;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.src.user.config.BaseException;
 import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.*;
@@ -12,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 import static com.there.src.user.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
@@ -152,11 +159,17 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestBody PatchUserReq patchUserReq) throws com.there.config.BaseException{
+    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
+                                              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
+            throws IOException, com.there.config.BaseException{
+
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
+
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
-        if(patchUserReq.getProfileImgUrl() == null){
+        if(MultipartFiles == null){
             return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
         }
         if(patchUserReq.getName() == null){
@@ -170,7 +183,7 @@ public class UserController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            userService.modifyProfile(userIdx, patchUserReq);
+            userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception){

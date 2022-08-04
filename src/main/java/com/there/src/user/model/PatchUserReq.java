@@ -10,7 +10,6 @@ import lombok.Setter;
 
 public class PatchUserReq {
     private String nickName;
-    private String profileImgUrl;
     private String name;
     private String info;
 
@@ -18,9 +17,8 @@ public class PatchUserReq {
     public PatchUserReq(){
 
     }
-    public PatchUserReq(String nickName, String profileImgUrl, String name, String info){
+    public PatchUserReq(String nickName, String name, String info){
         this.nickName = nickName;
-        this.profileImgUrl = profileImgUrl;
         this.name = name;
         this.info = info;
     }
