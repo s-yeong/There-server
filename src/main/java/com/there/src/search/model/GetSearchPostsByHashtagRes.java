@@ -1,16 +1,16 @@
-package com.there.src.post.model;
+package com.there.src.search.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class GetPostListRes {
+public class GetSearchPostsByHashtagRes {
+
+    private int postIdx;
     private String imgUrl;
-    private String name;
+
 
 }

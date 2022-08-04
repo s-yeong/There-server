@@ -53,7 +53,7 @@ public class HistoryService {
 
                     // s3 업로드
                     String s3path = "historyPicture/historyIdx : " + Integer.toString(historyIdx);
-                    String imgPath = s3Service.uploadHistoryPicture(MultipartFiles.get(i), s3path);
+                    String imgPath = s3Service.uploadFiles(MultipartFiles.get(i), s3path);
 
                     // db 업로드
                     s3Service.uploadHistoryPicture(imgPath, historyIdx);
@@ -129,7 +129,7 @@ public class HistoryService {
 
                         // s3에 업로드
                         String s3path = "historyPicture/historyIdx : " + Integer.toString(historyIdx);
-                        String imgPath = s3Service.uploadHistoryPicture(MultipartFiles.get(i), s3path);
+                        String imgPath = s3Service.uploadFiles(MultipartFiles.get(i), s3path);
 
                         // db 업로드
                         s3Service.uploadHistoryPicture(imgPath, historyIdx);

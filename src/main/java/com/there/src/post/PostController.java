@@ -1,21 +1,19 @@
 package com.there.src.post;
 
-import com.there.config.*;
-import com.there.src.history.model.GetHistoryListRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.there.src.post.config.BaseResponseStatus.*;
 
@@ -36,11 +34,10 @@ public class PostController {
         this.jwtService = jwtService;
     }
 
-    @ApiOperation(value="게시글 생성 API", notes="사진과 게시물에 대한 내용 반드시 입력")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
+    /**
+    * 게시글 생성 API
+    * posts/users/:userIdx
+    */
     @ResponseBody
     @PostMapping("/users/{userIdx}")
     public BaseResponse<PostPostsRes> createPosts
@@ -62,11 +59,10 @@ public class PostController {
 
     }
 
-    @ApiOperation(value="게시글 수정 API", notes="")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
+    /**
+     * 게시글 수정 API
+     * posts/{postIdx}/users/:userIdx
+     */
     @ResponseBody
     @PatchMapping("change/{postIdx}/users/{userIdx}")
     public BaseResponse<String> updatePosts
@@ -86,11 +82,10 @@ public class PostController {
 
     }
 
-    @ApiOperation(value="게시글 삭제 API", notes="실제 삭제가 아닌 status 변경")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
+    /**
+     * 게시글 삭제 API
+     * posts/{postIdx}/users/:userIdx
+     */
     @ResponseBody
     @PatchMapping("deletion/{postIdx}/users/{userIdx}")
     public BaseResponse<String> deletePosts
@@ -110,11 +105,10 @@ public class PostController {
 
     }
 
-    @ApiOperation(value="게시글 랜덤 조회 API", notes="")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
+    /**
+     * 무작위(랜덤) 게시글 리스트 조회 API
+     * /posts/random
+     */
     @ResponseBody
     @GetMapping("random")
     public BaseResponse<List<GetPostListRes>> getRandomPostList(){
@@ -126,43 +120,25 @@ public class PostController {
         }
     }
 
-    @ApiOperation(value="게시글 생성 API", notes="사진과 게시물에 대한 내용 반드시 입력")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
+    /**
+     * 인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API
+     * /posts/rankingAndfollowerPostList
+     */
     @ResponseBody
-    @GetMapping("ranking")
-    public BaseResponse<List<GetPostListRes>> getRankingPostList(){
+    @GetMapping("rankingAndfollowerPostList")
+    public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() throws com.there.config.BaseException{
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrieveRankingPosts();
+            int userIdxByJwt = jwtService.getUserIdx();
+
+            Map<String, List<GetPostListRes>> getPostListRes = new HashMap<>();
+            getPostListRes.put("인기글 리스트", postProvider.retrieveRankingPosts());
+            getPostListRes.put("팔로우 게시글 리스트",postProvider.retrieveFollowerPosts(userIdxByJwt));
+
+
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
-    }
-
-
-    /**
-     * 감정별 게시글 리스트 조회 API
-     * /posts/emotion/:emotion
-     */
-    @ApiOperation(value="게시글 감정별 조회 API", notes="추후에 구현 필요")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
-    @ResponseBody
-    @GetMapping("emotion/{emotion}")
-    public BaseResponse<List<GetPostListRes>> getEmotionPostList(@PathVariable("emotion") int emotion) {
-        try {
-            List<GetPostListRes> getPostListRes = postProvider.retrievePostList(emotion);
-            return new BaseResponse<>(getPostListRes);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-
     }
 
 }
