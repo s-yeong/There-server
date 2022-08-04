@@ -68,9 +68,10 @@ public class PostService {
                 // db 업로드
                 s3Service.uploadPostImg(imgPath, postIdx);
 
-
             return new PostPostsRes(postIdx);
+
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
@@ -89,9 +90,11 @@ public class PostService {
 
         try {
             if (MultipartFiles != null && patchPostsReq.getContent() != null){
+
                 if(MultipartFiles.size() > 1){
                     throw new BaseException(EXCEEDED_IMGURL);
                 }
+
                 s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
 
                 // s3 업로드
@@ -100,6 +103,7 @@ public class PostService {
 
                 // db 업로드
                 s3Service.uploadPostImg(imgPath, postIdx);
+
                 result = postDao.updatePosts(postIdx, patchPostsReq);
 
             }
@@ -107,6 +111,7 @@ public class PostService {
                 if(MultipartFiles.size() > 1){
                     throw new BaseException(EXCEEDED_IMGURL);
                 }
+                result = 1;
                 s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
 
                 // s3 업로드
@@ -115,7 +120,6 @@ public class PostService {
 
                 // db 업로드
                 s3Service.uploadPostImg(imgPath, postIdx);
-                result = 1;
             }
             else if (patchPostsReq.getContent() != null) {
                 result = postDao.updatePosts(postIdx, patchPostsReq);

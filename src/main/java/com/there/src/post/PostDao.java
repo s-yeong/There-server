@@ -22,7 +22,7 @@ public class PostDao {
     // 게시물 생성
     public int createPosts(int userIdx, PostPostsReq postPostsReq)  {
 
-        String createPostsQuery = "insert into Post (userIdx, content) values (?, ? ,?);";
+        String createPostsQuery = "insert into Post (userIdx, content) values (?, ?);";
         Object[] createPostsParams = new Object[]{userIdx, postPostsReq.getContent()};
 
         this.jdbcTemplate.update(createPostsQuery, createPostsParams);

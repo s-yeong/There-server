@@ -153,6 +153,7 @@ public class S3Service {
         try{
             s3Dao.uploadPostImg(imgPath, postIdx);
         } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

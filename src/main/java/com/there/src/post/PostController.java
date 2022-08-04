@@ -73,7 +73,7 @@ public class PostController {
 
     /**
      * 게시글 수정 API
-     * posts/{postIdx}/users/:userIdx
+     * posts/change/{postIdx}/users/:userIdx
      */
     @ResponseBody
     @PatchMapping("change/{postIdx}/users/{userIdx}")
