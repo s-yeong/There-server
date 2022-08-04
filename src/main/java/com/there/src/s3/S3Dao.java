@@ -46,5 +46,13 @@ public class S3Dao {
         this.jdbcTemplate.update(uploadUserProfileImgQuery, uploadUserProfileImgParams);
     }
 
+    /**
+     * 유저 프로필 사진 삭제
+     */
+    public void delUserProfileImg(int userIdx) {
+        String delHistoryPictureQuery = "update User SET profileImgUrl = null where userIdx = ?;";
+        this.jdbcTemplate.update(delHistoryPictureQuery, userIdx);
+    }
+
 }
 

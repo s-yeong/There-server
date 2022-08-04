@@ -96,20 +96,22 @@ public class UserService {
 
     // 유저 프로필 수정
     @Transactional(rollbackFor = BaseException.class)
-    public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFile) throws BaseException{
+    public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFiles) throws BaseException{
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
-
+        if(MultipartFiles.size() > 1){
+            throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+        }
          try {
-             if (MultipartFile.isEmpty() != false) {
-                 if(MultipartFile.size() > 1){
-                     throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
-                 }
+             if (MultipartFiles != null) {
+
+                    s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
+                    s3Service.delUserProfileImg(userIdx);
 
                      // s3 업로드
                      String s3path = "User/userIdx : " + Integer.toString(userIdx);
-                     String imgPath = s3Service.uploadFiles(MultipartFile.get(0), s3path);
+                     String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
 
                      // db 업로드
                      s3Service.uploadUserProfileImg(imgPath, userIdx);
@@ -119,6 +121,7 @@ public class UserService {
                  throw new BaseException(MODIFY_FAIL_USERNAME);
              }
          }catch (Exception exception) {
+             System.out.println(exception);
              throw new BaseException(DATABASE_ERROR);
          }
     }

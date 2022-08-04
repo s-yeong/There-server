@@ -37,18 +37,20 @@ public class S3Service {
      * 3. putS3
      * 4. removeNewFile
      * 5. convert
-     * 6. removeFolder
+     * 6. deleteFile
+     * 7. removeFolder
      */
 
+    // MultipartFile 파일 받아와서 전환후 리턴
     public String uploadFiles(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
         return upload(uploadFile, dirName);
     }
-    // S3로 파일 업로드하기
+    // S3 파일 업로드 과정
     public String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
-        String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
-        removeNewFile(uploadFile);
+        String fileName = dirName + "/" + uploadFile.getName() + " " + UUID.randomUUID(); // S3에 저장될 파일 이름
+        String uploadImageUrl = putS3(uploadFile, fileName);    // S3로 업로드
+        removeNewFile(uploadFile);  // 로컬에 저장된 이미지 지우기
         return uploadImageUrl;
     }
     // S3로 업로드
@@ -64,6 +66,7 @@ public class S3Service {
         }
         log.info("File delete fail");
     }
+    // MultipartFile -> File 전환
     public Optional<File> convert(MultipartFile multipartFile) throws IOException{
         File convertFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
@@ -76,6 +79,13 @@ public class S3Service {
         return Optional.empty();
     }
 
+    // s3 파일 삭제
+    public void deleteFile(String fileName){
+        DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
+        amazonS3Client.deleteObject(request);
+    }
+
+    // s3 폴더 삭제
     public void removeFolder(String folderName){
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request().withBucketName(bucket).withPrefix(folderName+"/");
         ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(listObjectsV2Request);
@@ -125,5 +135,15 @@ public class S3Service {
         }
     }
 
+    /**
+     *  유저 프로필 사진 삭제
+     */
+    public void delUserProfileImg(int userIdx) throws BaseException {
+        try {
+            s3Dao.delUserProfileImg(userIdx);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

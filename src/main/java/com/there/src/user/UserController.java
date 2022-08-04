@@ -160,7 +160,7 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
-                                              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFile)
+                                              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
             throws IOException, com.there.config.BaseException{
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -169,9 +169,9 @@ public class UserController {
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
-        /*if(patchUserReq.getProfileImgUrl() == null){
+        if(MultipartFiles == null){
             return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
-        }*/
+        }
         if(patchUserReq.getName() == null){
             return new BaseResponse<>(POST_USER_EMPTY_NAME);
         }
@@ -183,7 +183,7 @@ public class UserController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            userService.modifyProfile(userIdx, patchUserReq, MultipartFile);
+            userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception){
