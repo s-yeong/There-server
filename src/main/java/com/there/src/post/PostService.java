@@ -87,13 +87,12 @@ public class PostService {
     public void updatePosts(int postIdx, PatchPostsReq patchPostsReq, List<MultipartFile> MultipartFiles) throws BaseException {
 
         int result = 0;
+        if(MultipartFiles != null && MultipartFiles.size() > 1){
+            throw new BaseException(EXCEEDED_IMGURL);
+        }
 
         try {
             if (MultipartFiles != null && patchPostsReq.getContent() != null){
-
-                if(MultipartFiles.size() > 1){
-                    throw new BaseException(EXCEEDED_IMGURL);
-                }
 
                 s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
 
@@ -108,9 +107,7 @@ public class PostService {
 
             }
             else if (MultipartFiles != null) {
-                if(MultipartFiles.size() > 1){
-                    throw new BaseException(EXCEEDED_IMGURL);
-                }
+
                 result = 1;
                 s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
 
