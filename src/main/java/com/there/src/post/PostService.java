@@ -147,6 +147,7 @@ public class PostService {
             if (result == 0) throw new BaseException(UPDATE_FAIL_POST); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

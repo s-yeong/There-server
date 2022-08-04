@@ -55,7 +55,7 @@ public class PostController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/users/{userIdx}")
+    @PostMapping(value = "/users/{userIdx}",consumes = {"multipart/form-data"})
     public BaseResponse<PostPostsRes> createPosts(@PathVariable("userIdx")int userIdx, @RequestParam("jsonList") String jsonList,
      @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws IOException, com.there.config.BaseException {
 
@@ -90,7 +90,7 @@ public class PostController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("change/{postIdx}/users/{userIdx}")
+    @PatchMapping(value = "change/{postIdx}/users/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> updatePosts(@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx,
                                             @RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
             throws IOException, com.there.config.BaseException {
