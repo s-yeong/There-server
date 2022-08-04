@@ -15,6 +15,7 @@ public class GetUserRes {
     private String email;
 
     private String info;
+    private String profileImgUrl;
 
     private int followerIdx;
     private int followeeIdx;

@@ -1,7 +1,8 @@
 package com.there.src.user;
 
+import com.there.src.s3.S3Service;
 import com.there.src.user.config.BaseException;
-import com.there.src.user.config.*;
+
 import static com.there.src.user.config.BaseResponseStatus.*;
 
 
@@ -14,6 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Service
@@ -23,15 +28,16 @@ public class UserService {
     private final UserDao userDao;
     private final UserProvider userProvider;
     private final JwtService jwtService;
+    private final S3Service s3Service;
 
 
 
     @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService) {
+    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, S3Service s3Service) {
         this.userDao = userDao;
         this.userProvider = userProvider;
         this.jwtService = jwtService;
-
+        this.s3Service = s3Service;
     }
 
     // 로그인
@@ -89,16 +95,33 @@ public class UserService {
         }
 
     // 유저 프로필 수정
-    public void modifyProfile(int userIdx, PatchUserReq patchUserReq) throws BaseException{
+    @Transactional(rollbackFor = BaseException.class)
+    public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFiles) throws BaseException{
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
+        if(MultipartFiles.size() > 1){
+            throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+        }
          try {
+             if (MultipartFiles != null) {
+
+                    s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
+                    s3Service.delUserProfileImg(userIdx);
+
+                     // s3 업로드
+                     String s3path = "User/userIdx : " + Integer.toString(userIdx);
+                     String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                     // db 업로드
+                     s3Service.uploadUserProfileImg(imgPath, userIdx);
+             }
              int result = userDao.updateProfile(userIdx, patchUserReq);
              if (result == 0) {
                  throw new BaseException(MODIFY_FAIL_USERNAME);
              }
          }catch (Exception exception) {
+             System.out.println(exception);
              throw new BaseException(DATABASE_ERROR);
          }
     }
