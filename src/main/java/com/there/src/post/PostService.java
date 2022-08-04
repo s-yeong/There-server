@@ -71,7 +71,6 @@ public class PostService {
             return new PostPostsRes(postIdx);
 
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
@@ -121,6 +120,7 @@ public class PostService {
             else if (patchPostsReq.getContent() != null) {
                 result = postDao.updatePosts(postIdx, patchPostsReq);
             }
+            else result = 1;
 
             // 해시태그 수정
             if(patchPostsReq.getHashtag()!=null) {
@@ -145,7 +145,6 @@ public class PostService {
             if (result == 0) throw new BaseException(UPDATE_FAIL_POST); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

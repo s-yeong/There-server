@@ -61,6 +61,7 @@ public class PostController {
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
             if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
             if (postPostsReq.getContent() == null) return new BaseResponse<>(EMPTY_CONTENT);
+            if (postPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
 
             PostPostsRes postPostsRes = postService.createPosts(userIdx, postPostsReq, MultipartFiles);
             return new BaseResponse<>(postPostsRes);
@@ -86,6 +87,7 @@ public class PostController {
         int userIdxByJwt = jwtService.getUserIdx();
 
         if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+        if (patchPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
 
         try {
             postService.updatePosts(postIdx, patchPostsReq, MultipartFiles);
