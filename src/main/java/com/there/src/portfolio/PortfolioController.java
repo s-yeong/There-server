@@ -4,12 +4,16 @@ import com.there.src.portfolio.config.*;
 import com.there.src.portfolio.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.there.src.portfolio.config.BaseResponseStatus.EMPTY_TITLE;
 import static com.there.src.portfolio.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Api
@@ -28,13 +32,11 @@ public class PortfolioController {
         this.portfolioProvider = portfolioProvider;
     }
 
-    /**
-     * Portfolio 생성 API
-     * @param userIdx
-     * @param postPortfolioReq
-     * @return
-     * @throws com.there.config.BaseException
-     */
+    @ApiOperation(value="Portfolio 생성 API", notes="포트폴리오 제목 반드시 입력 필요")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/{userIdx}")
     public BaseResponse<PostPortfolioRes> createPortfolios
@@ -43,9 +45,9 @@ public class PortfolioController {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+            if (postPortfolioReq.getTitle() == null) return new BaseResponse<>(EMPTY_TITLE);
 
             PostPortfolioRes Portfolio = portfolioService.createPortfolios(userIdx, postPortfolioReq);
-
             return new BaseResponse<>(Portfolio);
 
         } catch (BaseException exception) {
@@ -55,12 +57,11 @@ public class PortfolioController {
         }
     }
 
-    /**
-     * Portfolio 내 Post 추가 APi
-     * @param portfolioIdx
-     * @param postIdx
-     * @return
-     */
+    @ApiOperation(value="Portfolio 내 Post 추가 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/{portfolioIdx}/post/{postIdx}")
     public BaseResponse<PostPostInPortfolioRes> createPostInPortfolio
@@ -75,12 +76,11 @@ public class PortfolioController {
     }
 
 
-    /**
-     * Portfolio List 조회 API
-     * @param userIdx
-     * @return
-     * @throws com.there.config.BaseException
-     */
+    @ApiOperation(value="Portfolio 리스트 조회 API", notes="포트폴리오 클릭 시 해당 유저의 포트폴리오 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/{userIdx}")
     public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
@@ -99,12 +99,11 @@ public class PortfolioController {
 
     }
 
-    /**
-     * Portfolio 조회 API
-     * @param portfolioIdx
-     * @return
-     * @throws com.there.config.BaseException
-     */
+    @ApiOperation(value="Portfolio 내 Post 조회 API", notes="포트폴리오 제목 클릭 시 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/{portfolioIdx}")
     public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) {
@@ -117,11 +116,11 @@ public class PortfolioController {
 
     }
 
-    /**
-     * Portfolio 삭제 API
-     * @param portfolioIdx
-     * @return
-     */
+    @ApiOperation(value="Portfolio 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("/{portfolioIdx}")
     public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) {
@@ -134,11 +133,11 @@ public class PortfolioController {
         }
     }
 
-    /**
-     * Portfolio 내 Post 삭제 API
-     * @param contentIdx
-     * @return
-     */
+    @ApiOperation(value="Portfolio 내 Post 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("/{contentIdx}")
     public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
