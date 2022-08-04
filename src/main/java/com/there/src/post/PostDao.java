@@ -71,48 +71,16 @@ public class PostDao {
 
     /**
      * 게시물 수정
-     * 1. 이미지, 콘텐츠 수정
-     * 2. 이미지 수정
-     * 3. 콘텐츠 수정
+     * + 콘텐츠 수정
      * + 해시태그 수정
      */
 
-    public int updatePosts(int postIdx, PatchPostsReq patchPostsReq){
+    public int updatePosts(int postIdx, PatchPostsReq patchPostsReq) {
 
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-
-    public int updatepostsImgUrlContent(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
+        String updatePostQuery = "update Post set content = ? where postIdx = ?";
+        Object[] updatePostParams = new Object[]{patchPostsReq.getContent(), postIdx};
 
         return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-    public int updatepostsImgUrl(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-    public int updatepostsContent(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
     }
 
     // 해시태그 삭제

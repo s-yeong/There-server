@@ -77,15 +77,18 @@ public class PostController {
      */
     @ResponseBody
     @PatchMapping("change/{postIdx}/users/{userIdx}")
-    public BaseResponse<String> updatePosts
-    (@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx, @RequestBody PatchPostsReq patchPostsReq) throws com.there.config.BaseException {
+    public BaseResponse<String> updatePosts(@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx,
+                                            @RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
+            throws IOException, com.there.config.BaseException {
 
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PatchPostsReq patchPostsReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
         int userIdxByJwt = jwtService.getUserIdx();
 
         if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
         try {
-            postService.updatePosts(postIdx, patchPostsReq);
+            postService.updatePosts(postIdx, patchPostsReq, MultipartFiles);
             String result = "게시글 수정을 성공했습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {

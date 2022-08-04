@@ -1,6 +1,7 @@
 package com.there.src.post;
 
 import com.there.src.post.config.BaseException;
+import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
 import com.there.src.s3.S3Service;
@@ -82,21 +83,42 @@ public class PostService {
      *  + 해시태그 수정
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updatePosts(int postIdx, PatchPostsReq patchPostsReq) throws BaseException {
+    public void updatePosts(int postIdx, PatchPostsReq patchPostsReq, List<MultipartFile> MultipartFiles) throws BaseException {
+
         int result = 0;
 
         try {
-            if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null){
+            if (MultipartFiles != null && patchPostsReq.getContent() != null){
+                if(MultipartFiles.size() > 1){
+                    throw new BaseException(EXCEEDED_IMGURL);
+                }
+                s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
+
+                // s3 업로드
+                String s3path = "Post/postIdx : " + Integer.toString(postIdx);
+                String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                // db 업로드
+                s3Service.uploadPostImg(imgPath, postIdx);
                 result = postDao.updatePosts(postIdx, patchPostsReq);
+
             }
-            else if (patchPostsReq.getImgUrl() != null && patchPostsReq.getContent() != null) {
-                result = postDao.updatepostsImgUrlContent(postIdx, patchPostsReq);
-            }
-            else if (patchPostsReq.getImgUrl() != null) {
-                result = postDao.updatepostsImgUrl(postIdx, patchPostsReq);
+            else if (MultipartFiles != null) {
+                if(MultipartFiles.size() > 1){
+                    throw new BaseException(EXCEEDED_IMGURL);
+                }
+                s3Service.removeFolder("Post/postIdx : " + Integer.toString(postIdx));
+
+                // s3 업로드
+                String s3path = "Post/postIdx : " + Integer.toString(postIdx);
+                String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                // db 업로드
+                s3Service.uploadPostImg(imgPath, postIdx);
+                result = 1;
             }
             else if (patchPostsReq.getContent() != null) {
-                result = postDao.updatepostsContent(postIdx, patchPostsReq);
+                result = postDao.updatePosts(postIdx, patchPostsReq);
             }
 
             // 해시태그 수정
@@ -122,6 +144,7 @@ public class PostService {
             if (result == 0) throw new BaseException(UPDATE_FAIL_POST); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
