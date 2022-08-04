@@ -4,6 +4,9 @@ import com.there.src.chat.config.*;
 import com.there.src.chat.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -23,9 +26,8 @@ import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
 public class ChatController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final SimpMessagingTemplate messagingTemplate;
     private final JwtService jwtService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final ChatContentService chatContentService;
     private final ChatContentProvider chatContentProvider;
@@ -42,10 +44,12 @@ public class ChatController {
         this.chatRoomProvider = chatRoomProvider;
     }
 
-    /**
-     * ChatRoom 생성 API
-     * /chat/room/{senderIdx}/receiverIdx}
-     */
+    @ApiOperation(value="ChatRoom 생성 API", notes="상대방 프로필에서 메시지 클릭 시 ChatRoom 생성")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
     @PostMapping("/room/{senderIdx}/{receiverIdx}")
     public BaseResponse<PostChatRoomRes> createRoom
             (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx) {
@@ -57,10 +61,11 @@ public class ChatController {
         }
     }
 
-    /**
-     * ChatRoom 조회 API
-     * /chat/room/user/{userIdx}
-     */
+    @ApiOperation(value="ChatRoom 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("room/user/{userIdx}")
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
@@ -78,10 +83,11 @@ public class ChatController {
         return new BaseResponse<>(getRoomInfoList);
     }
 
-    /**
-     * ChatRoom 삭제 API
-     * /chat/room/{roomIdx}
-     */
+    @ApiOperation(value="ChatRoom 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("/room/{roomIdx}")
     public BaseResponse<String> deleteChatRooms(@PathVariable("roomIdx")int roomIdx) {
@@ -94,11 +100,11 @@ public class ChatController {
         }
     }
 
-    /**
-     * Message 생성 및 전송 API
-     * /app/chat/{sendIdx}/{receiverIdx} : Client 메시지 보내는 주소
-     * /user/{sendIdx}/{receiverIdx} : 채팅방 주소
-     */
+    @ApiOperation(value="Message 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @MessageMapping("/{sendIdx}/{receiverIdx}")
     @SendTo("/user/{sendIdx}/{receiverIdx}")
     public MessagechatContentRes sendContent
@@ -115,9 +121,11 @@ public class ChatController {
             return messagechatContentRes;
     }
 
-    /**
-     * Message 조회 API
-     */
+    @ApiOperation(value="Message 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
     public BaseResponse<List<GetChatContentRes>> getChatContent
@@ -132,9 +140,11 @@ public class ChatController {
 
     }
 
-    /**
-     * Message 삭제 API
-     */
+    @ApiOperation(value="Message 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("deletion/{contentIdx}/users/{userIdx}")
     public BaseResponse<String> deletechatContent

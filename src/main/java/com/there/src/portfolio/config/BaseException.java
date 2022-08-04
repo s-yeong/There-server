@@ -1,4 +1,4 @@
-package com.there.src.post.config;
+package com.there.src.portfolio.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,5 +9,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BaseException extends Exception {
     private BaseResponseStatus status;
-
 }
