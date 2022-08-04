@@ -104,6 +104,13 @@ public class PostDao {
 
     }
 
+    // 게시물 해시태그 체크
+    public int checkPostTag(int postIdx){
+        String checkPostTagQuery = "select  exists(select * from PostTag where postIdx = ?);";
+        int checkPostTagParam = postIdx;
+        return this.jdbcTemplate.queryForObject(checkPostTagQuery,int.class,checkPostTagParam);
+    }
+
     // 게시물 삭제
     public int deletePosts(int postIdx) {
 

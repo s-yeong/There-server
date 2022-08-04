@@ -126,12 +126,14 @@ public class PostService {
             if(patchPostsReq.getHashtag()!=null) {
 
                 // 해시태그 삭제
-                for (int i = 0; i < patchPostsReq.getHashtag().length; i ++){
+                while(postDao.checkPostTag(postIdx) == 1){
+                    // 게시물 해시태그 체크
                     postDao.deleteTag(postIdx);
                 }
 
                 // 해시태그 생성
                 for (String hashtag : patchPostsReq.getHashtag()) {
+
                     int tagIdx = postDao.checkTagName(hashtag);
 
                     if (tagIdx == 0) {

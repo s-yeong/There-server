@@ -9,6 +9,9 @@ import com.there.src.post.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,11 @@ public class PostController {
     * 게시글 생성 API
     * posts/users/:userIdx
     */
+    @ApiOperation(value="게시글 생성 API", notes="Body 타입 : form-data<jsonList, images> jsonList - content, hashtag(5개까지)")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/users/{userIdx}")
     public BaseResponse<PostPostsRes> createPosts(@PathVariable("userIdx")int userIdx, @RequestParam("jsonList") String jsonList,
@@ -61,7 +69,7 @@ public class PostController {
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
             if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
             if (postPostsReq.getContent() == null) return new BaseResponse<>(EMPTY_CONTENT);
-            if (postPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
+            if (postPostsReq.getHashtag()!= null && postPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
 
             PostPostsRes postPostsRes = postService.createPosts(userIdx, postPostsReq, MultipartFiles);
             return new BaseResponse<>(postPostsRes);
@@ -76,6 +84,11 @@ public class PostController {
      * 게시글 수정 API
      * posts/change/{postIdx}/users/:userIdx
      */
+    @ApiOperation(value="게시글 수정 API", notes="Body 타입 : form-data<jsonList, images> jsonList - content, hashtag(5개까지), 이미지만 수정할 경우 jsonList값에 '{}' 넣기")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("change/{postIdx}/users/{userIdx}")
     public BaseResponse<String> updatePosts(@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx,
@@ -87,7 +100,7 @@ public class PostController {
         int userIdxByJwt = jwtService.getUserIdx();
 
         if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
-        if (patchPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
+        if (patchPostsReq.getHashtag() != null && patchPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
 
         try {
             postService.updatePosts(postIdx, patchPostsReq, MultipartFiles);
