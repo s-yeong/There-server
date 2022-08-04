@@ -1,16 +1,22 @@
 package com.there.src.post;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.*;
+import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +32,14 @@ public class PostController {
     private final PostProvider postProvider;
     private final PostService postService;
     private final JwtService jwtService;
+    private final S3Service s3Service;
 
     @Autowired
-    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService) {
+    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService, S3Service s3Service) {
         this.postProvider = postProvider;
         this.postService = postService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
     /**
@@ -40,17 +48,21 @@ public class PostController {
     */
     @ResponseBody
     @PostMapping("/users/{userIdx}")
-    public BaseResponse<PostPostsRes> createPosts
-    (@PathVariable("userIdx")int userIdx ,@RequestBody PostPostsReq postPostsReq) throws com.there.config.BaseException {
+    public BaseResponse<PostPostsRes> createPosts(@PathVariable("userIdx")int userIdx, @RequestParam("jsonList") String jsonList,
+     @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws IOException, com.there.config.BaseException {
+
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PostPostsReq postPostsReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
+
         try {
 
             int userIdxByJwt = jwtService.getUserIdx();
 
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
-            if (postPostsReq.getImgUrl() == null) return new BaseResponse<>(EMPTY_IMGURL);
+            if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
             if (postPostsReq.getContent() == null) return new BaseResponse<>(EMPTY_CONTENT);
 
-            PostPostsRes postPostsRes = postService.createPosts(userIdx, postPostsReq);
+            PostPostsRes postPostsRes = postService.createPosts(userIdx, postPostsReq, MultipartFiles);
             return new BaseResponse<>(postPostsRes);
 
         } catch (BaseException exception) {

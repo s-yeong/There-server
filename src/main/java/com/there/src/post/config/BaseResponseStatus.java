@@ -25,6 +25,7 @@ public enum BaseResponseStatus {
     // Posts
     EMPTY_IMGURL(false, 2010, "게시글 사진을 올려주세요."),
     EMPTY_CONTENT(false, 2011, "게시글 내용을 입력해주세요."),
+    EXCEEDED_IMGURL(false,2012, "게시글 사진을 하나만 올려주세요"),
 
     /**
      * 3000 : Response 오류

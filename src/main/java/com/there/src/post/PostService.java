@@ -1,16 +1,16 @@
 package com.there.src.post;
 
 import com.there.src.post.config.BaseException;
-import com.there.src.post.model.GetPostListRes;
-import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
+import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,19 +23,25 @@ public class PostService {
 
     private final PostDao postDao;
     private final JwtService jwtService;
+    private final S3Service s3Service;
 
     @Autowired
-    public PostService(PostDao postDao, JwtService jwtService) {
+    public PostService(PostDao postDao, JwtService jwtService, S3Service s3Service) {
         this.postDao = postDao;
         this.jwtService = jwtService;
-
+        this.s3Service = s3Service;
     }
 
     /**
      * 게시글 생성
      */
     @Transactional(rollbackFor = Exception.class)
-    public PostPostsRes createPosts(int userIdx, PostPostsReq postPostsReq) throws BaseException {
+    public PostPostsRes createPosts(int userIdx, PostPostsReq postPostsReq, List<MultipartFile> MultipartFiles) throws BaseException {
+
+        if(MultipartFiles.size() > 1){
+            throw new BaseException(EXCEEDED_IMGURL);
+        }
+
         try {
             int postIdx = postDao.createPosts(userIdx, postPostsReq);
 
@@ -52,9 +58,18 @@ public class PostService {
                 }
             }
 
+            // 게시물 사진 업로드
+
+                // s3 업로드
+                String s3path = "Post/postIdx : " + Integer.toString(postIdx);
+                String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                // db 업로드
+                s3Service.uploadPostImg(imgPath, postIdx);
+
+
             return new PostPostsRes(postIdx);
         } catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(CREATE_FAIL_POST);
         }
     }
