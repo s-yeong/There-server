@@ -22,8 +22,8 @@ public class PostDao {
     // 게시물 생성
     public int createPosts(int userIdx, PostPostsReq postPostsReq)  {
 
-        String createPostsQuery = "insert into Post (userIdx, imgUrl, content) values (?, ? ,?);";
-        Object[] createPostsParams = new Object[]{userIdx, postPostsReq.getImgUrl(), postPostsReq.getContent()};
+        String createPostsQuery = "insert into Post (userIdx, content) values (?, ?);";
+        Object[] createPostsParams = new Object[]{userIdx, postPostsReq.getContent()};
 
         this.jdbcTemplate.update(createPostsQuery, createPostsParams);
 
@@ -71,48 +71,16 @@ public class PostDao {
 
     /**
      * 게시물 수정
-     * 1. 이미지, 콘텐츠 수정
-     * 2. 이미지 수정
-     * 3. 콘텐츠 수정
+     * + 콘텐츠 수정
      * + 해시태그 수정
      */
 
-    public int updatePosts(int postIdx, PatchPostsReq patchPostsReq){
+    public int updatePosts(int postIdx, PatchPostsReq patchPostsReq) {
 
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-
-    public int updatepostsImgUrlContent(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
+        String updatePostQuery = "update Post set content = ? where postIdx = ?";
+        Object[] updatePostParams = new Object[]{patchPostsReq.getContent(), postIdx};
 
         return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-    public int updatepostsImgUrl(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
-    }
-
-    public int updatepostsContent(int postIdx, PatchPostsReq patchPostsReq) {
-
-        String updatePostQuery = "update Post set imgUrl = ?, content = ? where postIdx = ?";
-        Object[] updatePostParams = new Object[]{patchPostsReq.getImgUrl(), patchPostsReq.getContent(), postIdx};
-
-        return this.jdbcTemplate.update(updatePostQuery, updatePostParams);
-
     }
 
     // 해시태그 삭제
@@ -134,6 +102,13 @@ public class PostDao {
         }
         this.jdbcTemplate.update(end);
 
+    }
+
+    // 게시물 해시태그 체크
+    public int checkPostTag(int postIdx){
+        String checkPostTagQuery = "select  exists(select * from PostTag where postIdx = ?);";
+        int checkPostTagParam = postIdx;
+        return this.jdbcTemplate.queryForObject(checkPostTagQuery,int.class,checkPostTagParam);
     }
 
     // 게시물 삭제
