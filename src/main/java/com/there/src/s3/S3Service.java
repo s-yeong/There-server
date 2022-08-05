@@ -146,4 +146,17 @@ public class S3Service {
         }
     }
 
+    /**
+     * 게시물 사진 업로드 및 수정
+     */
+    public void uploadPostImg(String imgPath, int postIdx) throws BaseException {
+        try{
+            s3Dao.uploadPostImg(imgPath, postIdx);
+        } catch (Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 }
