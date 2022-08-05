@@ -1,5 +1,4 @@
-package com.there.picture.model;
-
+package com.there.src.post.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,9 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPictureReq {
-
-    private int historyIdx;
+public class GetPostRes {
     private String imgUrl;
-
 }

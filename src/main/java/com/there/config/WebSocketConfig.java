@@ -20,29 +20,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
 
-        config.enableSimpleBroker( "/user");    // Sub
-        config.setApplicationDestinationPrefixes("/app");       // Client -> Server
-        config.setUserDestinationPrefix("/user");               // Server -> Client
+        // Sub
+        config.enableSimpleBroker( "/user");
+
+        // Client -> Server
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry
-                .addEndpoint("/ws")
-                .setAllowedOrigins("*")
-                .withSockJS();
-    }
 
-    @Override
-    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-        DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
-        resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(new ObjectMapper());
-        converter.setContentTypeResolver(resolver);
-        messageConverters.add(converter);
-        return false;
-    }
+        // ws://localhost:8080:/ws
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
 
+    }
 
 }

@@ -1,17 +1,12 @@
-package com.there.picture.model;
-
+package com.there.src.post.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class PostPictureRes {
-
-    private int pictureIdx;
-
+public class GetPostTagRes {
+    private String name;
 }

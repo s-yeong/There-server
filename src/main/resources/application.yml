@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: there
+
+  datasource:
+    url: jdbc:mysql://there-db.cjg8pisspmbh.ap-northeast-2.rds.amazonaws.com:3306/There
+    username: There
+    password: therezzang!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      platform: mysql
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAVAK5CW4BP5NVWN7X
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: there-s3-bucket
+    stack:
+      auto: false
