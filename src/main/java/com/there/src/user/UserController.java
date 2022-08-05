@@ -158,7 +158,7 @@ public class UserController {
      * [PATCH] /users/{userIdx}
      */
     @ResponseBody
-    @PatchMapping(value = "/{userIdx}", consumes = {"multipart/form-data"})
+    @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
                                               @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
             throws IOException, com.there.config.BaseException{
