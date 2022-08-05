@@ -209,7 +209,7 @@ public class HistoryController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/modify/{historyIdx}")
+    @PatchMapping(value = "/modify/{historyIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> modifyHistory(@PathVariable("historyIdx") int historyIdx,
                                               @RequestParam("jsonList") String jsonList,
                                               @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
