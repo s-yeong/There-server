@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostPostsReq {
-    private String imgUrl;
+
     private String content;
     private String [] hashtag = null;
 

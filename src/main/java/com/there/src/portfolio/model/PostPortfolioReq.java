@@ -1,4 +1,4 @@
-package com.there.src.post.model;
+package com.there.src.portfolio.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchPostsReq {
 
-    private String content;
-    private String [] hashtag = null;
+public class PostPortfolioReq {
+
+    private String title;
 
 }

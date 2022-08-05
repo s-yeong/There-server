@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.awt.*;
 import java.util.List;
 
 @Repository
@@ -23,7 +22,7 @@ public class UserDao {
     }
 
     public GetUserRes getUsersByIdx(int userIdx){
-        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info,followingCount, followeeCount\n" +
+        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info, imgUrl, followingCount, followeeCount\n" +
                 "from User\n" +
                 "    left join(select followeeIdx, count(followeeIdx) as followingCount\n" +
                 "        from Follow\n" +
@@ -42,6 +41,7 @@ public class UserDao {
                         rs.getString("nickName"),
                         rs.getString("email"),
                         rs.getString("info"),
+                        rs.getString("imgUrl"),
                         rs.getInt("followingCount"),
                         rs.getInt("followeeCount")),
                 getUsersByIdxParams);
@@ -121,8 +121,8 @@ public class UserDao {
 
     // 회원 정보 수정
     public int updateProfile(int userIdx, PatchUserReq patchUserReq){
-        String updateUserNameQuery= "update User set nickName =?, profileImgUrl =?, name=?, info=? where userIdx =?";
-        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getProfileImgUrl(), patchUserReq.getName(),
+        String updateUserNameQuery= "update User set nickName =?, name=?, info=? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getName(),
                 patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
@@ -134,5 +134,4 @@ public class UserDao {
 
         return this.jdbcTemplate.update(deleteUserQuery, deleteUserParams);
     }
-
 }
