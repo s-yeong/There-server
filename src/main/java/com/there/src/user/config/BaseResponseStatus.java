@@ -53,6 +53,7 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
     DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
+    REFRESH_TOKEN_ERROR(false, 4003, "Refresh Token을 확인해주세요. "),
 
 
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),

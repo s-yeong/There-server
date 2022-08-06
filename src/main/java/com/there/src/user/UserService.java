@@ -7,6 +7,7 @@ import static com.there.src.user.config.BaseResponseStatus.*;
 
 
 import com.there.src.user.model.*;
+
 import com.there.utils.AES256;
 import com.there.utils.JwtService;
 import com.there.utils.SHA256;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -142,6 +145,32 @@ public class UserService {
         } catch(Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    // Access Token, Refresh Token 재발급 요청
+    public String reissue(TokenRequestDto tokenRequestDto) throws BaseException, com.there.config.BaseException {
+        // 만료된 refresh token 에러
+        if (!jwtService.validationToken(tokenRequestDto.getRefreshToken())) {
+            throw new BaseException(REFRESH_TOKEN_ERROR);
+        }
+
+        // Access Token에서 userIdx 가져오기
+        String accessToken = tokenRequestDto.getAccessToken();
+        jwtService.getUserIdx1(accessToken);
+
+        // 리프레시 토큰 불일치 에러
+        if (!userDao.getRefreshToken(jwtService.getUserIdx()).equals(tokenRequestDto.getRefreshToken())) {
+            throw new BaseException(REFRESH_TOKEN_ERROR);
+        }
+
+        // AccessToken, RefreshToken 토큰 재발급, 리프레시 토큰 저장
+        String newCreatedToken = jwtService.createToken(jwtService.getUserIdx());
+        String newRefreshToken = jwtService.createRefreshToken();
+        userDao.refreshTokensave(newRefreshToken, jwtService.getUserIdx());
+
+        //System.out.println("재발급 된 토큰" + newCreatedToken);
+
+        return newCreatedToken;
     }
 }
 

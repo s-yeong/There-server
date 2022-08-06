@@ -1,6 +1,7 @@
 package com.there.src.user;
 
 
+import antlr.Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -9,6 +10,7 @@ import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
@@ -107,7 +109,7 @@ public class UserController {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
 
-                // 이메일 형식
+            // 이메일 형식
             if(!isRegexEmail(postLoginReq.getEmail()))
             {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
@@ -119,6 +121,16 @@ public class UserController {
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
+    }
+
+    @ApiOperation(
+            value = "액세스, 리프레시 토큰 재발급",
+            notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
+    @PostMapping("/reissue")
+    public BaseResponse<TokenDto> reissue(
+            @ApiParam(value = "토큰 재발급 요청 DTO", required = true)
+            @RequestBody TokenRequestDto tokenRequestDto) throws BaseException, com.there.config.BaseException {
+        return new BaseResponse(userService.reissue(tokenRequestDto));
     }
 
 
