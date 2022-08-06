@@ -40,6 +40,7 @@ public class UserService {
         this.s3Service = s3Service;
     }
 
+    @Transactional
     // 로그인
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
 
@@ -56,14 +57,19 @@ public class UserService {
         // password 비교하여 일치한다면 jwt 발급
         if (postLoginReq.getPassword().equals(pwd)) {
             int userIdx = userDao.getPassword(postLoginReq).getUserIdx();
-            String jwt = jwtService.createJwt(userIdx);
-            return new PostLoginRes(userIdx, jwt);
+            String accessToken = jwtService.createToken(userIdx);
+            String refreshToken = jwtService.createRefreshToken();
+
+            userDao.refreshTokensave(refreshToken, userIdx);
+
+            return new PostLoginRes(userIdx, accessToken, refreshToken);
         } else
             throw new BaseException(FAILED_TO_LOGIN);
     }
 
 
     // 회원가입
+    @Transactional
     public PostJoinRes createUser(PostJoinReq postJoinReq) throws BaseException {
         // 중복 확인
         if (userProvider.checkEmail(postJoinReq.getEmail()) == 1) {
@@ -87,8 +93,8 @@ public class UserService {
             try {
                 int userIdx = userDao.createUser(postJoinReq);
                 // jwt 발급
-                String jwt = jwtService.createJwt(userIdx);
-                return new PostJoinRes(jwt, userIdx);
+                //String jwt = jwtService.createToken(userIdx);
+                return new PostJoinRes(userIdx);
             } catch (Exception exception) {
                 throw new BaseException(DATABASE_ERROR);
             }

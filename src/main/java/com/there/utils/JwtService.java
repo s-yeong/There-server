@@ -16,18 +16,34 @@ import java.util.Date;
 import static com.there.config.BaseResponseStatus.*;
 @Service
 public class JwtService {
+
+    private final Long accessTokenVaildMillisecond = 60 * 60 * 1000L; // 1 hour
+    private final Long refreshTokenVaildMillisecond = 14 * 24* 60 * 60 * 1000L; // 14 day
     /*
     JWT 생성
     @param userIdx
     @return String
      */
-    public String createJwt(int userIdx){
+    public String createToken(int userIdx){
+
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type","jwt")
                 .claim("userIdx",userIdx)
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis()+1*(1000*60*60*24*365)))
+                .setExpiration(new Date(System.currentTimeMillis()+accessTokenVaildMillisecond))
+                .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
+                .compact();
+    }
+
+    /*
+    jwt refresh token 생성
+     */
+    public String createRefreshToken() {
+        Date now = new Date();
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenVaildMillisecond))
                 .signWith(SignatureAlgorithm.HS256, Secret.JWT_SECRET_KEY)
                 .compact();
     }
@@ -40,6 +56,7 @@ public class JwtService {
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader("X-ACCESS-TOKEN");
     }
+
 
     /*
     JWT에서 userIdx 추출

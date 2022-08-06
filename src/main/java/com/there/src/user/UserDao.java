@@ -65,6 +65,14 @@ public class UserDao {
                 ), selectUserPostsParam);
 
     }
+
+    public int refreshTokensave(String refreshToken, int userIdx) {
+        String refreshTokensaveQuery ="update User set refreshToken =? where userIdx=?";
+        Object[] refreshTokensaveparams = new Object[]{refreshToken, userIdx};
+        return this.jdbcTemplate.update(refreshTokensaveQuery, refreshTokensaveparams);
+
+
+    }
     public User getPassword(PostLoginReq postLoginReq) {
         String getPwdQuery = "select userIdx, nickName, email, password from User where email = ? ";
         String getPwdParams = postLoginReq.getEmail();
