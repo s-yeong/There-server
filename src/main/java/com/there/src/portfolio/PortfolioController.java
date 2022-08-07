@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
     private final PortfolioProvider portfolioProvider;
 
+    @Autowired
     public PortfolioController(JwtService jwtService, PortfolioService portfolioService, PortfolioProvider portfolioProvider) {
         this.jwtService = jwtService;
         this.portfolioService = portfolioService;
@@ -116,6 +118,20 @@ public class PortfolioController {
 
     }
 
+    @ResponseBody
+    @PatchMapping("modify/{portfolioIdx}")
+    public BaseResponse<String> ModifyPortfolioTitle
+            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) {
+
+        try {
+            portfolioService.ModifyPortfolioTitle(portfolioIdx, patchPortfolioReq);
+            String result = "포트폴리오 이름 변경 하였습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
     @ApiOperation(value="Portfolio 삭제 API", notes="")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
@@ -143,7 +159,7 @@ public class PortfolioController {
     public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
         try {
             portfolioService.deletePostInPortfolio(contentIdx);
-            String result = "포트폴리오 삭제를 성공했습니다.";
+            String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
