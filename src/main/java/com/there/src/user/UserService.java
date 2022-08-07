@@ -95,8 +95,7 @@ public class UserService {
 
             try {
                 int userIdx = userDao.createUser(postJoinReq);
-                // jwt 발급
-                //String jwt = jwtService.createToken(userIdx);
+
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
                 throw new BaseException(DATABASE_ERROR);
@@ -149,6 +148,7 @@ public class UserService {
 
     // Access Token, Refresh Token 재발급 요청
     public String reissue(TokenRequestDto tokenRequestDto) throws BaseException, com.there.config.BaseException {
+
         // 만료된 refresh token 에러
         if (!jwtService.validationToken(tokenRequestDto.getRefreshToken())) {
             throw new BaseException(REFRESH_TOKEN_ERROR);
