@@ -21,6 +21,12 @@ public class SearchDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 인기 검색어 조회
+    /*public List<GetPopularSearchListRes> selectPopularSearches(){
+        String selectPopularSearchesQuery = "";
+        return this.jdbcTemplate.query(selectPopularSearchesQuery);
+    }
+*/
     // 최근 검색어 조회
     public List<GetRecentSearchListRes> selectRecentSearches(int userIdx){
         String selectRecentSearchesQuery = "select s.searchIdx as searchIdx, content\n" +
@@ -141,6 +147,14 @@ public class SearchDao {
                 checkSearchExistParams);
     }
 
+    // 중복 검색어 체크
+    public int checkDuplicateKeyword(String keyword){
+        String checkDuplicateSearchQuery = "select exists(select * from Search where content = ?);";
+        String checkDuplicateSearchParam = keyword;
+
+        return this.jdbcTemplate.queryForObject(checkDuplicateSearchQuery, int.class, checkDuplicateSearchParam);
+    }
+
     // 검색 기록
     public void insertSearch(int userIdx, String keyword){
         String start = "START TRANSACTION;";
@@ -154,7 +168,17 @@ public class SearchDao {
         this.jdbcTemplate.update(insertSearchQuery, insertSearchParam);
         this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParam);
         this.jdbcTemplate.update(end);
+    }
+    // 유저-검색 관계만 기록 (중복 검색어인 경우)
+    public void insertUserSearch(int userIdx, String keyword){
 
+        String selectsearchIdxQuery = "select searchIdx from Search where content = ?;";
+        String selectsearchIdxParam = keyword;
+        int searchIdx = this.jdbcTemplate.queryForObject(selectsearchIdxQuery, int.class, selectsearchIdxParam);
+
+        String insertUserSearchQuery = "insert into UserSearch(userIdx, searchIdx) value(?, ?);";
+        Object[] insertUserSearchParams = new Object[] {userIdx, searchIdx};
+        this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParams);
     }
 
     // 검색 업데이트

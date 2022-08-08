@@ -35,6 +35,22 @@ public class SearchController {
     }
 
     /**
+     * 인기 검색어 조회 API
+     * [GET] /search/popular
+     */
+    @ResponseBody
+    @GetMapping("/popular")
+    public BaseResponse<List<GetPopularSearchListRes>> getPopularSearch() throws com.there.config.BaseException{
+        try{
+            List<GetPopularSearchListRes> getPopularSearchListRes = searchProvider.retrievePopularSearches();
+            return new BaseResponse<>(getPopularSearchListRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
      * 최근 검색어 조회 API
      * [GET] /search/recent
      */
