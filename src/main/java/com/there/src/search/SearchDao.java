@@ -183,8 +183,12 @@ public class SearchDao {
 
     // 검색 업데이트
     public void updateSearch(String keyword){
-        String updateSearchQuery = "update Search SET updated_At = NOW() where content = ?;";
-        String updateSearchParam = keyword;
+        String selectsearchIdxQuery = "select searchIdx from Search where content = ?;";
+        String selectsearchIdxParam = keyword;
+        int searchIdx = this.jdbcTemplate.queryForObject(selectsearchIdxQuery, int.class, selectsearchIdxParam);
+
+        String updateSearchQuery = "update UserSearch SET updated_At = NOW() where searchIdx = ?;";
+        int updateSearchParam = searchIdx;
         this.jdbcTemplate.update(updateSearchQuery, updateSearchParam);
     }
 

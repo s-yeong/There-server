@@ -75,7 +75,6 @@ public class SearchProvider {
             return getSearchByAccount;
         }
         catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
 
