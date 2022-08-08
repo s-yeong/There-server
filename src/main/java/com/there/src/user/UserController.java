@@ -40,7 +40,7 @@ public class UserController {
 
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService){
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
@@ -54,34 +54,34 @@ public class UserController {
      * @return BaseResponse<GetUserRes>
      */
 
-    @ApiOperation(value="유저 조회 API", notes=" 유저 인덱스값 입력시 해당하는 유저 정보 리턴")
+    @ApiOperation(value = "유저 조회 API", notes = " 유저 인덱스값 입력시 해당하는 유저 정보 리턴")
     @ApiResponses({
             @ApiResponse(code = 200, message = "API 정상 작동"),
             @ApiResponse(code = 500, message = "서버 에러")
     })
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx")int userIdx) {
-        try{
+    public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx") int userIdx) {
+        try {
 
             GetUserRes getUsersRes = userProvider.getUsersByIdx(userIdx);
             return new BaseResponse<>(getUsersRes);
-        } catch(BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    /** 유저 피드 조회
+    /**
+     * 유저 피드 조회
      * [GET] /users/feed
      * @return BaseResponse<GetUserFeedRes>
      */
-
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
-    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx)throws com.there.config.BaseException{
-        try{
+    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+        try {
             int userIdxByJwt = jwtService.getUserIdx();
-            GetUserFeedRes getUserFeed=userProvider.retrieveUserFeed(userIdx,userIdxByJwt);
+            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -95,20 +95,20 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
         try {
-            if(postLoginReq.getEmail() == null)
+            if (postLoginReq.getEmail() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
             }
 
-            if(postLoginReq.getPassword() == null)
+            if (postLoginReq.getPassword() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
 
-                // 이메일 형식
-            if(!isRegexEmail(postLoginReq.getEmail()))
+            // 이메일 형식
+            if (!isRegexEmail(postLoginReq.getEmail()))
             {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
             }
@@ -116,7 +116,7 @@ public class UserController {
             PostLoginRes postLoginRes = userService.logIn(postLoginReq);
 
             return new BaseResponse<>(postLoginRes);
-        } catch(BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -129,26 +129,26 @@ public class UserController {
     @ResponseBody
     @PostMapping("/join")
     public BaseResponse<PostJoinRes> createUser(@RequestBody PostJoinReq postJoinReq) {
-        try{
-            if(postJoinReq.getEmail() == null)
+        try {
+            if (postJoinReq.getEmail() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
             }
 
-            if(postJoinReq.getPassword() == null)
+            if (postJoinReq.getPassword() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
 
             // 이메일 정규 표현
-           if(!isRegexEmail(postJoinReq.getEmail()))
-           {
+            if (!isRegexEmail(postJoinReq.getEmail()))
+            {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-           }
+            }
 
             PostJoinRes postJoinRes = userService.createUser(postJoinReq);
             return new BaseResponse<>(postJoinRes);
-        } catch(BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -197,18 +197,19 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException{
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
-            if(userIdx != userIdxByJwt){
+            if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             userService.deleteUser(userIdx);
 
             String result = "삭제되었습니다.";
             return new BaseResponse<>(result);
-        } catch(BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 }
+
