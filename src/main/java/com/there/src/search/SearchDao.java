@@ -33,7 +33,7 @@ public class SearchDao {
                 "from Search as s\n" +
                 "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
                 "where us.userIdx = ?\n" +
-                "order by s.updated_At;";
+                "order by us.updated_At;";
         int selectRecentSearchesParam = userIdx;
         return this.jdbcTemplate.query(selectRecentSearchesQuery,
                 (rs, rowNum) -> new GetRecentSearchListRes(
@@ -44,13 +44,11 @@ public class SearchDao {
 
 
     // 최근 검색어 삭제
-    public int deleteRecentSearch(int searchIdx){
+    public int deleteRecentSearch(int userIdx, int searchIdx){
 
-        String deleteRecentSearchQuery ="delete us, s\n" +
-                "from UserSearch as us\n" +
-                "    join Search as s on s.searchIdx = us.searchIdx\n" +
-                "where us.searchIdx=?;";
-        int deleteRecentSearchParam = searchIdx;
+        String deleteRecentSearchQuery ="delete from UserSearch where userIdx =? and searchIdx=?;";
+        Object[] deleteRecentSearchParam = new Object[] {userIdx, searchIdx};
+
         return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
     }
 
@@ -169,6 +167,7 @@ public class SearchDao {
         this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParam);
         this.jdbcTemplate.update(end);
     }
+
     // 유저-검색 관계만 기록 (중복 검색어인 경우)
     public void insertUserSearch(int userIdx, String keyword){
 
