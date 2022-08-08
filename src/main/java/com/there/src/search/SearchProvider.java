@@ -127,7 +127,6 @@ public class SearchProvider {
     // 검색 기록 체크 - 존재O : 1, 존재X : 0
     public int checkSearchExist(int userIdx, String keyword) throws BaseException {
         try{
-
             int result = searchDao.checkSearchExist(userIdx, keyword);
             return result;
         } catch (Exception exception){
@@ -150,7 +149,6 @@ public class SearchProvider {
         try{
             int result = searchDao.checkUserSearchExist(userIdx, searchIdx);
             return result;
-
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

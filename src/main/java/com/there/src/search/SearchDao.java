@@ -55,10 +55,7 @@ public class SearchDao {
     // 최근 검색어 모두 삭제
     public int deleteAllRecentSearch(int userIdx){
 
-        String deleteAllRecentSearchQuery ="delete from us, s\n" +
-                "    using UserSearch as us\n" +
-                "    join Search as s on s.searchIdx = us.searchIdx\n" +
-                "where userIdx = ?;";
+        String deleteAllRecentSearchQuery ="delete from UserSearch where userIdx = ?;";
         int deleteAllRecentSearchParam = userIdx;
         return this.jdbcTemplate.update(deleteAllRecentSearchQuery, deleteAllRecentSearchParam);
     }
