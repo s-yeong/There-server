@@ -22,11 +22,20 @@ public class SearchDao {
     }
 
     // 인기 검색어 조회
-    /*public List<GetPopularSearchListRes> selectPopularSearches(){
-        String selectPopularSearchesQuery = "";
-        return this.jdbcTemplate.query(selectPopularSearchesQuery);
+    public List<GetPopularSearchListRes> selectPopularSearches(){
+        String selectPopularSearchesQuery = "select s.searchIdx as searchIdx, content\n" +
+                "from Search as s\n" +
+                "    left join(select count(searchIdx) as searchCount, searchIdx\n" +
+                "                from UserSearch\n" +
+                "                group by searchIdx) as us on us.searchIdx = s.searchIdx\n" +
+                "order by searchCount desc LIMIT 4;";
+        return this.jdbcTemplate.query(selectPopularSearchesQuery,
+                (rs, rowNum) -> new GetPopularSearchListRes(
+                        rs.getInt("searchIdx"),
+                        rs.getString("content")
+                ));
     }
-*/
+
     // 최근 검색어 조회
     public List<GetRecentSearchListRes> selectRecentSearches(int userIdx){
         String selectRecentSearchesQuery = "select s.searchIdx as searchIdx, content\n" +

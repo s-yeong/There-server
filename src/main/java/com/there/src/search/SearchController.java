@@ -38,6 +38,11 @@ public class SearchController {
      * 인기 검색어 조회 API
      * [GET] /search/popular
      */
+    @ApiOperation(value="인기 검색어 조회 API", notes="인기 검색어 최대 4개까지 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/popular")
     public BaseResponse<List<GetPopularSearchListRes>> getPopularSearch() throws com.there.config.BaseException{
