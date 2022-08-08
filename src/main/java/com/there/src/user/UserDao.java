@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.util.List;
 
@@ -97,6 +98,14 @@ public class UserDao {
 
         String lastInsertQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+    }
+
+    // 로그아웃
+    public int logout (int userIdx) {
+        String logoutQuery = "update User set User.refreshToken=null where userIdx= ?";
+        Object[] logoutParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(logoutQuery, logoutParams);
     }
 
     // 이메일 확인

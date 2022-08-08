@@ -1,7 +1,6 @@
 package com.there.src.user;
 
 
-import antlr.Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -18,9 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.there.src.user.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
@@ -42,10 +44,11 @@ public class UserController {
 
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService){
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService ){
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+
     }
 
 
@@ -120,17 +123,32 @@ public class UserController {
             return new BaseResponse<>(postLoginRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
+        } catch (com.there.config.BaseException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @ApiOperation(
             value = "액세스, 리프레시 토큰 재발급",
             notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
-    @PostMapping("/reissue")
+    @PostMapping("{userIdx}/reissue")
     public BaseResponse<TokenDto> reissue(
             @ApiParam(value = "토큰 재발급 요청 DTO", required = true)
-            @RequestBody TokenRequestDto tokenRequestDto) throws BaseException, com.there.config.BaseException {
-        return new BaseResponse(userService.reissue(tokenRequestDto));
+            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
+        return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
+    }
+
+    @ApiOperation(value = "logout")
+    @ApiResponses({ @ApiResponse(code = 204, message = "success") })
+    @PatchMapping("{userIdx}/logout")
+    public BaseResponse<String> logout(@PathVariable("userIdx")int userIdx)  {
+        try {
+            userService.logout(userIdx);
+            String result = "로그아웃 완료";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
 

@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.there.src.comment.config.BaseResponseStatus.*;
 
+
 @Api
 @RestController
 @RequestMapping("/comments")
@@ -44,7 +45,12 @@ public class CommentController {
      @RequestBody PostCommentReq postCommentReq) throws com.there.config.BaseException {
         try {
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            if (!jwtService.validationToken(jwtService.getJwt())){
+                throw new BaseException(ACCESS_TOKEN_ERROR);
+            }
+
+            System.out.println(jwtService.getUserIdx1(jwtService.getJwt()));
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
             if (postCommentReq.getContent() == null) return new BaseResponse<>(COMMENTS_EMPTY_CONTENT);

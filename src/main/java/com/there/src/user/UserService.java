@@ -14,14 +14,15 @@ import com.there.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
-
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -33,19 +34,22 @@ public class UserService {
     private final JwtService jwtService;
     private final S3Service s3Service;
 
+    private final RedisTemplate redisTemplate;
+
 
 
     @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, S3Service s3Service) {
+    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, S3Service s3Service, RedisTemplate redisTemplate) {
         this.userDao = userDao;
         this.userProvider = userProvider;
         this.jwtService = jwtService;
         this.s3Service = s3Service;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional
     // 로그인
-    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
+    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException, com.there.config.BaseException {
 
         User user = userDao.getPassword(postLoginReq);
 
@@ -65,11 +69,54 @@ public class UserService {
 
             userDao.refreshTokensave(refreshToken, userIdx);
 
+            redisTemplate.opsForValue()
+                    .set("RT: " + userIdx, refreshToken, jwtService.getExpiration1(refreshToken), TimeUnit.MILLISECONDS);
+
             return new PostLoginRes(userIdx, accessToken, refreshToken);
         } else
             throw new BaseException(FAILED_TO_LOGIN);
     }
 
+    @Transactional
+    public void logout(int userIdx) throws BaseException {
+        try {
+
+            int result = userDao.logout(userIdx);
+            //System.out.println(req);
+
+            if (result == 0) {
+                throw new BaseException(FAIL_TO_LOGOUT);
+            }
+
+            System.out.println("무슨 토큰이야" + jwtService.getJwt());
+
+            // 1. Access Token 검증
+            if (!jwtService.validationToken(jwtService.getJwt())){
+                throw new BaseException(ACCESS_TOKEN_ERROR);
+            }
+
+            // 2. Access Token에서 userIdx 가져오기
+            String accessToken = jwtService.getJwt();
+            jwtService.getUserIdx1(accessToken);
+
+
+            // 3. Redis에서 해당 userIdx로 저장된 Refresh Token이 있는지 여부를 확인 후 있을 경우 삭제합니다.
+            if (redisTemplate.opsForValue().get("RT: " + userIdx) != null) {
+
+                // Refresh Token 삭제
+                redisTemplate.delete("RT: " + userIdx);
+            }
+
+             // 4. 해당 Access Token 유효시간 가지고 와서 BlackList로 저장하기
+            Long expiration = jwtService.getExpiration(accessToken);
+            redisTemplate.opsForValue()
+                    .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+        } catch (Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
     // 회원가입
     @Transactional
@@ -147,28 +194,25 @@ public class UserService {
     }
 
     // Access Token, Refresh Token 재발급 요청
-    public String reissue(TokenRequestDto tokenRequestDto) throws BaseException, com.there.config.BaseException {
+    public String reissue(int userIdx, String accessToken, String refreshToken) throws BaseException, com.there.config.BaseException {
 
         // 만료된 refresh token 에러
-        if (!jwtService.validationToken(tokenRequestDto.getRefreshToken())) {
+        if (!jwtService.validationExpiration(refreshToken)){
             throw new BaseException(REFRESH_TOKEN_ERROR);
         }
 
-        // Access Token에서 userIdx 가져오기
-        String accessToken = tokenRequestDto.getAccessToken();
-        jwtService.getUserIdx1(accessToken);
-
-        // 리프레시 토큰 불일치 에러
-        if (!userDao.getRefreshToken(jwtService.getUserIdx()).equals(tokenRequestDto.getRefreshToken())) {
+        // refresh token 불일치 에러
+        if (!userDao.getRefreshToken(userIdx).equals(refreshToken)) {
             throw new BaseException(REFRESH_TOKEN_ERROR);
         }
-
         // AccessToken, RefreshToken 토큰 재발급, 리프레시 토큰 저장
-        String newCreatedToken = jwtService.createToken(jwtService.getUserIdx());
+        String newCreatedToken = jwtService.createToken(userIdx);
         String newRefreshToken = jwtService.createRefreshToken();
-        userDao.refreshTokensave(newRefreshToken, jwtService.getUserIdx());
+        userDao.refreshTokensave(newRefreshToken, userIdx);
 
-        //System.out.println("재발급 된 토큰" + newCreatedToken);
+        // RefreshToken Redis 업데이트
+        redisTemplate.opsForValue()
+                .set("RT: " + userIdx, newRefreshToken, jwtService.getExpiration1(newRefreshToken), TimeUnit.MILLISECONDS);
 
         return newCreatedToken;
     }
