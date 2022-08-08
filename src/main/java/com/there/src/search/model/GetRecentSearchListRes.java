@@ -13,7 +13,5 @@ public class GetRecentSearchListRes {
 
     private int searchIdx;
     private String content;
-//    private GetSearchByAccountRes getSearchByAccountRes = null;
-//    private GetSearchByHashtagRes getSearchByHashtagRes = null;
 
 }

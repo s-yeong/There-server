@@ -42,28 +42,6 @@ public class SearchProvider {
 
     }
 
-    // 통합 검색 API
-    public GetSearchByAllRes retrieveByAll(int userIdx, String keyword) throws BaseException {
-        try{
-
-            List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(keyword);
-            List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(keyword);
-            // 검색 기록
-            if(checkSearchExist(userIdx, keyword) == 0){
-                searchDao.insertSearch(userIdx, keyword);
-            }
-            else{
-                searchDao.updateSearch(keyword);
-            }
-            GetSearchByAllRes getSearchByAll = new GetSearchByAllRes(getSearchByAccount, getSearchByHashtag);
-
-            return getSearchByAll;
-        }
-        catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-    }
 
     // 계정 검색 API
     public List<GetSearchByAccountRes> retrieveByAccount(int userIdx, String account) throws BaseException {
