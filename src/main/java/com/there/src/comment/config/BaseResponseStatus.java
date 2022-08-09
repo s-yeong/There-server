@@ -60,7 +60,7 @@ public enum BaseResponseStatus {
     DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
     DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
     DELETE_FAIL_COMMENT(false, 4003, "댓글 삭제를 실패하였습니다. "),
-
+    ACCESS_TOKEN_ERROR(false, 4004, "Access Token을 확인해주세요. "),
     CREATE_FAIL_COMMENT(false, 4010, "댓글 생성을 실패하였습니다. "),
     CREATE_FAIL_RECOMMENT(false, 4009, "대댓글 생성을 실패하였습니다. "),
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),

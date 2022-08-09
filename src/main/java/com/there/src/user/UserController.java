@@ -108,7 +108,7 @@ public class UserController {
             }
 
             // 이메일 형식
-            if (!isRegexEmail(postLoginReq.getEmail()))
+            if(!isRegexEmail(postLoginReq.getEmail()))
             {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
             }
@@ -116,6 +116,30 @@ public class UserController {
             PostLoginRes postLoginRes = userService.logIn(postLoginReq);
 
             return new BaseResponse<>(postLoginRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        } catch (com.there.config.BaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @ApiOperation(
+            value = "액세스, 리프레시 토큰 재발급",
+            notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
+    @PostMapping("{userIdx}/reissue")
+    public BaseResponse<TokenDto> reissue(
+            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
+        return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
+    }
+
+    @ApiOperation(value = "logout")
+    @ApiResponses({ @ApiResponse(code = 204, message = "success") })
+    @PatchMapping("{userIdx}/logout")
+    public BaseResponse<String> logout(@PathVariable("userIdx")int userIdx)  {
+        try {
+            userService.logout(userIdx);
+            String result = "로그아웃 완료";
+            return new BaseResponse<>(result);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
