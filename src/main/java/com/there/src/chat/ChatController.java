@@ -70,17 +70,19 @@ public class ChatController {
     @GetMapping("room/user/{userIdx}")
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
     (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
-        // 채팅방 조회
-        List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
 
         // 메시지 확인 상태 변경
         try {
+            // 채팅방 조회
+            List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
+
+            // 메시지 확인 상태 변경
             chatContentService.checkChatContent(userIdx);
+            return new BaseResponse<>(getRoomInfoList);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
 
-        return new BaseResponse<>(getRoomInfoList);
     }
 
     @ApiOperation(value="ChatRoom 삭제 API", notes="")
