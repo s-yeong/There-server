@@ -123,6 +123,16 @@ public class UserController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping("/oauth/kakao")
+    public String kakaologin(@RequestParam("code") String code) {
+        String access_Token = userService.getKakaoAccessToken(code);
+        System.out.println("controller access_token: " + access_Token);
+
+        return "index";
+    }
+
+
     @ApiOperation(
             value = "액세스, 리프레시 토큰 재발급",
             notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")

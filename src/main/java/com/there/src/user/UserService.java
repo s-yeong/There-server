@@ -1,5 +1,7 @@
 package com.there.src.user;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
 import com.there.src.s3.S3Service;
 import com.there.src.user.config.BaseException;
 
@@ -20,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -117,6 +122,68 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 카카오 로그인
+    public String getKakaoAccessToken(String code) {
+        String accessToken = "";
+        String refreshToken = "";
+        String reqURL = "https://kauth.kakao.com/oauth/token";
+
+
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            // POST 요청을 위해 기본값이 false인 setDoOutput을 true로
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            // POST 요청에 필요로 요구하는 파라미터 스트림을 통해 전송
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("grant_type=authorization_code");
+            sb.append("&client_id=2e8b184b25eb6aee0a1496b4af1d7ffd");
+            sb.append("&redirect_uri=http://localhost:8080/users/oauth/kakao");
+            sb.append("&code=" + code);
+            sb.append("&client_secret=fJMsCcaBpzyMWMj6ughnTuo9zl3jMLq6");
+            bw.write(sb.toString());
+            bw.flush();
+
+            // 결과코드가 200이라면 성공
+            int resposneCode = conn.getResponseCode();
+            System.out.println("responseCode: " + resposneCode);
+
+            // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+
+                result += line;
+            }
+
+            System.out.println("response body: " + result);
+
+            // Gson 라이브러리에 포함된 클래스로 JSON 파싱 객체 생성
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(result);
+
+            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+
+            System.out.println("access_token: " + accessToken);
+            System.out.println("refresh_token: " + refreshToken);
+
+            br.close();
+            bw.close();
+        } catch (IOException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        return accessToken;
+    }
+
 
     // 회원가입
     @Transactional
