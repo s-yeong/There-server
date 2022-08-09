@@ -41,12 +41,7 @@ public class SearchService {
         }
 
         try{
-
-            int result = searchDao.deleteRecentSearch(userIdx, searchIdx);
-            if(result == 0){
-                throw new BaseException(DELETE_FAIL_SEARCH);
-            }
-
+            searchDao.deleteRecentSearch(userIdx, searchIdx);
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }

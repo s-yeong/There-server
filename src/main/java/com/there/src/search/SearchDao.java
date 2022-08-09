@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -53,12 +52,21 @@ public class SearchDao {
 
 
     // 최근 검색어 삭제
-    public int deleteRecentSearch(int userIdx, int searchIdx){
+    public void deleteRecentSearch(int userIdx, int searchIdx){
 
-        String deleteRecentSearchQuery ="delete from UserSearch where userIdx =? and searchIdx=?;";
-        Object[] deleteRecentSearchParam = new Object[] {userIdx, searchIdx};
+        String start = "START TRANSACTION";
+        String deleteUserSearchQuery ="delete from UserSearch where userIdx =? and searchIdx=?;";
+        String existUserSearchQuery = "select exists(select * from UserSearch where searchIdx = ?);";
+        String deleteSearchQuery = "delete from Search where searchIdx = ?;";
+        String end = "COMMIT";
 
-        return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
+        Object[] deleteUserSearchParams = new Object[] {userIdx, searchIdx};
+
+        this.jdbcTemplate.update(start);
+        this.jdbcTemplate.update(deleteUserSearchQuery, deleteUserSearchParams);
+        int searchExist = this.jdbcTemplate.queryForObject(existUserSearchQuery,int.class,searchIdx);
+        if(searchExist == 0) this.jdbcTemplate.update(deleteSearchQuery, searchIdx);
+        this.jdbcTemplate.update(end);
     }
 
     // 최근 검색어 모두 삭제
