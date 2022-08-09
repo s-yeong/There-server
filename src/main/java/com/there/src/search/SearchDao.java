@@ -70,11 +70,23 @@ public class SearchDao {
     }
 
     // 최근 검색어 모두 삭제
-    public int deleteAllRecentSearch(int userIdx){
+    public void deleteAllRecentSearch(int userIdx){
 
-        String deleteAllRecentSearchQuery ="delete from UserSearch where userIdx = ?;";
-        int deleteAllRecentSearchParam = userIdx;
-        return this.jdbcTemplate.update(deleteAllRecentSearchQuery, deleteAllRecentSearchParam);
+        String start = "START TRANSACTION";
+        String selectSearchIdxQuery = "select searchIdx from UserSearch where userIdx = ? LIMIT 1;";
+        String deleteUserSearchQuery = "delete from UserSearch where userIdx = ? LIMIT 1;";
+        String existUserSearchQuery = "select exists(select * from UserSearch where searchIdx = ?);";
+        String deleteSearchQuery = "delete from Search where searchIdx = ?;";
+        String end = "COMMIT";
+
+        this.jdbcTemplate.update(start);
+        int searchIdx = this.jdbcTemplate.queryForObject(selectSearchIdxQuery,int.class,userIdx);
+        this.jdbcTemplate.update(deleteUserSearchQuery, userIdx);
+        int searchExist = this.jdbcTemplate.queryForObject(existUserSearchQuery,int.class,searchIdx);
+        if(searchExist == 0){
+            this.jdbcTemplate.update(deleteSearchQuery, searchIdx);
+        }
+        this.jdbcTemplate.update(end);
     }
 
 
@@ -206,7 +218,7 @@ public class SearchDao {
     }
 
     // 해당 유저 검색 기록인지 체크
-    public int checkUserSearchExist(int userIdx, int searchIdx){
+    public int checkUserSearch(int userIdx, int searchIdx){
         String checkUserSearchExistQuery = "select exists(select * from UserSearch where userIdx = ? and searchIdx = ?);";
         Object[] checkUserSearchExistParams = new Object[] {userIdx, searchIdx};
 
@@ -227,4 +239,12 @@ public class SearchDao {
                 checkUserExistParam);
     }
 
+    // 해당 유저의 검색 기록이 존재하는지 체크
+    public int checkUserSearchExist(int userIdx){
+        String checkUserSearchExistQuery = "select exists(select * from UserSearch where userIdx = ?);";
+        int checkUserSearchExistParam = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserSearchExistQuery,
+                int.class,
+                checkUserSearchExistParam);
+    }
 }

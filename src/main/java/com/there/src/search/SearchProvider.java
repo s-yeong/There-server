@@ -145,9 +145,9 @@ public class SearchProvider {
     }
 
     // 해당 유저 검색인지 체크
-    public int checkUserSearchExist(int userIdx, int searchIdx) throws BaseException {
+    public int checkUserSearch(int userIdx, int searchIdx) throws BaseException {
         try{
-            int result = searchDao.checkUserSearchExist(userIdx, searchIdx);
+            int result = searchDao.checkUserSearch(userIdx, searchIdx);
             return result;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -157,6 +157,16 @@ public class SearchProvider {
     public int checkUserExist(int userIdx) throws BaseException {
         try{
             return searchDao.checkUserExist(userIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 해당 유저의 검색 기록이 존재하는지 체크
+    public int checkUserSearchExist(int userIdx) throws BaseException {
+        try{
+            int result = searchDao.checkUserSearchExist(userIdx);
+            return result;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

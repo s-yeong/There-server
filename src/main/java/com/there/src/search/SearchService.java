@@ -36,7 +36,7 @@ public class SearchService {
         }
 
         // 해당하는 유저의 검색 기록인지
-        if(searchProvider.checkUserSearchExist(userIdx, searchIdx) == 0){
+        if(searchProvider.checkUserSearch(userIdx, searchIdx) == 0){
             throw new BaseException(USERS_SEARCHES_INVALID_ID);
         }
 
@@ -56,12 +56,9 @@ public class SearchService {
         }
 
         try{
-
-            int result = searchDao.deleteAllRecentSearch(userIdx);
-            if(result == 0){
-                throw new BaseException(DELETE_FAIL_SEARCH);
+            while(searchProvider.checkUserSearchExist(userIdx) == 1){
+                searchDao.deleteAllRecentSearch(userIdx);
             }
-
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
