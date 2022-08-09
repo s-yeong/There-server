@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.there.src.user.config.BaseResponseStatus.*;
@@ -127,7 +128,8 @@ public class UserController {
     @RequestMapping("/oauth/kakao")
     public String kakaologin(@RequestParam("code") String code) {
         String access_Token = userService.getKakaoAccessToken(code);
-        System.out.println("controller access_token: " + access_Token);
+        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
+        System.out.println("login Controller: " + userInfo);
 
         return "index";
     }

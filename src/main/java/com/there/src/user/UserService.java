@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -178,12 +179,60 @@ public class UserService {
             br.close();
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
             e.printStackTrace();
         }
         return accessToken;
     }
 
+    public HashMap<String, Object> getUserInfo(String token)  {
+
+        //    요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
+        HashMap<String, Object> userInfo = new HashMap<>();
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+
+        // access Token을 이용하여 사용자 정보 조회
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            //conn.setDoOutput(true);
+            conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
+
+            // 결과 코드가 200이라면 성공
+            int responseCode = conn.getResponseCode();
+            System.out.println("responseCode: " + responseCode);
+
+            // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            System.out.println("response body: " + result);
+
+            //Gson 라이브러리로 JSON 파싱
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(result);
+
+            int id = element.getAsJsonObject().get("id").getAsInt();
+            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
+            String email = "";
+            if(hasEmail){
+                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+            }
+
+            System.out.println("id: " + id);
+            System.out.println("email: " + email);
+
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
 
     // 회원가입
     @Transactional
