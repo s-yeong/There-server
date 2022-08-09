@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.util.List;
 
@@ -65,6 +66,15 @@ public class UserDao {
                 ), selectUserPostsParam);
 
     }
+
+    // 로그인 시 리프레시 토큰 저장
+    public int refreshTokensave(String refreshToken, int userIdx) {
+        String refreshTokensaveQuery ="update User set refreshToken =? where userIdx=?";
+        Object[] refreshTokensaveparams = new Object[]{refreshToken, userIdx};
+        return this.jdbcTemplate.update(refreshTokensaveQuery, refreshTokensaveparams);
+
+
+    }
     public User getPassword(PostLoginReq postLoginReq) {
         String getPwdQuery = "select userIdx, nickName, email, password from User where email = ? ";
         String getPwdParams = postLoginReq.getEmail();
@@ -90,6 +100,14 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
     }
 
+    // 로그아웃
+    public int logout (int userIdx) {
+        String logoutQuery = "update User set User.refreshToken=null where userIdx= ?";
+        Object[] logoutParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(logoutQuery, logoutParams);
+    }
+
     // 이메일 확인
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select email from User where email = ?)";
@@ -108,16 +126,22 @@ public class UserDao {
                 int.class,
                 checkUserExistParams);
     }
-    /*//입력 비밀번호 일치 여부 확인
-    public int checkPwdExist(String checkPwd) {
 
+    // 리프레시 토큰 중복 여부
+    public int checkRefreshExist(int userIdx){
+        String checkRefreshTokenExistQuery = "select exists(select refreshToken from User where userIdx =?)";
+        int checkRefreshTokenExistParmas = userIdx;
+        return this.jdbcTemplate.queryForObject(checkRefreshTokenExistQuery, int.class,
+                checkRefreshTokenExistParmas);
     }
-*/
-    public int checkJwt(int userIdx) {
-        String checkJwtQuery = "select exist(select userIdx from User where userIdx =?)";
-        int checkJwtParams = userIdx;
-        return this.jdbcTemplate.queryForObject(checkJwtQuery, int.class , checkJwtParams);
+
+    // 리프레시 토큰 조회
+    public String getRefreshToken(int userIdx) {
+        String selectRefreshToken = "select refreshToken from User where userIdx= ?";
+        int selectRefreshTokenParams = userIdx;
+        return this.jdbcTemplate.queryForObject(selectRefreshToken, String.class, selectRefreshTokenParams);
     }
+
 
     // 회원 정보 수정
     public int updateProfile(int userIdx, PatchUserReq patchUserReq){
