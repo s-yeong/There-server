@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -21,13 +20,28 @@ public class SearchDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    // 인기 검색어 조회
+    public List<GetPopularSearchListRes> selectPopularSearches(){
+        String selectPopularSearchesQuery = "select s.searchIdx as searchIdx, content\n" +
+                "from Search as s\n" +
+                "    left join(select count(searchIdx) as searchCount, searchIdx\n" +
+                "                from UserSearch\n" +
+                "                group by searchIdx) as us on us.searchIdx = s.searchIdx\n" +
+                "order by searchCount desc LIMIT 4;";
+        return this.jdbcTemplate.query(selectPopularSearchesQuery,
+                (rs, rowNum) -> new GetPopularSearchListRes(
+                        rs.getInt("searchIdx"),
+                        rs.getString("content")
+                ));
+    }
+
     // 최근 검색어 조회
     public List<GetRecentSearchListRes> selectRecentSearches(int userIdx){
         String selectRecentSearchesQuery = "select s.searchIdx as searchIdx, content\n" +
                 "from Search as s\n" +
                 "    join UserSearch as us on us.searchIdx = s.searchIdx\n" +
                 "where us.userIdx = ?\n" +
-                "order by s.updated_At;";
+                "order by us.updated_At;";
         int selectRecentSearchesParam = userIdx;
         return this.jdbcTemplate.query(selectRecentSearchesQuery,
                 (rs, rowNum) -> new GetRecentSearchListRes(
@@ -38,25 +52,41 @@ public class SearchDao {
 
 
     // 최근 검색어 삭제
-    public int deleteRecentSearch(int searchIdx){
+    public void deleteRecentSearch(int userIdx, int searchIdx){
 
-        String deleteRecentSearchQuery ="delete us, s\n" +
-                "from UserSearch as us\n" +
-                "    join Search as s on s.searchIdx = us.searchIdx\n" +
-                "where us.searchIdx=?;";
-        int deleteRecentSearchParam = searchIdx;
-        return this.jdbcTemplate.update(deleteRecentSearchQuery, deleteRecentSearchParam);
+        String start = "START TRANSACTION";
+        String deleteUserSearchQuery ="delete from UserSearch where userIdx =? and searchIdx=?;";
+        String existUserSearchQuery = "select exists(select * from UserSearch where searchIdx = ?);";
+        String deleteSearchQuery = "delete from Search where searchIdx = ?;";
+        String end = "COMMIT";
+
+        Object[] deleteUserSearchParams = new Object[] {userIdx, searchIdx};
+
+        this.jdbcTemplate.update(start);
+        this.jdbcTemplate.update(deleteUserSearchQuery, deleteUserSearchParams);
+        int searchExist = this.jdbcTemplate.queryForObject(existUserSearchQuery,int.class,searchIdx);
+        if(searchExist == 0) this.jdbcTemplate.update(deleteSearchQuery, searchIdx);
+        this.jdbcTemplate.update(end);
     }
 
     // 최근 검색어 모두 삭제
-    public int deleteAllRecentSearch(int userIdx){
+    public void deleteAllRecentSearch(int userIdx){
 
-        String deleteAllRecentSearchQuery ="delete from us, s\n" +
-                "    using UserSearch as us\n" +
-                "    join Search as s on s.searchIdx = us.searchIdx\n" +
-                "where userIdx = ?;";
-        int deleteAllRecentSearchParam = userIdx;
-        return this.jdbcTemplate.update(deleteAllRecentSearchQuery, deleteAllRecentSearchParam);
+        String start = "START TRANSACTION";
+        String selectSearchIdxQuery = "select searchIdx from UserSearch where userIdx = ? LIMIT 1;";
+        String deleteUserSearchQuery = "delete from UserSearch where userIdx = ? LIMIT 1;";
+        String existUserSearchQuery = "select exists(select * from UserSearch where searchIdx = ?);";
+        String deleteSearchQuery = "delete from Search where searchIdx = ?;";
+        String end = "COMMIT";
+
+        this.jdbcTemplate.update(start);
+        int searchIdx = this.jdbcTemplate.queryForObject(selectSearchIdxQuery,int.class,userIdx);
+        this.jdbcTemplate.update(deleteUserSearchQuery, userIdx);
+        int searchExist = this.jdbcTemplate.queryForObject(existUserSearchQuery,int.class,searchIdx);
+        if(searchExist == 0){
+            this.jdbcTemplate.update(deleteSearchQuery, searchIdx);
+        }
+        this.jdbcTemplate.update(end);
     }
 
 
@@ -141,6 +171,14 @@ public class SearchDao {
                 checkSearchExistParams);
     }
 
+    // 중복 검색어 체크
+    public int checkDuplicateKeyword(String keyword){
+        String checkDuplicateSearchQuery = "select exists(select * from Search where content = ?);";
+        String checkDuplicateSearchParam = keyword;
+
+        return this.jdbcTemplate.queryForObject(checkDuplicateSearchQuery, int.class, checkDuplicateSearchParam);
+    }
+
     // 검색 기록
     public void insertSearch(int userIdx, String keyword){
         String start = "START TRANSACTION;";
@@ -154,18 +192,33 @@ public class SearchDao {
         this.jdbcTemplate.update(insertSearchQuery, insertSearchParam);
         this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParam);
         this.jdbcTemplate.update(end);
+    }
 
+    // 유저-검색 관계만 기록 (중복 검색어인 경우)
+    public void insertUserSearch(int userIdx, String keyword){
+
+        String selectsearchIdxQuery = "select searchIdx from Search where content = ?;";
+        String selectsearchIdxParam = keyword;
+        int searchIdx = this.jdbcTemplate.queryForObject(selectsearchIdxQuery, int.class, selectsearchIdxParam);
+
+        String insertUserSearchQuery = "insert into UserSearch(userIdx, searchIdx) value(?, ?);";
+        Object[] insertUserSearchParams = new Object[] {userIdx, searchIdx};
+        this.jdbcTemplate.update(insertUserSearchQuery, insertUserSearchParams);
     }
 
     // 검색 업데이트
     public void updateSearch(String keyword){
-        String updateSearchQuery = "update Search SET updated_At = NOW() where content = ?;";
-        String updateSearchParam = keyword;
+        String selectsearchIdxQuery = "select searchIdx from Search where content = ?;";
+        String selectsearchIdxParam = keyword;
+        int searchIdx = this.jdbcTemplate.queryForObject(selectsearchIdxQuery, int.class, selectsearchIdxParam);
+
+        String updateSearchQuery = "update UserSearch SET updated_At = NOW() where searchIdx = ?;";
+        int updateSearchParam = searchIdx;
         this.jdbcTemplate.update(updateSearchQuery, updateSearchParam);
     }
 
     // 해당 유저 검색 기록인지 체크
-    public int checkUserSearchExist(int userIdx, int searchIdx){
+    public int checkUserSearch(int userIdx, int searchIdx){
         String checkUserSearchExistQuery = "select exists(select * from UserSearch where userIdx = ? and searchIdx = ?);";
         Object[] checkUserSearchExistParams = new Object[] {userIdx, searchIdx};
 
@@ -186,4 +239,12 @@ public class SearchDao {
                 checkUserExistParam);
     }
 
+    // 해당 유저의 검색 기록이 존재하는지 체크
+    public int checkUserSearchExist(int userIdx){
+        String checkUserSearchExistQuery = "select exists(select * from UserSearch where userIdx = ?);";
+        int checkUserSearchExistParam = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserSearchExistQuery,
+                int.class,
+                checkUserSearchExistParam);
+    }
 }
