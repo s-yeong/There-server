@@ -50,11 +50,11 @@ public class ChatRoomDao {
 
         return this.jdbcTemplate.query(getChatRoomInfoQuery, (rs, rowNum) -> new GetRoomInfoRes(
 
-                // roomIdx, 안 읽은 메시지 수
+                // roomIdx, 안 읽은 메시지 수 조회
                 rs.getInt("roomIdx"),
                 rs.getInt("count"),
 
-                // 유저 정보
+                // 유저 정보 조회
                 getUserInfoList = this.jdbcTemplate.queryForObject(getUserInfoQuery,
                         (rk, rownum) -> new GetUserInfoRes(
                                 rk.getString("nickName"),

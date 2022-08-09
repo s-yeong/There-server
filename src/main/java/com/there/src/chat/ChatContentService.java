@@ -50,9 +50,9 @@ public class ChatContentService {
         }
     }
 
-    public void checkChatContent(int userIdx) throws BaseException {
+    public void checkChatContent(int roomIdx) throws BaseException {
         try {
-            int result = chatContentDao.checkChatContent(userIdx);
+            int result = chatContentDao.checkChatContent(roomIdx);
             if (result == 0) throw new BaseException(CHECK_FAIL_CHATCONTENT); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {

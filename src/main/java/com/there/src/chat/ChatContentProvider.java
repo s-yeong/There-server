@@ -26,9 +26,9 @@ public class ChatContentProvider {
     /**
      * 채팅방 콘텐츠 조회
      */
-    public List<GetChatContentRes> retrieveChatContent(int roomIdx, int senderIdx, int receiverIdx) throws BaseException {
+    public List<GetChatContentRes> retrieveChatContent(int roomIdx) throws BaseException {
         try {
-            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx, senderIdx, receiverIdx);
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx);
             return getChatContentList;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
