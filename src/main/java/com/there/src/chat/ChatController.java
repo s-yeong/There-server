@@ -67,7 +67,7 @@ public class ChatController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("room/user/{userIdx}")
+    @GetMapping("/room/user/{userIdx}")
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
     (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
 
