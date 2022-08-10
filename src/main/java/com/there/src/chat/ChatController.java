@@ -44,7 +44,7 @@ public class ChatController {
         this.chatRoomProvider = chatRoomProvider;
     }
 
-    @ApiOperation(value="ChatRoom 생성 API", notes="상대방 프로필에서 메시지 클릭 시 ChatRoom 생성")
+    @ApiOperation(value="채팅방 생성 API", notes="상대방 프로필에서 메시지 클릭 시 ChatRoom 생성")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
@@ -61,7 +61,7 @@ public class ChatController {
         }
     }
 
-    @ApiOperation(value="ChatRoom 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
+    @ApiOperation(value="채팅방 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
@@ -71,21 +71,13 @@ public class ChatController {
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
     (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
 
-        // 메시지 확인 상태 변경
-        try {
-            // 채팅방 조회
-            List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
-
-            // 메시지 확인 상태 변경
-            chatContentService.checkChatContent(userIdx);
-            return new BaseResponse<>(getRoomInfoList);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
+        // 채팅방 조회
+        List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
+        return new BaseResponse<>(getRoomInfoList);
 
     }
 
-    @ApiOperation(value="ChatRoom 삭제 API", notes="")
+    @ApiOperation(value="채팅방 삭제 API", notes="")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
@@ -102,7 +94,7 @@ public class ChatController {
         }
     }
 
-    @ApiOperation(value="Message 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
+    @ApiOperation(value="메세지 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
@@ -123,7 +115,7 @@ public class ChatController {
             return messagechatContentRes;
     }
 
-    @ApiOperation(value="Message 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
+    @ApiOperation(value="메세지 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
@@ -142,7 +134,7 @@ public class ChatController {
 
     }
 
-    @ApiOperation(value="Message 삭제 API", notes="")
+    @ApiOperation(value="메세지 삭제 API", notes="")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
