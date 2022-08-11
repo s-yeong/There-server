@@ -23,6 +23,13 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
     EMPTY_TITLE(false, 2004, "제목을 입력해주세요."),
 
+    // Posts
+    EMPTY_IMGURL(false, 2010, "게시글 사진을 올려주세요."),
+    EMPTY_CONTENT(false, 2011, "게시글 내용을 입력해주세요."),
+    EXCEEDED_IMGURL(false,2012, "게시글 사진을 하나만 올려주세요"),
+    EXCEEDED_HASHTAG(false,2013, "해시태그는 5개까지 가능합니다."),
+
+
     // histroys
     USERS_POSTS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
     USERS_HISTORYS_INVALID_ID(false,2012, "해당 유저가 아닙니다."),
@@ -34,6 +41,7 @@ public enum BaseResponseStatus {
     HISTORYS_INVALID_CONTENTS(false, 2053, "히스토리 내용의 글자 수를 확인해주세요"),
     HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
     HISTORYS_MODIFY_NOTTHING(false,2055, "변경 사항이 없습니다."),
+
 
     /**
      * 3000 : Response 오류
@@ -71,6 +79,12 @@ public enum BaseResponseStatus {
     DELETE_FAIL_PORTFOLIO(false, 4107, "포트폴리오 삭제를 실패하였습니다."),
     DELETE_FAIL_POSTINPORTFOLIO(false, 4108, "포스트 삭제를 실패하였습니다."),
     MODIFY_FAIL_TITLE(false, 4109, "포트폴리오 제목 변경을 실패하였습니다"),
+
+    // Posts
+    CREATE_FAIL_POST(false, 4010, "게시글 생성을 실패하였습니다. "),
+    UPDATE_FAIL_POST(false, 4011, "게시글 수정을 실패하였습니다. "),
+    DELETE_FAIL_POST(false, 4012, "게시글 삭제를 실패하였습니다. "),
+
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");

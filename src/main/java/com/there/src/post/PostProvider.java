@@ -1,6 +1,6 @@
 package com.there.src.post;
 
-import com.there.src.post.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.post.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.post.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class PostProvider {

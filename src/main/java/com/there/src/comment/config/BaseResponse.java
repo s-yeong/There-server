@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.there.src.post.config.BaseResponseStatus.SUCCESS;
+import static com.there.src.comment.config.BaseResponseStatus.SUCCESS;
 
 @Getter
 @AllArgsConstructor
