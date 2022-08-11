@@ -79,11 +79,16 @@ public class UserController {
      * [GET] /users/feed
      * @return BaseResponse<GetUserFeedRes>
      */
+    @ApiOperation(value = " 유저 피드 조회 API", notes = " 유저 인덱스 값 입력시 해당하는 유저 피드 조회")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "API 정상 작동"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
     public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
@@ -96,6 +101,11 @@ public class UserController {
      * 로그인 API
      * [POST] /users/login
      */
+    @ApiOperation(value = "일반 로그인 API", notes = "Body 타입 : String ")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/login")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
@@ -129,8 +139,13 @@ public class UserController {
     /**
      * 카카오 로그인 API
      * [GET] /users/login/kakao
-     * @return BaseResponse<String>
+     * @return BaseResponse<PostLoginRes>
      */
+    @ApiOperation(value = " 카카오 로그인 API")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/login/kakao")
     public BaseResponse<PostLoginRes> kakaoLogin(@RequestParam(required = false) String code){
@@ -166,6 +181,11 @@ public class UserController {
      * [GET] /users/kakao/:userIdx
      * @return BaseResponse<String>
      */
+    @ApiOperation(value = " 카카오 토큰 갱신 API", notes ="RequestParam : accessToken, refreshToken")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("/kakao/{kakaoIdx}")
     public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws  BaseException {
@@ -174,23 +194,35 @@ public class UserController {
             return new BaseResponse<>(result);
     }
 
-    /*
-    @ResponseBody
-    @GetMapping("/kakao/logout")
-    public BaseResponse<String> kakaologout();
-
+    /**
+     * 일반 로그인 토큰 갱신 API
+     * [POST] /users/:userIdx/reissue
+     * @return BaseResponse<TokenDto>
+     */
     @ApiOperation(
             value = "액세스, 리프레시 토큰 재발급",
             notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
-    @PostMapping("{userIdx}/reissue")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @PostMapping("/{userIdx}/reissue")
     public BaseResponse<TokenDto> reissue(
             @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
         return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
     }
-*/
-    @ApiOperation(value = "logout")
-    @ApiResponses({ @ApiResponse(code = 204, message = "success") })
-    @PatchMapping("{userIdx}/logout")
+
+    /**
+     * 일반 로그아웃 API
+     * [PACTH] /users/:userIdx/logout
+     * @return BaseResponse<String>
+     */
+    @ApiOperation(value = "일반 로그인 로그아웃", notes = "유저 인덱스 값 입력 시 해당 유저 로그아웃")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @PatchMapping("/{userIdx}/logout")
     public BaseResponse<String> logout(@PathVariable("userIdx")int userIdx)  {
         try {
             userService.logout(userIdx);
@@ -201,11 +233,16 @@ public class UserController {
         }
     }
 
-
     /**
-     * 회원가입 API
+     * 일반 회원가입 API
      * [POST] /users/join
+     * @return BaseResponse<PostJoinRes>
      */
+    @ApiOperation(value = "일반 회원가입", notes = "Body 타입: String")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/join")
     public BaseResponse<PostJoinRes> createUser(@RequestBody PostJoinReq postJoinReq) {
@@ -274,7 +311,13 @@ public class UserController {
     /**
      * 회원 삭제
      * [PATCH] /{userIdx}/status
+     * @return BaseResponse<String>
      */
+    @ApiOperation(value = "회원 삭제")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {

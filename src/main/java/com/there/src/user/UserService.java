@@ -239,7 +239,6 @@ public class UserService {
 
             }
 
-
             userInfo.put("nickname" , nickname);
             userInfo.put("email", email);
             //br.close();
@@ -386,6 +385,7 @@ public class UserService {
 
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
+                System.out.println(exception);
                 throw new BaseException(DATABASE_ERROR);
             }
         }
@@ -437,10 +437,13 @@ public class UserService {
     // Access Token, Refresh Token 재발급 요청
     public String reissue(int userIdx, String accessToken, String refreshToken) throws BaseException, com.there.config.BaseException {
 
+        /*
+        System.out.println(refreshToken);
         // 만료된 refresh token 에러
         if (!jwtService.validationExpiration(refreshToken)){
+            System.out.println();
             throw new BaseException(REFRESH_TOKEN_ERROR);
-        }
+        }*/
 
         // refresh token 불일치 에러
         if (!userDao.getRefreshToken(userIdx).equals(refreshToken)) {
