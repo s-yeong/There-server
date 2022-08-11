@@ -23,6 +23,17 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
     EMPTY_TITLE(false, 2004, "제목을 입력해주세요."),
 
+    // histroys
+    USERS_POSTS_INVALID_ID(false,2011, "해당 유저가 아닙니다."),
+    USERS_HISTORYS_INVALID_ID(false,2012, "해당 유저가 아닙니다."),
+    HISTORYS_EMPTY_HISTORY_ID(false, 2030, "히스토리 아이디 값을 확인해주세요."),
+
+    HISTORYS_EMPTY_TITLES(false,2050,"히스토리 제목을 입력해주세요."),
+    HISTORYS_INVALID_TITLES(false, 2051, "히스토리 제목의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_CONTENTS(false,2052,"히스토리 내용을 입력해주세요."),
+    HISTORYS_INVALID_CONTENTS(false, 2053, "히스토리 내용의 글자 수를 확인해주세요"),
+    HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
+    HISTORYS_MODIFY_NOTTHING(false,2055, "변경 사항이 없습니다."),
 
     /**
      * 3000 : Response 오류
@@ -33,6 +44,10 @@ public enum BaseResponseStatus {
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+
+    // histroys
+    DELETE_FAIL_HISTORY(false, 3030,"히스토리 삭제를 실패하였습니다."),
+    MODIFY_FAIL_HISTORY(false, 3030,"히스토리 수정을 실패하였습니다."),
 
 
     /**

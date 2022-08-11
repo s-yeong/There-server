@@ -1,6 +1,6 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.BaseException;
+import com.there.config.*;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.history.cofig.BaseResponseStatus.DATABASE_ERROR;
-import static com.there.src.history.cofig.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class HistoryProvider {

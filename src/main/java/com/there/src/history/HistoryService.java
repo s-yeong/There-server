@@ -1,6 +1,6 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.BaseException;
+import com.there.config.BaseException;
 import com.there.src.history.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.there.src.history.cofig.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class HistoryService {
