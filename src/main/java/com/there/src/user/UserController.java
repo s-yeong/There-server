@@ -2,6 +2,7 @@ package com.there.src.user;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.src.user.config.BaseException;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -124,16 +126,58 @@ public class UserController {
         }
     }
 
+    /**
+     * 카카오 로그인 API
+     * [GET] /users/login/kakao
+     * @return BaseResponse<String>
+     */
     @ResponseBody
-    @RequestMapping("/oauth/kakao")
-    public String kakaologin(@RequestParam("code") String code) {
-        String access_Token = userService.getKakaoAccessToken(code);
-        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
-        System.out.println("login Controller: " + userInfo);
+    @GetMapping("/login/kakao")
+    public BaseResponse<PostLoginRes> kakaoLogin(@RequestParam(required = false) String code){
 
-        return "index";
+        try {
+            // URL에 포함된 code를 이용하여 액세스 토큰 발급
+            String accessToken = userService.getKakaoAccessToken(code);
+            System.out.println(accessToken);
+
+            // 액세스 토큰을 이용하여 카카오 서버에서 유저 정보(닉네임, 이메일) 받아오기
+            HashMap<String, Object> userInfo = userService.getUserInfo(accessToken);
+            System.out.println("login Controller: " + userInfo);
+
+            PostLoginRes postLoginRes = null;
+
+            // 만일, db에 해당 email을 가지는 유저가 없으면 회원가입 시키고 유저 식별자와 jwt반환
+            // 현재 카카오 유저의 전화번호를 받아올 권한이 없어서 테스트를 하지 못함.
+            if(userProvider.checkEmail(String.valueOf(userInfo.get("email")))== 0) {
+                //PostLoginRes postLoginRes = 해당 서비스;
+                return new BaseResponse<>(postLoginRes);
+            } else {
+                // 아니면 기존 유저의 로그인으로 판단하고 유저 식별자와 jwt 반환
+                postLoginRes = userProvider.getUserInfo(String.valueOf(userInfo.get("email")));
+                return new BaseResponse<>(postLoginRes);
+            }
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
+    /**
+     * 카카오 토큰 갱신 API
+     * [GET] /users/kakao/:userIdx
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @GetMapping("/kakao/{kakaoIdx}")
+    public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws  BaseException {
+        String result = "";
+            userService.updateKakaoToken(kakaoIdx);
+            return new BaseResponse<>(result);
+    }
+
+    /*
+    @ResponseBody
+    @GetMapping("/kakao/logout")
+    public BaseResponse<String> kakaologout();
 
     @ApiOperation(
             value = "액세스, 리프레시 토큰 재발급",
@@ -143,7 +187,7 @@ public class UserController {
             @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
         return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
     }
-
+*/
     @ApiOperation(value = "logout")
     @ApiResponses({ @ApiResponse(code = 204, message = "success") })
     @PatchMapping("{userIdx}/logout")

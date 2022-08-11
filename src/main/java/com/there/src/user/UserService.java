@@ -1,5 +1,7 @@
 package com.there.src.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 import com.there.src.s3.S3Service;
@@ -28,6 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -78,7 +81,7 @@ public class UserService {
             redisTemplate.opsForValue()
                     .set("RT: " + userIdx, refreshToken, jwtService.getExpiration1(refreshToken), TimeUnit.MILLISECONDS);
 
-            return new PostLoginRes(userIdx, accessToken, refreshToken);
+            return new PostLoginRes(userIdx, accessToken);
         } else
             throw new BaseException(FAILED_TO_LOGIN);
     }
@@ -144,7 +147,7 @@ public class UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=2e8b184b25eb6aee0a1496b4af1d7ffd");
-            sb.append("&redirect_uri=http://localhost:8080/users/oauth/kakao");
+            sb.append("&redirect_uri=http://localhost:8080/users/login/kakao");
             sb.append("&code=" + code);
             sb.append("&client_secret=fJMsCcaBpzyMWMj6ughnTuo9zl3jMLq6");
             bw.write(sb.toString());
@@ -176,6 +179,9 @@ public class UserService {
             System.out.println("access_token: " + accessToken);
             System.out.println("refresh_token: " + refreshToken);
 
+            // 토큰 저장
+            userDao.createKakaoUserToken(accessToken, refreshToken);
+
             br.close();
             bw.close();
         } catch (IOException e) {
@@ -186,16 +192,17 @@ public class UserService {
 
     public HashMap<String, Object> getUserInfo(String token)  {
 
-        //    요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
+        // 요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
         HashMap<String, Object> userInfo = new HashMap<>();
         String reqURL = "https://kapi.kakao.com/v2/user/me";
+        String refreshToken = "";
 
         // access Token을 이용하여 사용자 정보 조회
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("GET");
             //conn.setDoOutput(true);
             conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
 
@@ -217,22 +224,140 @@ public class UserService {
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
-            int id = element.getAsJsonObject().get("id").getAsInt();
-            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
-            String email = "";
-            if(hasEmail){
-                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+            JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+
+            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+            String email = kakao_account.getAsJsonObject().get("email").getAsString();
+
+
+            if (userDao.checkEmail(email) == 0){
+                //없다면
+                // user테이블 저장
+                int kakaoIdx = userDao.getkakaoIdx(token);
+                userDao.createKakaoUser(email, nickname, kakaoIdx);
+
             }
 
-            System.out.println("id: " + id);
-            System.out.println("email: " + email);
 
-            br.close();
+            userInfo.put("nickname" , nickname);
+            userInfo.put("email", email);
+            //br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // 정보가 db에 저장되어 있는지
         return userInfo;
     }
+
+    // 카카오 토큰 갱신
+    public void updateKakaoToken(int kakaoIdx) throws BaseException {
+        // error
+        String RefreshToken = userDao.getkakaoRefreshToken(kakaoIdx);
+        System.out.println(" kakao db에서 가져온 리프레시 토큰 " + RefreshToken);
+        userDao.updateKakaoUser(kakaoIdx);
+
+        KakaoToken kakaoToken = userProvider.getKakaoToken(kakaoIdx);
+        String postURL = "https://kauth.kakao.com/oauth/token";
+        KakaoToken newToken = null;
+
+        try {
+            URL url = new URL(postURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            // POST 요청에 필요한 파라미터를 OutputStream을 통해 전송
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            String sb = "grant_type=refresh_token" +
+                        "&client_id=2e8b184b25eb6aee0a1496b4af1d7ffd" + // REST_API_KEY
+                        "&refresh_token=" + userDao.getkakaoRefreshToken(kakaoIdx) + // REFRESH_TOKEN
+                        "&client_secret=fJMsCcaBpzyMWMj6ughnTuo9zl3jMLq6";
+            bufferedWriter.write(sb);
+            bufferedWriter.flush();
+
+            // 요청을 통해 얻은 데이터를 InputStreamReader을 통해 읽어 오기
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            StringBuilder result = new StringBuilder();
+
+            while ((line = bufferedReader.readLine()) != null) {
+                result.append(line);
+            }
+            System.out.println("response body : " + result);
+
+            JsonElement element = JsonParser.parseString(result.toString());
+
+            Set<String> keySet = element.getAsJsonObject().keySet();
+
+            // 새로 발급 받은 accessToken 불러오기
+            String accessToken = element.getAsJsonObject().get("access_token").getAsString();
+
+            // refreshToken은 유효 기간이 1개월 미만인 경우에만 갱신되어 반환되므로,
+            // 반환되지 않는 경우의 상황을 if문으로 처리해주었다.
+            String refreshToken = "";
+            if(keySet.contains("refresh_token")) {
+                refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+            }
+
+            if(refreshToken.equals("")) {
+                newToken = new KakaoToken(accessToken, kakaoToken.getRefreshtoken());
+            } else {
+                newToken = new KakaoToken(accessToken, refreshToken);
+            }
+
+            bufferedReader.close();
+            bufferedWriter.close();
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        try{
+            int result = 0;
+            if (newToken != null) {
+                result = userDao.updateKakaoToken(kakaoIdx, newToken);
+            }
+            if(result == 0){
+                throw new BaseException(REFRESH_TOKEN_ERROR);
+            }
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 카카오 로그아웃
+    public void logout(String token) throws Exception {
+        String reqUrl = "https://kapi.kakao.com//v1/user/logout";
+
+        URL url = new URL(reqUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        //요청 메서드 설정
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+
+        //요청 헤더정보 설정
+        conn.setRequestProperty("Authorization", "Bearer " + token);//Bearer다음 한 칸 띄고, accessToken
+
+
+        //읽을 때는 그냥 bufferedRead
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+
+            //응답 상태코드 200이면 성공
+            int responseCode = conn.getResponseCode();
+            System.out.println("응답 코드(로그아웃) : " + responseCode);
+
+            //응답데이터를 입력스트림으로부터 읽어내기
+            String responseData = br.readLine();
+            System.out.println("logout-response-data: " + responseData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     // 회원가입
     @Transactional
