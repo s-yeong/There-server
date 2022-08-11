@@ -42,12 +42,14 @@ public enum BaseResponseStatus {
     HISTORYS_EMPTY_IMGURL(false,2054, "히스토리 사진은 하나 이상이어야 합니다."),
     HISTORYS_MODIFY_NOTTHING(false,2055, "변경 사항이 없습니다."),
 
+    // search
+    USERS_SEARCHES_INVALID_ID(false,2100, "해당 유저가 아닙니다."),
+    USERS_EMPTY_USER_ID(false, 3001, "없는 아이디입니다."),
 
     /**
      * 3000 : Response 오류
      */
 
-    USERS_EMPTY_USER_ID(false, 3001, "없는 아이디입니다."),
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
