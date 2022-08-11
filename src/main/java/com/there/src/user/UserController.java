@@ -174,11 +174,11 @@ public class UserController {
             return new BaseResponse<>(result);
     }
 
-    /*
+/*
     @ResponseBody
     @GetMapping("/kakao/logout")
     public BaseResponse<String> kakaologout();
-
+*/
     @ApiOperation(
             value = "액세스, 리프레시 토큰 재발급",
             notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
@@ -187,7 +187,7 @@ public class UserController {
             @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
         return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
     }
-*/
+
     @ApiOperation(value = "logout")
     @ApiResponses({ @ApiResponse(code = 204, message = "success") })
     @PatchMapping("{userIdx}/logout")

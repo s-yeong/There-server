@@ -386,6 +386,7 @@ public class UserService {
 
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
+                System.out.println(exception);
                 throw new BaseException(DATABASE_ERROR);
             }
         }
