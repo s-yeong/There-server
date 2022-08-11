@@ -31,9 +31,9 @@ public class CommentDao {
 
     // 댓글 조회
     public List<GetCommentListRes> selectCommentList(int postIdx) {
-        String selectCommentQuery = "select nickName, profileImgUrl, content, created_At, \n" +
-                "from Comment c join User as u on u.userIdx = c.userIdx\n" +
-                "where postIdx = ? ;";
+        String selectCommentQuery = "select nickName, profileImgUrl, content, created_At\n" +
+                "                from Comment c join User as u on u.userIdx = c.userIdx\n" +
+                "                where c.postIdx = ? ;";
         int selectCommentParam = postIdx;
 
         return this.jdbcTemplate.query(selectCommentQuery, (rs, rowNum) -> new GetCommentListRes(
