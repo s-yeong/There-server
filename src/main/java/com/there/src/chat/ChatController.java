@@ -143,13 +143,9 @@ public class ChatController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/deletion/{contentIdx}/users/{userIdx}")
-    public BaseResponse<String> deletechatContent
+    @PatchMapping("/deletion/{contentIdx}")
+    public BaseResponse<String> deleteChatContent
     (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
-
-        int userIdxByJwt = jwtService.getUserIdx();
-
-        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
         try {
             chatContentService.deleteChatContent(contentIdx);
