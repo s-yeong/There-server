@@ -71,11 +71,11 @@ public class ChatController {
     })
     @ResponseBody
     @GetMapping("/room/user/{userIdx}")
-    public BaseResponse<List<GetRoomInfoRes>> getChatRooms
+    public BaseResponse<List<GetRoomListRes>> getChatRooms
             (@PathVariable("userIdx")int userIdx) {
 
         // 채팅방 조회
-        List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
+        List<GetRoomListRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
         return new BaseResponse<>(getRoomInfoList);
 
     }

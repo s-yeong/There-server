@@ -1,19 +1,20 @@
 package com.there.src.chat;
 
 import com.there.src.chat.model.GetRoomInfoRes;
+import com.there.src.chat.model.GetRoomListRes;
 import com.there.src.chat.model.GetUserInfoRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class ChatRoomDao {
 
     private JdbcTemplate jdbcTemplate;
-    private GetUserInfoRes getUserInfoList;
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
@@ -32,7 +33,11 @@ public class ChatRoomDao {
     }
 
     // 채팅방 목록 조회
-    public List<GetRoomInfoRes> selectChatRoomList(int userIdx) {
+    public List<GetRoomListRes> selectChatRoomList(int userIdx) {
+
+        List<GetRoomListRes> RoomList = new ArrayList<GetRoomListRes>();
+        List<GetRoomInfoRes> RoomInfo;
+        List<GetUserInfoRes> UserInfo;
 
         String getChatRoomInfoQuery = "select      roomIdx, count(*) as count\n" +
                 "from        chatContent\n" +
@@ -45,21 +50,35 @@ public class ChatRoomDao {
                 "from    User u\n" +
                 "where   u.userIdx in (select receiverIdx from chatRoom where senderIdx = ? and u.status = 'ACTIVE');";
 
-
         int getChatRoomListParams = userIdx;
 
-        return this.jdbcTemplate.query(getChatRoomInfoQuery, (rs, rowNum) -> new GetRoomInfoRes(
+        // 채팅방 정보 조회
+        RoomInfo = this.jdbcTemplate.query(getChatRoomInfoQuery, (rs, rowNum) -> new GetRoomInfoRes(
 
-                // roomIdx, 안 읽은 메시지 수 조회
+
                 rs.getInt("roomIdx"),
-                rs.getInt("count"),
+                rs.getInt("count")), getChatRoomListParams);
 
-                // 유저 정보 조회
-                getUserInfoList = this.jdbcTemplate.queryForObject(getUserInfoQuery,
-                        (rk, rownum) -> new GetUserInfoRes(
-                                rk.getString("nickName"),
-                                rk.getString("profileImgUrl"))
-                        , getChatRoomListParams)), getChatRoomListParams);
+
+        // 유저 정보 조회
+        UserInfo = this.jdbcTemplate.query(getUserInfoQuery, (rs, rowNum) -> new GetUserInfoRes(
+                                rs.getString("nickName"),
+                                rs.getString("profileImgUrl")), getChatRoomListParams);
+
+        for (int i = 0; i < RoomInfo.size(); i++) {
+
+            GetRoomListRes Room;
+            GetRoomInfoRes tmp_Room = RoomInfo.get(i);
+            GetUserInfoRes tmp_User = UserInfo.get(i);
+
+            Room =
+                    new GetRoomListRes(tmp_Room.getRoomIdx(), tmp_Room.getCount(), tmp_User.getNickName(), tmp_User.getProfileImgUrl());
+
+            RoomList.add(Room);
+        }
+
+        return RoomList;
+
     }
 
     // 채팅방 삭제
