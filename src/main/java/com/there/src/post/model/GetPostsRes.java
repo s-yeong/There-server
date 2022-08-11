@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,4 +18,5 @@ public class GetPostsRes {
     private String imgUrl;
     private String content;
     private int likeCount;
+    private List<GetPostTagRes> getPostTagist;
 }
