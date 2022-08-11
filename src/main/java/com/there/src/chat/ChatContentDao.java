@@ -53,7 +53,8 @@ public class ChatContentDao {
                     rs.getString("created_At")), getChatContentParams);
     }
 
-    public List<GetChatContentRes> selectChatContentList(int roomIdx, int senderIdx, int receiverIdx) {
+    // 채팅방 조회
+    public List<GetChatContentRes> selectChatContentList(int roomIdx) {
         String selectChatContentQuery = "select  content, created_At\n" +
                 "from    chatContent\n" +
                 "where   roomIdx = ? and status = 'ACTIVE';";
@@ -71,13 +72,12 @@ public class ChatContentDao {
         return this.jdbcTemplate.update(deleteChatContentQuery, deleteChatContentParams);
     }
 
-    public int checkChatContent(int userIdx) {
+    // 메시지 확인
+    public int checkChatContent(int roomIdx) {
         String updateChatContentQuery = "UPDATE  chatContent\n" +
                 "SET     `check` = 1\n" +
-                "WHERE   status = 'ACTIVE' and roomIdx in (select  roomIdx\n" +
-                "                                          from    chatRoom\n" +
-                "                                          where   senderIdx = ?);";
-        int updateChatContentParams = userIdx;
+                "WHERE   status = 'ACTIVE' and roomIdx = ?;";
+        int updateChatContentParams = roomIdx;
 
         return this.jdbcTemplate.update(updateChatContentQuery, updateChatContentParams);
     }
