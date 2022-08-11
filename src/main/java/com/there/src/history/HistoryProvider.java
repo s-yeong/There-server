@@ -29,7 +29,7 @@ public class HistoryProvider {
     }
 
     // 히스토리 조회
-    public GetHistoryRes findHistory(int historyIdx) throws BaseException {
+    public GetHistoryRes retrieveHistory(int historyIdx) throws BaseException {
         try {
 
             GetHistoryRes getHistoryRes = historyDao.selectHistory(historyIdx);
@@ -40,7 +40,7 @@ public class HistoryProvider {
     }
 
     // 히스토리 리스트 조회
-    public List<GetHistoryListRes> retrieveHistorys(int postIdx) throws BaseException{
+    public List<GetHistoryListRes> retrieveHistoryList(int postIdx) throws BaseException{
         try{
             List<GetHistoryListRes> getHistoryList = historyDao.selectHistoryList(postIdx);
             return getHistoryList;
@@ -53,7 +53,7 @@ public class HistoryProvider {
     }
 
     // 히스토리 수정화면 조회
-    public GetHistoryScreenRes findModifyHistory(int userIdx, int historyIdx) throws BaseException {
+    public GetHistoryScreenRes retrieveModifyHistory(int userIdx, int historyIdx) throws BaseException {
         try {
             if(checkUserExist(userIdx) == 0){
                 throw new BaseException(USERS_EMPTY_USER_ID);
