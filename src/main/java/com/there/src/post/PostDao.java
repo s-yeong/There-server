@@ -18,6 +18,7 @@ public class PostDao {
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
+    List<GetPostTagRes> getPostTagRes;
 
     // 게시물 조회
     public GetPostsRes selectPosts(int postIdx) {
@@ -37,7 +38,14 @@ public class PostDao {
                         rs.getString("nickName"),
                         rs.getString("imgUrl"),
                         rs.getString("content"),
-                        rs.getInt("likeCount"))
+                        rs.getInt("likeCount"),
+        getPostTagRes = this.jdbcTemplate.query("select t.name\n" +
+                "from PostTag as pt\n" +
+                "    join Tag as t on t.tagIdx = pt.tagIdx\n" +
+                "where pt.postIdx = ?;",
+                (rk, rownum) -> new GetPostTagRes(
+                        rk.getString("name")
+                ), selectPostsParam))
                 , selectPostsParam);
     }
 
