@@ -50,36 +50,18 @@ public class ChatController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/room/{senderIdx}/{receiverIdx}")
-    public BaseResponse<PostChatRoomRes> createRoom
-            (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx) {
+    @PostMapping("/room/{receiverIdx}")
+    public BaseResponse<PostChatRoomRes> createRoom (@PathVariable("receiverIdx")int receiverIdx) throws com.there.config.BaseException {
+
         try {
+            int senderIdx = jwtService.getUserIdx();
             PostChatRoomRes postChatRoomRes = chatRoomService.createRoom(senderIdx, receiverIdx);
+
             return new BaseResponse<>(postChatRoomRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
-    }
 
-    @ApiOperation(value="Message 생성 및 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
-    @MessageMapping("/{sendIdx}/{receiverIdx}")
-    @SendTo("/user/{sendIdx}/{receiverIdx}")
-    public MessagechatContentRes sendContent
-            (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
-             @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
-
-        String receiverId = Integer.toString(receiverIdx);
-
-        // 메시지 DB 저장 후 가져오기
-        int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
-        MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
-
-        // 메시지 전달 user/{receiverIdx}
-        return messagechatContentRes;
     }
 
     @ApiOperation(value="채팅방 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
@@ -88,37 +70,13 @@ public class ChatController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("room/user/{userIdx}")
+    @GetMapping("/room/user/{userIdx}")
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
-    (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+            (@PathVariable("userIdx")int userIdx) {
 
         // 채팅방 조회
         List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
-
         return new BaseResponse<>(getRoomInfoList);
-    }
-
-    @ApiOperation(value="채팅방 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
-    @ResponseBody
-    @GetMapping("/room/{roomIdx}")
-    public BaseResponse<List<GetChatContentRes>> getChatContent
-            (@PathVariable("roomIdx") int roomIdx) throws com.there.config.BaseException {
-
-        try {
-            // 메시지 조회
-            List<GetChatContentRes> getChatContentList
-                    = chatContentProvider.retrieveChatContent(roomIdx);
-
-            // 메시지 확인
-            chatContentService.checkChatContent(roomIdx);
-            return new BaseResponse<>(getChatContentList);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
 
     }
 
@@ -139,19 +97,55 @@ public class ChatController {
         }
     }
 
-    @ApiOperation(value="Message 삭제 API", notes="")
+    @ApiOperation(value="메세지 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @MessageMapping("/{sendIdx}/{receiverIdx}")
+    @SendTo("/user/{sendIdx}/{receiverIdx}")
+    public MessagechatContentRes sendContent
+            (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
+             @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
+
+        String receiverId = Integer.toString(receiverIdx);
+
+        // 메시지 생성 후 가져오기
+        int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
+        MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
+
+        // 메시지 전달 user/{receiverIdx}
+        return messagechatContentRes;
+    }
+
+    @ApiOperation(value="메세지 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("deletion/{contentIdx}/users/{userIdx}")
-    public BaseResponse<String> deletechatContent
-    (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
+    public BaseResponse<List<GetChatContentRes>> getChatContent
+            (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
 
-        int userIdxByJwt = jwtService.getUserIdx();
+        try {
+            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx, receiverIdx);
+            return new BaseResponse<>(getChatContentList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
 
-        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+    }
+
+    @ApiOperation(value="메세지 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @PatchMapping("/deletion/{contentIdx}")
+    public BaseResponse<String> deleteChatContent
+            (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
 
         try {
             chatContentService.deleteChatContent(contentIdx);
