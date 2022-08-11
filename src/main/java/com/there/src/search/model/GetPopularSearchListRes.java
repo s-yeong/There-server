@@ -5,15 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GetSearchByAllRes {
+public class GetPopularSearchListRes {
 
-    List<GetSearchByAccountRes> getSearchByAccount;
-    List<GetSearchByHashtagRes> getSearchByHashtag;
+    private int searchIdx;
+    private String content;
 
 }

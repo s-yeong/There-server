@@ -35,6 +35,27 @@ public class SearchController {
     }
 
     /**
+     * 인기 검색어 조회 API
+     * [GET] /search/popular
+     */
+    @ApiOperation(value="인기 검색어 조회 API", notes="인기 검색어 최대 4개까지 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("/popular")
+    public BaseResponse<List<GetPopularSearchListRes>> getPopularSearch() throws com.there.config.BaseException{
+        try{
+            List<GetPopularSearchListRes> getPopularSearchListRes = searchProvider.retrievePopularSearches();
+            return new BaseResponse<>(getPopularSearchListRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
+
+    /**
      * 최근 검색어 조회 API
      * [GET] /search/recent
      */
@@ -102,28 +123,6 @@ public class SearchController {
         }
     }
 
-    /**
-     * 통합 검색 API(인기)
-     * [GET] /search/all?keyword=
-     */
-    @ApiOperation(value="통합 검색 API", notes="계정, 태그 모두 검색(인기탭)")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
-    @ResponseBody
-    @GetMapping("/all")
-    public BaseResponse<GetSearchByAllRes> getSearch(@RequestParam String keyword) throws com.there.config.BaseException{
-        try{
-            int userIdxByJwt = jwtService.getUserIdx();
-            GetSearchByAllRes getSearchByAllRes = searchProvider.retrieveByAll(userIdxByJwt, keyword);
-
-            return new BaseResponse<>(getSearchByAllRes);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
 
     /**
      * 계정 검색 API

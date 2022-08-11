@@ -28,6 +28,20 @@ public class SearchProvider {
         this.jwtService = jwtService;
     }
 
+    // 인기 검색어 조회 API
+    public List<GetPopularSearchListRes> retrievePopularSearches() throws BaseException {
+        try{
+
+            List<GetPopularSearchListRes> getPopularSearchList = searchDao.selectPopularSearches();
+
+            return getPopularSearchList;
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
     // 최근 검색어 조회 API
     public List<GetRecentSearchListRes> retrieveRecentSearches(int userIdx) throws BaseException {
         try{
@@ -42,37 +56,17 @@ public class SearchProvider {
 
     }
 
-    // 통합 검색 API
-    public GetSearchByAllRes retrieveByAll(int userIdx, String keyword) throws BaseException {
-        try{
-
-            List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(keyword);
-            List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(keyword);
-            // 검색 기록
-            if(checkSearchExist(userIdx, keyword) == 0){
-                searchDao.insertSearch(userIdx, keyword);
-            }
-            else{
-                searchDao.updateSearch(keyword);
-            }
-            GetSearchByAllRes getSearchByAll = new GetSearchByAllRes(getSearchByAccount, getSearchByHashtag);
-
-            return getSearchByAll;
-        }
-        catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-    }
 
     // 계정 검색 API
     public List<GetSearchByAccountRes> retrieveByAccount(int userIdx, String account) throws BaseException {
         try{
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(account);
 
-            // 검색 기록
+            // 검색 기록 체크 - 존재O : 1, 존재X : 0
             if(checkSearchExist(userIdx, account) == 0){
-                searchDao.insertSearch(userIdx, account);
+                if(checkDuplicateKeyword(account) == 0)
+                    searchDao.insertSearch(userIdx, account);
+                else searchDao.insertUserSearch(userIdx, account);
             }
             else{
                 searchDao.updateSearch(account);
@@ -81,7 +75,6 @@ public class SearchProvider {
             return getSearchByAccount;
         }
         catch (Exception exception) {
-            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
 
@@ -91,9 +84,12 @@ public class SearchProvider {
     public List<GetSearchByHashtagRes> retrieveByHashtag(int userIdx, String hashtag) throws BaseException {
         try{
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(hashtag);
-            // 검색 기록
+
+            // 검색 기록 체크 - 존재O : 1, 존재X : 0
             if(checkSearchExist(userIdx, hashtag) == 0){
-                searchDao.insertSearch(userIdx, hashtag);
+                if(checkDuplicateKeyword(hashtag) == 0)
+                    searchDao.insertSearch(userIdx, hashtag);
+                else searchDao.insertUserSearch(userIdx, hashtag);
             }
             else{
                 searchDao.updateSearch(hashtag);
@@ -131,7 +127,6 @@ public class SearchProvider {
     // 검색 기록 체크 - 존재O : 1, 존재X : 0
     public int checkSearchExist(int userIdx, String keyword) throws BaseException {
         try{
-
             int result = searchDao.checkSearchExist(userIdx, keyword);
             return result;
         } catch (Exception exception){
@@ -139,12 +134,21 @@ public class SearchProvider {
         }
     }
 
-    // 해당 유저 검색인지 체크
-    public int checkUserSearchExist(int userIdx, int searchIdx) throws BaseException {
+    // 중복 검색어 체크 - 존재O : 1, 존재X : 0
+    public int checkDuplicateKeyword(String keyword) throws BaseException {
         try{
-            int result = searchDao.checkUserSearchExist(userIdx, searchIdx);
+            int result = searchDao.checkDuplicateKeyword(keyword);
             return result;
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    // 해당 유저 검색인지 체크
+    public int checkUserSearch(int userIdx, int searchIdx) throws BaseException {
+        try{
+            int result = searchDao.checkUserSearch(userIdx, searchIdx);
+            return result;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -153,6 +157,16 @@ public class SearchProvider {
     public int checkUserExist(int userIdx) throws BaseException {
         try{
             return searchDao.checkUserExist(userIdx);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 해당 유저의 검색 기록이 존재하는지 체크
+    public int checkUserSearchExist(int userIdx) throws BaseException {
+        try{
+            int result = searchDao.checkUserSearchExist(userIdx);
+            return result;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
