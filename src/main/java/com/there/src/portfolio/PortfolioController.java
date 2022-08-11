@@ -67,7 +67,7 @@ public class PortfolioController {
     @ResponseBody
     @PostMapping("/{portfolioIdx}/post/{postIdx}")
     public BaseResponse<PostPostInPortfolioRes> createPostInPortfolio
-            (@PathVariable("portfolioIdx")int portfolioIdx, @PathVariable("postIdx")int postIdx) {
+            (@PathVariable("portfolioIdx")int portfolioIdx, @PathVariable("postIdx")int postIdx) throws BaseException {
 
         PostPostInPortfolioRes PostInPortfolioRes = portfolioService.createPostInPortfolio(portfolioIdx, postIdx);
         return new BaseResponse<>(PostInPortfolioRes);
@@ -81,7 +81,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx();
@@ -104,7 +104,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @GetMapping("/{portfolioIdx}")
-    public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) {
+    public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
         List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
         return new BaseResponse<>(PortfolioListRes);
 
