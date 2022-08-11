@@ -1,6 +1,9 @@
 package com.there.src.user;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.src.user.config.BaseException;
 import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.*;
@@ -12,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 import static com.there.src.user.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
@@ -33,7 +40,7 @@ public class UserController {
 
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService){
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
@@ -47,34 +54,34 @@ public class UserController {
      * @return BaseResponse<GetUserRes>
      */
 
-    @ApiOperation(value="유저 조회 API", notes=" 유저 인덱스값 입력시 해당하는 유저 정보 리턴")
+    @ApiOperation(value = "유저 조회 API", notes = " 유저 인덱스값 입력시 해당하는 유저 정보 리턴")
     @ApiResponses({
             @ApiResponse(code = 200, message = "API 정상 작동"),
             @ApiResponse(code = 500, message = "서버 에러")
     })
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx")int userIdx) {
-        try{
+    public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx") int userIdx) {
+        try {
 
             GetUserRes getUsersRes = userProvider.getUsersByIdx(userIdx);
             return new BaseResponse<>(getUsersRes);
-        } catch(BaseException exception){
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    /** 유저 피드 조회
+    /**
+     * 유저 피드 조회
      * [GET] /users/feed
      * @return BaseResponse<GetUserFeedRes>
      */
-
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
-    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx)throws com.there.config.BaseException{
-        try{
+    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+        try {
             int userIdxByJwt = jwtService.getUserIdx();
-            GetUserFeedRes getUserFeed=userProvider.retrieveUserFeed(userIdx,userIdxByJwt);
+            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -88,19 +95,19 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/login")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq) {
         try {
-            if(postLoginReq.getEmail() == null)
+            if (postLoginReq.getEmail() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
             }
 
-            if(postLoginReq.getPassword() == null)
+            if (postLoginReq.getPassword() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
 
-                // 이메일 형식
+            // 이메일 형식
             if(!isRegexEmail(postLoginReq.getEmail()))
             {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
@@ -109,7 +116,31 @@ public class UserController {
             PostLoginRes postLoginRes = userService.logIn(postLoginReq);
 
             return new BaseResponse<>(postLoginRes);
-        } catch(BaseException exception){
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        } catch (com.there.config.BaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @ApiOperation(
+            value = "액세스, 리프레시 토큰 재발급",
+            notes = "액세스 토큰 만료시 회원 검증 후 리프레스 토큰을 검증해서 액세스 토큰과 리프레시 토큰을 재발급합니다. ")
+    @PostMapping("{userIdx}/reissue")
+    public BaseResponse<TokenDto> reissue(
+            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
+        return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
+    }
+
+    @ApiOperation(value = "logout")
+    @ApiResponses({ @ApiResponse(code = 204, message = "success") })
+    @PatchMapping("{userIdx}/logout")
+    public BaseResponse<String> logout(@PathVariable("userIdx")int userIdx)  {
+        try {
+            userService.logout(userIdx);
+            String result = "로그아웃 완료";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -122,26 +153,26 @@ public class UserController {
     @ResponseBody
     @PostMapping("/join")
     public BaseResponse<PostJoinRes> createUser(@RequestBody PostJoinReq postJoinReq) {
-        try{
-            if(postJoinReq.getEmail() == null)
+        try {
+            if (postJoinReq.getEmail() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
             }
 
-            if(postJoinReq.getPassword() == null)
+            if (postJoinReq.getPassword() == null)
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
 
             // 이메일 정규 표현
-           if(!isRegexEmail(postJoinReq.getEmail()))
-           {
+            if (!isRegexEmail(postJoinReq.getEmail()))
+            {
                 return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-           }
+            }
 
             PostJoinRes postJoinRes = userService.createUser(postJoinReq);
             return new BaseResponse<>(postJoinRes);
-        } catch(BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -151,12 +182,18 @@ public class UserController {
      * [PATCH] /users/{userIdx}
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestBody PatchUserReq patchUserReq) throws com.there.config.BaseException{
+    @PatchMapping(value = "/{userIdx}", consumes = {"multipart/form-data"})
+    public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
+                                              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
+            throws IOException, com.there.config.BaseException{
+
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
+
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
-        if(patchUserReq.getProfileImgUrl() == null){
+        if(MultipartFiles == null){
             return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
         }
         if(patchUserReq.getName() == null){
@@ -170,7 +207,7 @@ public class UserController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            userService.modifyProfile(userIdx, patchUserReq);
+            userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception){
@@ -184,18 +221,19 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException{
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
-            if(userIdx != userIdxByJwt){
+            if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             userService.deleteUser(userIdx);
 
             String result = "삭제되었습니다.";
             return new BaseResponse<>(result);
-        } catch(BaseException exception) {
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 }
+

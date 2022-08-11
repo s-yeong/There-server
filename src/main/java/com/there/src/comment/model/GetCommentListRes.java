@@ -1,11 +1,12 @@
 package com.there.src.comment.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+
+import java.util.List;
+
+@Data
 @AllArgsConstructor
 public class GetCommentListRes {
 
@@ -13,4 +14,5 @@ public class GetCommentListRes {
     private String profileImgUrl;
     private String content;
     private String created_At;
+
 }

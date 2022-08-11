@@ -32,6 +32,7 @@ public enum BaseResponseStatus {
     POST_USER_EMPTY_NICKNAME(false, 2021, "닉네임을 입력해주세요."),
     POST_USER_EMPTY_PROFILEIMG(false, 2020, "프로필 사진을 등록해주세요."),
     POST_USER_EMPTY_INFO(false, 2020, "소개를 입력해주세요."),
+    USERS_EXCEEDED_PROFILEIMG(false,2030, "프로필 사진을 하나만 입력해주세요"),
 
     /**
      * 3000 : Response 오류
@@ -41,7 +42,9 @@ public enum BaseResponseStatus {
     // Common
     RESPONSE_ERROR(false, 3000, "값을 불러오는데 실패하였습니다."),
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
+    DUPLICATED_PWD(false, 3015, "비밀번호가 일치하지 않습니다. "),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+    FAIL_TO_LOGOUT(false, 3015, "로그아웃 실패"),
 
 
     /**
@@ -51,6 +54,8 @@ public enum BaseResponseStatus {
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
     DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
+    REFRESH_TOKEN_ERROR(false, 4003, "Refresh Token을 확인해주세요. "),
+    ACCESS_TOKEN_ERROR(false, 4004, "Access Token을 확인해주세요. "),
 
 
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),

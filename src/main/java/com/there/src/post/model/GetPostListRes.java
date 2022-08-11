@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 public class GetPostListRes {
     private String imgUrl;
-    private String content;
-    private String created_At;
+    private String name;
 
 }

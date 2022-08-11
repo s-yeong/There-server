@@ -14,11 +14,19 @@ spring:
     init:
       platform: mysql
 
+  redis:
+    port: 6379
+    host: localhost
+  jwt:
+    secret-key: SECRET_KEY
+    blacklist:
+      access-token: BlackList_AccessToken_
+
 cloud:
   aws:
     credentials:
-      access-key: AKIAVAK5CW4BIA6USF4O
-      secret-key: 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
+      access-key: AKIAVAK5CW4BP5NVWN7X
+      secret-key: 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
     region:
       static: ap-northeast-2
     s3:

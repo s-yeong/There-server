@@ -37,5 +37,31 @@ public class S3Dao {
         this.jdbcTemplate.update(delHistoryPictureQuery, historyIdx);
     }
 
+    /**
+     * 유저 프로필 사진 업로드
+     */
+    public void uploadUserProfileImg(String imgPath, int userIdx){
+        String uploadUserProfileImgQuery = "update User SET profileImgUrl = ? where userIdx = ?;";
+        Object[] uploadUserProfileImgParams = new Object[]{imgPath, userIdx};
+        this.jdbcTemplate.update(uploadUserProfileImgQuery, uploadUserProfileImgParams);
+    }
+
+    /**
+     * 유저 프로필 사진 삭제
+     */
+    public void delUserProfileImg(int userIdx) {
+        String delHistoryPictureQuery = "update User SET profileImgUrl = null where userIdx = ?;";
+        this.jdbcTemplate.update(delHistoryPictureQuery, userIdx);
+    }
+
+    /**
+     * 게시물 사진 업로드
+     */
+    public void uploadPostImg(String imgPath, int postIdx){
+        String uploadPostImgUrlQuery = "update Post SET imgUrl = ? where postIdx = ?;";
+        Object[] uploadPostImgUrlParams = new Object[]{imgPath, postIdx};
+        this.jdbcTemplate.update(uploadPostImgUrlQuery, uploadPostImgUrlParams);
+    }
+
 }
 

@@ -1,42 +1,55 @@
 package com.there.src.chat;
 
-import com.there.config.BaseException;
-import com.there.config.BaseResponse;
-import com.there.src.chat.model.MessagechatContentReq;
-import com.there.src.chat.model.MessagechatContentRes;
-import com.there.src.chat.model.PostChatRoomRes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.there.src.chat.config.*;
+import com.there.src.chat.model.*;
+import com.there.utils.JwtService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
+
+@Api
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private final JwtService jwtService;
     private final SimpMessagingTemplate messagingTemplate;
+
     private final ChatContentService chatContentService;
+    private final ChatContentProvider chatContentProvider;
     private final ChatRoomService chatRoomService;
+    private final ChatRoomProvider chatRoomProvider;
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatContentService chatContentService, ChatRoomService chatRoomService) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, JwtService jwtService, ChatContentService chatContentService, ChatContentProvider chatContentProvider, ChatRoomService chatRoomService, ChatRoomProvider chatRoomProvider) {
         this.messagingTemplate = messagingTemplate;
+        this.jwtService = jwtService;
         this.chatContentService = chatContentService;
+        this.chatContentProvider = chatContentProvider;
         this.chatRoomService = chatRoomService;
+        this.chatRoomProvider = chatRoomProvider;
     }
 
-    /**
-     * ChatRoom 생성 API
-     * /chat/room/{senderIdx}/receiverIdx}
-     */
+    @ApiOperation(value="ChatRoom 생성 API", notes="상대방 프로필에서 메시지 클릭 시 ChatRoom 생성")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
     @PostMapping("/room/{senderIdx}/{receiverIdx}")
     public BaseResponse<PostChatRoomRes> createRoom
             (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx) {
@@ -48,22 +61,106 @@ public class ChatController {
         }
     }
 
-    /**
-     * Message 전송 API
-     * app/chat/content/{sendIdx}/{receiverIdx}
-     */
-    @MessageMapping("content/{sendIdx}/{receiverIdx}")
-    public void createContent
-    (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx,
+    @ApiOperation(value="ChatRoom 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("room/user/{userIdx}")
+    public BaseResponse<List<GetRoomInfoRes>> getChatRooms
+    (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+        // 채팅방 조회
+        List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
+
+        // 메시지 확인 상태 변경
+        try {
+            chatContentService.checkChatContent(userIdx);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+        return new BaseResponse<>(getRoomInfoList);
+    }
+
+    @ApiOperation(value="ChatRoom 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @PatchMapping("/room/{roomIdx}")
+    public BaseResponse<String> deleteChatRooms(@PathVariable("roomIdx")int roomIdx) {
+        try {
+            chatRoomService.deleteChatRoom(roomIdx);
+            String result = "채팅방 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ApiOperation(value="Message 전송 API", notes="메세지 입력 후 보내기 버튼 클릭 시 전송")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @MessageMapping("/{sendIdx}/{receiverIdx}")
+    @SendTo("/user/{sendIdx}/{receiverIdx}")
+    public MessagechatContentRes sendContent
+    (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
      @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
 
-            // 생성 된 Content 가져오기
-            int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
-            MessagechatContentRes messagechatContentRes = chatContentService.getChatContent(senderIdx, receiverIdx, contentIdx);
+            String receiverId = Integer.toString(receiverIdx);
 
-            // Content 전달
-            messagingTemplate.convertAndSendToUser
-                    (messagechatContentRes.getSenderId(), "/queue/message", messagechatContentRes);
+            // 메시지 생성 후 가져오기
+            int contentIdx = chatContentService.createContent(senderIdx, receiverIdx, messagechatContentReq);
+            MessagechatContentRes messagechatContentRes = chatContentProvider.getChatContent(senderIdx, receiverIdx, contentIdx);
+
+            // 메시지 전달 user/{receiverIdx}
+            return messagechatContentRes;
+    }
+
+    @ApiOperation(value="Message 조회 API", notes="채팅방 목록에서 채팅방 클릭 시 메시지 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
+    public BaseResponse<List<GetChatContentRes>> getChatContent
+    (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
+
+        try {
+            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx, receiverIdx);
+            return new BaseResponse<>(getChatContentList);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+    @ApiOperation(value="Message 삭제 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @PatchMapping("deletion/{contentIdx}/users/{userIdx}")
+    public BaseResponse<String> deletechatContent
+    (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
+        try {
+            chatContentService.deleteChatContent(contentIdx);
+            String result = "메세지 삭제를 성공했습니다.";
+            return new BaseResponse<>(result);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class UserDao {
     }
 
     public GetUserRes getUsersByIdx(int userIdx){
-        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info,followingCount, followeeCount\n" +
+        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info, imgUrl, followingCount, followeeCount\n" +
                 "from User\n" +
                 "    left join(select followeeIdx, count(followeeIdx) as followingCount\n" +
                 "        from Follow\n" +
@@ -41,6 +42,7 @@ public class UserDao {
                         rs.getString("nickName"),
                         rs.getString("email"),
                         rs.getString("info"),
+                        rs.getString("imgUrl"),
                         rs.getInt("followingCount"),
                         rs.getInt("followeeCount")),
                 getUsersByIdxParams);
@@ -62,6 +64,15 @@ public class UserDao {
                         rs.getInt("postIdx"),
                         rs.getString("imgUrl")
                 ), selectUserPostsParam);
+
+    }
+
+    // 로그인 시 리프레시 토큰 저장
+    public int refreshTokensave(String refreshToken, int userIdx) {
+        String refreshTokensaveQuery ="update User set refreshToken =? where userIdx=?";
+        Object[] refreshTokensaveparams = new Object[]{refreshToken, userIdx};
+        return this.jdbcTemplate.update(refreshTokensaveQuery, refreshTokensaveparams);
+
 
     }
     public User getPassword(PostLoginReq postLoginReq) {
@@ -89,6 +100,14 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
     }
 
+    // 로그아웃
+    public int logout (int userIdx) {
+        String logoutQuery = "update User set User.refreshToken=null where userIdx= ?";
+        Object[] logoutParams = new Object[]{userIdx};
+
+        return this.jdbcTemplate.update(logoutQuery, logoutParams);
+    }
+
     // 이메일 확인
     public int checkEmail(String email){
         String checkEmailQuery = "select exists(select email from User where email = ?)";
@@ -108,16 +127,26 @@ public class UserDao {
                 checkUserExistParams);
     }
 
-    public int checkJwt(int userIdx) {
-        String checkJwtQuery = "select exist(select userIdx from User where userIdx =?)";
-        int checkJwtParams = userIdx;
-        return this.jdbcTemplate.queryForObject(checkJwtQuery, int.class , checkJwtParams);
+    // 리프레시 토큰 중복 여부
+    public int checkRefreshExist(int userIdx){
+        String checkRefreshTokenExistQuery = "select exists(select refreshToken from User where userIdx =?)";
+        int checkRefreshTokenExistParmas = userIdx;
+        return this.jdbcTemplate.queryForObject(checkRefreshTokenExistQuery, int.class,
+                checkRefreshTokenExistParmas);
     }
+
+    // 리프레시 토큰 조회
+    public String getRefreshToken(int userIdx) {
+        String selectRefreshToken = "select refreshToken from User where userIdx= ?";
+        int selectRefreshTokenParams = userIdx;
+        return this.jdbcTemplate.queryForObject(selectRefreshToken, String.class, selectRefreshTokenParams);
+    }
+
 
     // 회원 정보 수정
     public int updateProfile(int userIdx, PatchUserReq patchUserReq){
-        String updateUserNameQuery= "update User set nickName =?, profileImgUrl =?, name=?, info=? where userIdx =?";
-        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getProfileImgUrl(), patchUserReq.getName(),
+        String updateUserNameQuery= "update User set nickName =?, name=?, info=? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getName(),
                 patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
