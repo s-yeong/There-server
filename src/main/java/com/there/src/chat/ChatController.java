@@ -129,7 +129,7 @@ public class ChatController {
             (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
 
         try {
-            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx, receiverIdx);
+            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx);
             return new BaseResponse<>(getChatContentList);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
