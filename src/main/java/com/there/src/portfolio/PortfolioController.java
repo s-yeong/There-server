@@ -113,7 +113,7 @@ public class PortfolioController {
     @ResponseBody
     @PatchMapping("/modify/{portfolioIdx}")
     public BaseResponse<String> ModifyPortfolioTitle
-            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) {
+            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) throws BaseException {
 
         portfolioService.ModifyPortfolioTitle(portfolioIdx, patchPortfolioReq);
         String result = "포트폴리오 이름 변경 하였습니다.";
@@ -128,7 +128,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @PatchMapping("/{portfolioIdx}")
-    public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) {
+    public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
 
         portfolioService.deletePortfolio(portfolioIdx);
         String result = "포트폴리오 삭제를 성공했습니다.";
@@ -143,7 +143,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @PatchMapping("/{contentIdx}")
-    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
+    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) throws BaseException {
 
         portfolioService.deletePostInPortfolio(contentIdx);
         String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
