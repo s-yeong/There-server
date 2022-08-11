@@ -96,7 +96,7 @@ public class PortfolioController {
             return new BaseResponse<>(PortfolioListRes);
 
         } catch (BaseException exception) {
-           return new BaseResponse<>(exception.getStatus());
+            return new BaseResponse<>(exception.getStatus());
         }
 
     }
@@ -119,7 +119,7 @@ public class PortfolioController {
     }
 
     @ResponseBody
-    @PatchMapping("modify/{portfolioIdx}")
+    @PatchMapping("/modify/{portfolioIdx}")
     public BaseResponse<String> ModifyPortfolioTitle
             (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) {
 
@@ -130,6 +130,7 @@ public class PortfolioController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
 
     @ApiOperation(value="Portfolio 삭제 API", notes="")
@@ -140,6 +141,7 @@ public class PortfolioController {
     @ResponseBody
     @PatchMapping("/{portfolioIdx}")
     public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) {
+
         try {
             portfolioService.deletePortfolio(portfolioIdx);
             String result = "포트폴리오 삭제를 성공했습니다.";
@@ -147,6 +149,7 @@ public class PortfolioController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
 
     @ApiOperation(value="Portfolio 내 Post 삭제 API", notes="")
@@ -157,6 +160,7 @@ public class PortfolioController {
     @ResponseBody
     @PatchMapping("/{contentIdx}")
     public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
+
         try {
             portfolioService.deletePostInPortfolio(contentIdx);
             String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
@@ -164,9 +168,7 @@ public class PortfolioController {
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
-
-
-
 
 }
