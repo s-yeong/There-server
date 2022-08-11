@@ -60,7 +60,7 @@ public class HistoryController {
     public BaseResponse<GetHistoryRes> getHistory(@PathVariable("historyIdx") int historyIdx) {
         try {
 
-            GetHistoryRes getHistoryRes = historyProvider.findHistory(historyIdx);
+            GetHistoryRes getHistoryRes = historyProvider.retrieveHistory(historyIdx);
             return new BaseResponse<>(getHistoryRes);
 
         } catch (BaseException exception) {
@@ -70,9 +70,7 @@ public class HistoryController {
 
     /**
      * 히스토리 리스트 조회 API
-     * [GET] /historys?postIdx=
-     *
-     * @return BaseResponse<getHistoryListRes>
+     * [GET] /historys:postIdx
      */
     @ApiOperation(value="히스토리 리스트 조회 API", notes="히스토리 제목 + 날짜들이 리스트로 조회")
     @ApiResponses({
@@ -80,11 +78,11 @@ public class HistoryController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("")
+    @GetMapping("/{postIdx}")
     public BaseResponse<List<GetHistoryListRes>> getHistoryList(@RequestParam int postIdx) {
         try {
 
-            List<GetHistoryListRes> getHistoryListRes = historyProvider.retrieveHistorys(postIdx);
+            List<GetHistoryListRes> getHistoryListRes = historyProvider.retrieveHistoryList(postIdx);
             return new BaseResponse<>(getHistoryListRes);
 
         } catch (BaseException exception) {
@@ -177,7 +175,7 @@ public class HistoryController {
 
     /**
      * 히스토리 수정 화면 API
-     * [GET] /historys/:historyIdx
+     * [GET] /historys/modify/:historyIdx
      */
     @ApiOperation(value="히스토리 수정 화면 API", notes="히스토리 조회와 다른 점은 JWT 인증이 필요")
     @ApiResponses({
@@ -190,7 +188,7 @@ public class HistoryController {
         try {
 
             int userIdxByJwt = jwtService.getUserIdx();
-            GetHistoryScreenRes getHistoryScreenRes = historyProvider.findModifyHistory(userIdxByJwt, historyIdx);
+            GetHistoryScreenRes getHistoryScreenRes = historyProvider.retrieveModifyHistory(userIdxByJwt, historyIdx);
             return new BaseResponse<>(getHistoryScreenRes);
 
         } catch (BaseException exception) {
