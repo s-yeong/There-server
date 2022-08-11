@@ -3,6 +3,7 @@ package com.there.src.post;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.there.src.history.model.GetHistoryRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.*;
@@ -43,6 +44,31 @@ public class PostController {
         this.postService = postService;
         this.jwtService = jwtService;
         this.s3Service = s3Service;
+    }
+
+    /**
+     * 게시글 조회 API
+     * posts/:postIdx
+     */
+
+    @ApiOperation(value="게시글 조회 API", notes="PathVariable로 postIdx 받아와서 게시글 상세 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("/{postIdx}")
+    public BaseResponse<GetPostsRes> getPosts(@PathVariable("postIdx")int postIdx) throws com.there.config.BaseException{
+
+        try{
+
+            GetPostsRes getPostsRes = postProvider.retrievePosts(postIdx);
+            return new BaseResponse<>(getPostsRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
     }
 
     /**
@@ -116,6 +142,11 @@ public class PostController {
      * 게시글 삭제 API
      * posts/{postIdx}/users/:userIdx
      */
+    @ApiOperation(value="게시글 삭제 API", notes="실제 DB를 삭제하지 않고 status를 INACTIVE로 변경")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("deletion/{postIdx}/users/{userIdx}")
     public BaseResponse<String> deletePosts
@@ -139,11 +170,16 @@ public class PostController {
      * 무작위(랜덤) 게시글 리스트 조회 API
      * /posts/random
      */
+    @ApiOperation(value="무작위 게시글 리스트 조회 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("random")
     public BaseResponse<List<GetPostListRes>> getRandomPostList(){
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrievePosts();
+            List<GetPostListRes> getPostListRes = postProvider.retrieveRandomPosts();
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -154,6 +190,11 @@ public class PostController {
      * 인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API
      * /posts/rankingAndfollowerPostList
      */
+    @ApiOperation(value="인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("rankingAndfollowerPostList")
     public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() throws com.there.config.BaseException{
