@@ -29,7 +29,7 @@ public class ChatRoomProvider {
     /**
      * 채팅방 목록 조회
      */
-    public List<GetRoomInfoRes> retrieveChatRoom(int userIdx) throws BaseException {
+    public List<GetRoomInfoRes> retrieveChatRoom(int userIdx) {
 
         List<GetRoomInfoRes> getRoomInfoList = chatRoomDao.selectChatRoomList(userIdx);
 

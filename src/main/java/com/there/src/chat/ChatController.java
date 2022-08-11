@@ -50,15 +50,18 @@ public class ChatController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/room/{senderIdx}/{receiverIdx}")
-    public BaseResponse<PostChatRoomRes> createRoom
-            (@PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx")int receiverIdx) {
+    @PostMapping("/room/{receiverIdx}")
+    public BaseResponse<PostChatRoomRes> createRoom (@PathVariable("receiverIdx")int receiverIdx) throws com.there.config.BaseException {
+
         try {
+            int senderIdx = jwtService.getUserIdx();
             PostChatRoomRes postChatRoomRes = chatRoomService.createRoom(senderIdx, receiverIdx);
+
             return new BaseResponse<>(postChatRoomRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
+
     }
 
     @ApiOperation(value="채팅방 리스트 조회 API", notes="하단바에서 메세지 클릭 시 채팅방 조회")
@@ -69,7 +72,7 @@ public class ChatController {
     @ResponseBody
     @GetMapping("/room/user/{userIdx}")
     public BaseResponse<List<GetRoomInfoRes>> getChatRooms
-    (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+    (@PathVariable("userIdx")int userIdx) {
 
         // 채팅방 조회
         List<GetRoomInfoRes> getRoomInfoList = chatRoomProvider.retrieveChatRoom(userIdx);
