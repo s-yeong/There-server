@@ -1,6 +1,7 @@
 package com.there.src.portfolio;
 
 import com.there.src.portfolio.config.*;
+import com.there.src.portfolio.model.PatchPortfolioReq;
 import com.there.src.portfolio.model.PostPortfolioReq;
 import com.there.src.portfolio.model.PostPortfolioRes;
 import com.there.src.portfolio.model.PostPostInPortfolioRes;
@@ -66,4 +67,16 @@ public class PortfolioService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public void ModifyPortfolioTitle(int portfolioIdx, PatchPortfolioReq patchPortfolioReq) throws BaseException {
+
+        try {
+            int result = portfolioDao.ModifyPortfolioTitle(portfolioIdx, patchPortfolioReq);
+                if (result == 0) throw new BaseException(MODIFY_FAIL_TITLE); // 삭제 확인 (0 : 실패 / 1 : 성공)
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 }

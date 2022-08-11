@@ -1,9 +1,6 @@
 package com.there.src.portfolio;
 
-import com.there.src.portfolio.model.GetPortfolioListRes;
-import com.there.src.portfolio.model.GetPortfolioRes;
-import com.there.src.portfolio.model.Portfolio;
-import com.there.src.portfolio.model.PostPortfolioReq;
+import com.there.src.portfolio.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -36,7 +33,7 @@ public class PortfolioDao {
     }
 
     /**
-     * PortPolio에 Post 추가 API
+     * PortPolio 내 Post 추가
      * @param portfolioIdx
      * @param postIdx
      * @return
@@ -72,7 +69,7 @@ public class PortfolioDao {
     }
 
     /**
-     * Portfolio 조회 API
+     * Portfolio 조회
      * @param portfolioIdx
      * @return
      */
@@ -92,7 +89,22 @@ public class PortfolioDao {
     }
 
     /**
-     * Portfolio 삭제 API
+     * Portfolio 제목 변경
+     * @param portfolioIdx
+     * @param patchPortfolioReq
+     * @return
+     */
+    public int ModifyPortfolioTitle(int portfolioIdx, PatchPortfolioReq patchPortfolioReq) {
+
+        String ModifyPortfolioTitleQuery = "UPDATE Portfolio SET title = ? WHERE portfolioIdx = ?";
+        Object[] ModifyPortfolioTitleParams = new Object[]{portfolioIdx, patchPortfolioReq.getTitle()};
+
+        return this.jdbcTemplate.update(ModifyPortfolioTitleQuery, ModifyPortfolioTitleParams);
+
+    }
+
+    /**
+     * Portfolio 삭제
      * @param portfolioIdx
      * @return
      */
@@ -103,10 +115,16 @@ public class PortfolioDao {
         return this.jdbcTemplate.update(deletePortfolioQuery, deletePortfolioParams);
     }
 
+    /**
+     * Portfolio 내 게시글 삭제
+     * @param contentIdx
+     * @return
+     */
     public int deletePostInPortfolio(int contentIdx) {
         String deletePortfolioQuery = "DELETE FROM Portfolio_Post WHERE contentIdx = ?";
         int deletePortfolioParams = contentIdx;
 
         return this.jdbcTemplate.update(deletePortfolioQuery, deletePortfolioParams);
     }
+
 }
