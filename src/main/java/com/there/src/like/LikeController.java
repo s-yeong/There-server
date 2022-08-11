@@ -1,7 +1,6 @@
 package com.there.src.like;
 
-import com.there.src.like.config.BaseException;
-import com.there.src.like.config.BaseResponse;
+import com.there.config.*;
 import com.there.src.like.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.there.src.like.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Api
 @RestController

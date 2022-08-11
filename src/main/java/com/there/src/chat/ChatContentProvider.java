@@ -1,6 +1,6 @@
 package com.there.src.chat;
 
-import com.there.src.chat.config.*;
+import com.there.config.*;
 import com.there.src.chat.model.GetChatContentRes;
 import com.there.src.chat.model.MessagechatContentRes;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.chat.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class ChatContentProvider {

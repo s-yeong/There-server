@@ -21,20 +21,8 @@ public enum BaseResponseStatus {
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
+    EMPTY_TITLE(false, 2004, "제목을 입력해주세요."),
 
-
-    // [POST] /users
-    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력하세요."),
-    POST_USERS_EMPTY_PASSWORD(false, 2012, "비밀번호를 입력하세요."),
-    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
-    POST_USERS_EXIST_PASSWORD(false, 2017, "중복된 이메일입니다."),
-
-
-    // [PATCH] /users
-    POST_USER_EMPTY_NAME(false, 2020, "이름을 입력해주세요."),
-    POST_USER_EMPTY_NICKNAME(false, 2021, "닉네임을 입력해주세요."),
-    POST_USER_EMPTY_PROFILEIMG(false, 2020, "프로필 사진을 등록해주세요."),
-    POST_USER_EMPTY_INFO(false, 2020, "소개를 입력해주세요."),
 
     /**
      * 3000 : Response 오류
@@ -52,11 +40,23 @@ public enum BaseResponseStatus {
      */
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
-    DELETE_FAIL_POST(false, 4002, "게시글 삭제를 실패하였습니다. "),
-    DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
 
+    // ChatRoom
+    DELETE_FAIL_CHATROOM(false, 4100, "채팅방 삭제를 실패하였습니다."),
 
-    MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
+    // ChatContent
+    DELETE_FAIL_CHATCONTENT(false, 4101, "메시자 삭제를 실패 하였습니다."),
+    CHECK_FAIL_CHATCONTENT(false, 4102, "메시지 확인을 실패하였습니다."),
+
+    // Portfolio
+    CREATE_FAIL_PORTFOLIO(false, 4103, "포트폴리오 생성을 실패하였습니다."),
+    GET_FAIL_LIST(false, 4104, "리스트 조회를 실패하였습니다."),
+    CREATE_FAIL_POSTINPORTFOLIO(false, 4105, "포스트 추가를 실패하였습니다."),
+    GET_FAIL_PORTFOLIO(false, 4106, "포트폴리오 조회를 실패하였습니다."),
+    DELETE_FAIL_PORTFOLIO(false, 4107, "포트폴리오 삭제를 실패하였습니다."),
+    DELETE_FAIL_POSTINPORTFOLIO(false, 4108, "포스트 삭제를 실패하였습니다."),
+    MODIFY_FAIL_TITLE(false, 4109, "포트폴리오 제목 변경을 실패하였습니다"),
+
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
 
