@@ -3,6 +3,7 @@ package com.there.src.post;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.there.src.history.model.GetHistoryRes;
 import com.there.src.post.config.BaseException;
 import com.there.src.post.config.BaseResponse;
 import com.there.src.post.model.*;
@@ -43,6 +44,25 @@ public class PostController {
         this.postService = postService;
         this.jwtService = jwtService;
         this.s3Service = s3Service;
+    }
+
+    /**
+     * 게시물 조회 API
+     * posts/:postIdx
+     */
+    @ResponseBody
+    @GetMapping("/{postIdx}")
+    public BaseResponse<GetPostsRes> getPosts(@PathVariable("postIdx")int postIdx) throws com.there.config.BaseException{
+
+        try{
+
+            GetPostsRes getPostsRes = postProvider.retrievePosts(postIdx);
+            return new BaseResponse<>(getPostsRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
     }
 
     /**
@@ -143,7 +163,7 @@ public class PostController {
     @GetMapping("random")
     public BaseResponse<List<GetPostListRes>> getRandomPostList(){
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrievePosts();
+            List<GetPostListRes> getPostListRes = postProvider.retrieveRandomPosts();
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
