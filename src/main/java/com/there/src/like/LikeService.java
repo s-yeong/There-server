@@ -1,6 +1,6 @@
 package com.there.src.like;
 
-import com.there.src.like.config.BaseException;
+import com.there.config.*;
 import com.there.src.like.model.DeleteLikeReq;
 import com.there.src.like.model.PostLikeReq;
 import com.there.src.like.model.PostLikeRes;
@@ -8,7 +8,7 @@ import com.there.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.like.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class LikeService {

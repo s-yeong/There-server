@@ -1,6 +1,6 @@
 package com.there.src.chat;
 
-import com.there.src.chat.config.*;
+import com.there.config.*;
 import com.there.src.chat.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.there.src.chat.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.there.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Api
 @RestController
@@ -51,12 +51,11 @@ public class ChatController {
     })
     @ResponseBody
     @PostMapping("/room/{receiverIdx}")
-    public BaseResponse<PostChatRoomRes> createRoom (@PathVariable("receiverIdx")int receiverIdx) throws com.there.config.BaseException {
+    public BaseResponse<PostChatRoomRes> createRoom (@PathVariable("receiverIdx")int receiverIdx) {
 
         try {
             int senderIdx = jwtService.getUserIdx();
             PostChatRoomRes postChatRoomRes = chatRoomService.createRoom(senderIdx, receiverIdx);
-
             return new BaseResponse<>(postChatRoomRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -106,7 +105,7 @@ public class ChatController {
     @SendTo("/user/{sendIdx}/{receiverIdx}")
     public MessagechatContentRes sendContent
             (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
-             @Payload MessagechatContentReq messagechatContentReq) throws BaseException {
+             @Payload MessagechatContentReq messagechatContentReq) throws BaseException, com.there.config.BaseException {
 
         String receiverId = Integer.toString(receiverIdx);
 
