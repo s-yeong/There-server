@@ -396,6 +396,7 @@ public class UserService {
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
+
         if(MultipartFiles.size() > 1){
             throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
         }
@@ -412,10 +413,23 @@ public class UserService {
                      // db 업로드
                      s3Service.uploadUserProfileImg(imgPath, userIdx);
              }
-             int result = userDao.updateProfile(userIdx, patchUserReq);
+             int result = 0;
+             if (patchUserReq.getNickName() != null){
+                 result = userDao.updateNickName(userIdx, patchUserReq);
+
+             }
+             if(patchUserReq.getName()!= null) {
+                 result = userDao.updateName(userIdx, patchUserReq);
+             }
+
+             if(patchUserReq.getInfo() != null) {
+                 result = userDao.updateInfo(userIdx, patchUserReq);
+             }
+
              if (result == 0) {
                  throw new BaseException(MODIFY_FAIL_USERNAME);
              }
+
          }catch (Exception exception) {
              System.out.println(exception);
              throw new BaseException(DATABASE_ERROR);

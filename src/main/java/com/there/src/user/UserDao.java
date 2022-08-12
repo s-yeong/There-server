@@ -192,6 +192,21 @@ public class UserDao {
                 patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
+    public int updateNickName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set nickName =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set name =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateInfo(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set info =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getInfo(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
 
     // 회원 삭제
     public int updateUserStatus(int userIdx){
