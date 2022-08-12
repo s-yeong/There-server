@@ -113,7 +113,7 @@ public class HistoryController {
             int userIdxByJwt = jwtService.getUserIdx();
 
             if (postHistoryReq.getTitle() == null) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_TITLES);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_TITLE);
             }
 
             if (postHistoryReq.getTitle().length() > 45) {
@@ -121,7 +121,7 @@ public class HistoryController {
             }
 
             if (postHistoryReq.getContent() == null) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_CONTENTS);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_CONTENT);
             }
 
             if (postHistoryReq.getContent().length() > 500) {
@@ -129,7 +129,7 @@ public class HistoryController {
             }
 
             if (MultipartFiles == null ) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_IMGURL);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_IMGURL);
             }
 
 

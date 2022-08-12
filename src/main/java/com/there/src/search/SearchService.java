@@ -37,7 +37,7 @@ public class SearchService {
 
         // 해당하는 유저의 검색 기록인지
         if(searchProvider.checkUserSearch(userIdx, searchIdx) == 0){
-            throw new BaseException(USERS_SEARCHES_INVALID_ID);
+            throw new BaseException(USERS_INVALID_ID);
         }
 
         try{

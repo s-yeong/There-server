@@ -62,7 +62,7 @@ public class HistoryProvider {
                 throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
             }
             if(checkUserHistoryExist(userIdx, historyIdx) == 0){
-                throw new BaseException(USERS_HISTORYS_INVALID_ID);
+                throw new BaseException(USERS_INVALID_ID);
             }
 
             GetHistoryScreenRes getHistoryScreenRes = historyDao.selectModifyHistory(historyIdx);
