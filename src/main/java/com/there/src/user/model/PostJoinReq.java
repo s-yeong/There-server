@@ -12,16 +12,16 @@ public class PostJoinReq {
     private String password;
 
     private String checkpwd;
-    private String name;
+    private String nickName;
 
     public PostJoinReq(){
 
     }
-    public PostJoinReq(String email, String password, String name, String checkpwd){
+    public PostJoinReq(String email, String password, String nickName, String checkpwd){
         this.email = email;
         this.password = password;
         this.checkpwd = checkpwd;
-        this.name = name;
+        this.nickName = nickName;
 
     }
 }

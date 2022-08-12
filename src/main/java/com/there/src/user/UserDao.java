@@ -92,8 +92,8 @@ public class UserDao {
 
     // 회원가입
     public int createUser(PostJoinReq postJoinReq) {
-        String createUserQuery = "insert into User(email, password,name) values(?,  ?,?)";
-        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getName()};
+        String createUserQuery = "insert into User(email, password,nickName) values(?,  ?,?)";
+        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getNickName()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
 
         String lastInsertQuery = "select last_insert_id()";

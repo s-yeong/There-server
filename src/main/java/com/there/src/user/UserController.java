@@ -256,6 +256,9 @@ public class UserController {
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
+            if(postJoinReq.getNickName() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
 
             // 이메일 정규 표현
             if (!isRegexEmail(postJoinReq.getEmail()))
