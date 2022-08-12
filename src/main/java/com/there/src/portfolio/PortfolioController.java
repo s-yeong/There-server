@@ -81,7 +81,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx();
