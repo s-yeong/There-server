@@ -256,6 +256,9 @@ public class UserController {
             {
                 return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
             }
+            if(postJoinReq.getNickName() == null) {
+                return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
+            }
 
             // 이메일 정규 표현
             if (!isRegexEmail(postJoinReq.getEmail()))
@@ -286,20 +289,16 @@ public class UserController {
         if(patchUserReq.getNickName() ==null) {
             return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
         }
-        if(MultipartFiles == null){
-            return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
-        }
-        if(patchUserReq.getName() == null){
-            return new BaseResponse<>(POST_USER_EMPTY_NAME);
-        }
-        if(patchUserReq.getInfo() == null){
-            return new BaseResponse<>(POST_USER_EMPTY_INFO);
-        }
+
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+
+            if(MultipartFiles == null)
+                return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
+
             userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";
             return new BaseResponse<>(result);

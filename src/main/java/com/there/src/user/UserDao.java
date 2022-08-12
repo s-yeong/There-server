@@ -92,8 +92,8 @@ public class UserDao {
 
     // 회원가입
     public int createUser(PostJoinReq postJoinReq) {
-        String createUserQuery = "insert into User(email, password,name) values(?,  ?,?)";
-        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getName()};
+        String createUserQuery = "insert into User(email, password,nickName) values(?,  ?,?)";
+        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getNickName()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
 
         String lastInsertQuery = "select last_insert_id()";
@@ -190,6 +190,21 @@ public class UserDao {
         String updateUserNameQuery= "update User set nickName =?, name=?, info=? where userIdx =?";
         Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getName(),
                 patchUserReq.getInfo(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateNickName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set nickName =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set name =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateInfo(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set info =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
 

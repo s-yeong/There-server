@@ -32,6 +32,7 @@ public enum BaseResponseStatus {
     POST_USER_EMPTY_NICKNAME(false, 2021, "닉네임을 입력해주세요."),
     POST_USER_EMPTY_PROFILEIMG(false, 2020, "프로필 사진을 등록해주세요."),
     POST_USER_EMPTY_INFO(false, 2020, "소개를 입력해주세요."),
+    POST_USERS_EMPTY_NICKNAME(false, 2022, "닉네임을 입력해주세요."),
     USERS_EXCEEDED_PROFILEIMG(false,2030, "프로필 사진을 하나만 입력해주세요"),
 
     /**
