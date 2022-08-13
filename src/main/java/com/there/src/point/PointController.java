@@ -3,6 +3,9 @@ package com.there.src.point;
 import com.there.src.point.config.BaseException;
 import com.there.src.point.config.BaseResponse;
 import com.there.utils.JwtService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +41,16 @@ public class PointController {
 
     /**
      * 내 포인트 충전 API
-     * kakaoPay/:userIdx
+     * /kakaoPay/:userIdx
      */
+    @ApiOperation(value = "카카오페이 포인트 충전", notes = "Body 타입: String")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PostMapping("/kakaoPay/{userIdx}")
-    public BaseResponse<String> kakaoPay(@PathVariable("userIdx") int userIdx,
-            @RequestBody PostPointReq postpointReq)
+    public BaseResponse<String> kakaoPay(@PathVariable("userIdx") int userIdx, @RequestBody PostPointReq postpointReq)
             throws com.there.config.BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
@@ -60,9 +67,36 @@ public class PointController {
 
 
     /**
-     * 포인트 충전 직후 충전 내역 조회 API
-     * kakaoPaySuccess
+     * 채팅 시 상대방에게 포인트 결제 API
+     * /kakaoPay/:userIdx
      */
+    @ApiOperation(value = "카카오페이 포인트 결제", notes = "Body 타입: String")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @PostMapping("/kakaoPay/chat/{userIdx}")
+    public BaseResponse<String> chatkakaoPay(@PathVariable("userIdx") int userIdx, @RequestBody PostPointReq postpointReq) {
+
+        kakaopay.kakaoPayReady(userIdx, postpointReq);
+
+        String url = kakaopay.kakaoPayReady(userIdx, postpointReq);
+        System.out.println(url);
+
+        return new BaseResponse<>(url);
+    }
+
+
+    /**
+     * 포인트 충전 직후 내역 조회 API
+     * /kakaoPaySuccess/:userIdx
+     */
+    @ApiOperation(value = "포인트(단건 결제) 충전 내역", notes = "PathVariable로 들어온 userIdx의 포인트 충전 단건결제 내역 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @GetMapping("/kakaoPaySuccess/{userIdx}")
     public BaseResponse<String> kakaoPaySuccess(@RequestParam("pg_token") String pg_token, @PathVariable("userIdx") int userIdx) {
 
@@ -74,10 +108,15 @@ public class PointController {
 
     /**
      * 포인트 충전 내역 리스트 조회 API
-     * Point/chargePointList/:userIdx
+     * /kakaoPay/chargePointList/:userIdx
      */
+    @ApiOperation(value = "포인트 충전 내역 리스트", notes = "PathVariable로 들어온 userIdx의 포인트 충전 내역 리스트 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
-    @GetMapping("Point/chargePointList/{userIdx}")
+    @GetMapping("/kakaoPay/chargePointList/{userIdx}")
     public BaseResponse<List<GetchargePointListRes>> chargePointList(@PathVariable("userIdx") int userIdx)
             throws com.there.config.BaseException {
 
@@ -95,10 +134,15 @@ public class PointController {
 
     /**
      * 누적 포인트 내역 조회 API
-     * Point/totalPoint/:userIdx
+     * /kakaoPay/totalPoint/:userIdx
      */
+    @ApiOperation(value = "누적 포인트 내역", notes = "PathVariable로 들어온 userIdx의 누적 포인트 내역 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
-    @GetMapping("Point/totalPoint/{userIdx}")
+    @GetMapping("/kakaoPay/totalPoint/{userIdx}")
     public BaseResponse<GetTotalPointRes> getTotalPoint(@PathVariable("userIdx") int userIdx)
             throws com.there.config.BaseException {
 
@@ -114,8 +158,17 @@ public class PointController {
         }
     }
 
+    /**
+     * 카카오페이 환불 API
+     * /kakaoPay/cancel/:pointIdx
+     */
+    @ApiOperation(value = "카카오페이 환불", notes = "PathVariable로 들어온 pointIdx 포인트 status 'DELETED'로 변경")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
-    @PostMapping("Point/cancle/{pointIdx}")
+    @PostMapping("/kakaoPay/cancel/{pointIdx}")
     public BaseResponse<String> canclePoint(@PathVariable("pointIdx") int pointIdx) {
 
         kakaopay.kakaoPayCancle(pointIdx);
