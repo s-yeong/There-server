@@ -1,8 +1,6 @@
 package com.there.src.point;
 
-import com.there.src.point.model.KakaoPayApprovalVO;
-import com.there.src.point.model.KakaoPayReadyVO;
-import com.there.src.point.model.PostPointReq;
+import com.there.src.point.model.*;
 import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +29,7 @@ public class KakaoPay {
     private KakaoPayApprovalVO kakaoPayApprovalVO;
 
     private final PointDao pointDao;
+    private GetPointCancleRes getPointCancleRes;
 
     public KakaoPay(PointDao pointDao) {
         this.pointDao = pointDao;
@@ -54,7 +53,7 @@ public class KakaoPay {
         params.add("item_name", "머니충전");
         params.add("quantity", "1");
         params.add("total_amount",Integer.toString(postpointReq.getAmount()));
-        params.add("tax_free_amount", "100");
+        params.add("tax_free_amount", Integer.toString(postpointReq.getAmount()/10));
         params.add("approval_url", "http://localhost:8080/kakaoPaySuccess/"+userIdx);
         params.add("cancel_url", "http://localhost:8080/kakaoPayCancel");
         params.add("fail_url", "http://localhost:8080/kakaoPaySuccessFail");
@@ -107,6 +106,7 @@ public class KakaoPay {
         params.add("pg_token", pg_token);
 
 
+
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 
         try {
@@ -118,9 +118,12 @@ public class KakaoPay {
             Integer Idx = parseInt(kakaoPayApprovalVO.getPartner_user_id());
             Integer amount = kakaoPayApprovalVO.getAmount().getTotal();
             String tid = kakaoPayApprovalVO.getTid();
+            Integer tax_free_amount = kakaoPayApprovalVO.getAmount().getTax_free();
 
             System.out.println(userIdx);
-            pointDao.chargePoint(Idx, amount, tid);
+            System.out.println(amount);
+            System.out.println(tax_free_amount);
+            pointDao.chargePoint(Idx, amount,tax_free_amount, tid);
 
             System.out.println("결제 성공하였습니다. ");
 
@@ -130,6 +133,44 @@ public class KakaoPay {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public GetPointCancleRes kakaoPayCancle(int pointIdx){
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 서버로 요청할 Header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + "89f7949d98d25443bb89a05c88266529");
+        headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
+        headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+
+        GetPointRes getPointRes = pointDao.selectPoint(pointIdx);
+
+        // 서버로 요청할 Body
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("cid","TC0ONETIME");
+        params.add("tid", getPointRes.getTid());
+        params.add("cancel_amount", String.valueOf(getPointRes.getCancle_amount()));
+        params.add("cancel_tax_free_amount", String.valueOf(getPointRes.getTax_free_amount()));
+
+        HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<>(params, headers);
+
+        try {
+            getPointCancleRes = restTemplate.postForObject(new URI (HOST + "/v1/payment/cancel"), body, GetPointCancleRes.class);
+
+            pointDao.cancelPoint(pointIdx);
+
+            return getPointCancleRes;
+
+        } catch(RestClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch(URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
