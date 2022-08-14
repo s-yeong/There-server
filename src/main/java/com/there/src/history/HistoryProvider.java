@@ -51,28 +51,6 @@ public class HistoryProvider {
 
     }
 
-    // 히스토리 수정화면 조회
-    public GetHistoryScreenRes retrieveModifyHistory(int userIdx, int historyIdx) throws BaseException {
-        try {
-            if(checkUserExist(userIdx) == 0){
-                throw new BaseException(USERS_EMPTY_USER_ID);
-            }
-
-            if(checkHistoryExist(historyIdx) == 0){
-                throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
-            }
-            if(checkUserHistoryExist(userIdx, historyIdx) == 0){
-                throw new BaseException(USERS_INVALID_ID);
-            }
-
-            GetHistoryScreenRes getHistoryScreenRes = historyDao.selectModifyHistory(historyIdx);
-            return getHistoryScreenRes;
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     public int checkUserExist(int userIdx) throws BaseException{
         try{
             return historyDao.checkUserExist(userIdx);
@@ -80,6 +58,7 @@ public class HistoryProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
     public int checkHistoryExist(int historyIdx) throws BaseException{
         try{

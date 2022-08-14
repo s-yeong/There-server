@@ -40,6 +40,11 @@ public class HistoryService {
 
         try{
 
+            // 유저 존재하는지
+            if(historyProvider.checkUserExist(userIdx) == 0){
+                throw new BaseException(USERS_EMPTY_USER_ID);
+            }
+
             // 이 게시물이 userIdx가 맞는지
             if(historyProvider.checkUserPostExist(userIdx, postHistoryReq.getPostIdx()) == 0){
                 throw new BaseException(USERS_INVALID_ID);
@@ -70,7 +75,6 @@ public class HistoryService {
 
     // 히스토리 삭제
     public void deleteHistory(int userIdx, int historyIdx) throws BaseException{
-
 
         if(historyProvider.checkUserExist(userIdx) == 0){
             throw new BaseException(USERS_EMPTY_USER_ID);
@@ -107,6 +111,7 @@ public class HistoryService {
             if(historyProvider.checkUserExist(userIdx) == 0){
                 throw new BaseException(USERS_EMPTY_USER_ID);
             }
+
             if(historyProvider.checkHistoryExist(historyIdx) == 0){
                 throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
             }
