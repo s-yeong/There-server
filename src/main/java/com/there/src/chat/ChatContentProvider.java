@@ -1,6 +1,6 @@
 package com.there.src.chat;
 
-import com.there.src.chat.config.*;
+import com.there.config.*;
 import com.there.src.chat.model.GetChatContentRes;
 import com.there.src.chat.model.MessagechatContentRes;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.chat.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class ChatContentProvider {
@@ -26,9 +26,9 @@ public class ChatContentProvider {
     /**
      * 채팅방 콘텐츠 조회
      */
-    public List<GetChatContentRes> retrieveChatContent(int roomIdx, int senderIdx, int receiverIdx) throws BaseException {
+    public List<GetChatContentRes> retrieveChatContent(int roomIdx) throws BaseException {
         try {
-            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx, senderIdx, receiverIdx);
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx);
             return getChatContentList;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

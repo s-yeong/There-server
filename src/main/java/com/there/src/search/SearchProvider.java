@@ -1,6 +1,6 @@
 package com.there.src.search;
 
-import com.there.src.search.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.search.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 
 @Service

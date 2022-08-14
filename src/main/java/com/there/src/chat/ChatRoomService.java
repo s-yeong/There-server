@@ -1,13 +1,13 @@
 package com.there.src.chat;
 
-import com.there.src.chat.config.*;
+import com.there.config.*;
 import com.there.src.chat.model.PostChatRoomRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.chat.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class ChatRoomService {

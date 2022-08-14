@@ -1,14 +1,13 @@
 package com.there.src.chat;
 
-import com.there.src.chat.config.*;
+import com.there.config.*;
 import com.there.src.chat.model.MessagechatContentReq;
-import com.there.src.chat.model.MessagechatContentRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.chat.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class ChatContentService {
@@ -50,9 +49,9 @@ public class ChatContentService {
         }
     }
 
-    public void checkChatContent(int userIdx) throws BaseException {
+    public void checkChatContent(int roomIdx) throws BaseException {
         try {
-            int result = chatContentDao.checkChatContent(userIdx);
+            int result = chatContentDao.checkChatContent(roomIdx);
             if (result == 0) throw new BaseException(CHECK_FAIL_CHATCONTENT); // 삭제 확인 (0 : 실패 / 1 : 성공)
         }
         catch (Exception exception) {

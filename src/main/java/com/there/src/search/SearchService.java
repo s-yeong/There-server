@@ -1,13 +1,13 @@
 package com.there.src.search;
 
-import com.there.src.search.config.BaseException;
+import com.there.config.BaseException;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.search.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
@@ -37,7 +37,7 @@ public class SearchService {
 
         // 해당하는 유저의 검색 기록인지
         if(searchProvider.checkUserSearch(userIdx, searchIdx) == 0){
-            throw new BaseException(USERS_SEARCHES_INVALID_ID);
+            throw new BaseException(USERS_INVALID_ID);
         }
 
         try{

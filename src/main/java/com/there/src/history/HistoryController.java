@@ -3,9 +3,7 @@ package com.there.src.history;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.there.src.history.cofig.BaseException;
-import com.there.src.history.cofig.BaseResponse;
-import com.there.src.history.cofig.BaseResponseStatus;
+import com.there.config.*;
 import com.there.src.history.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
@@ -20,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
-import static com.there.src.post.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
 @RequestMapping("/historys")
@@ -105,7 +101,7 @@ public class HistoryController {
     @PostMapping(value="", consumes = {"multipart/form-data"})
     public BaseResponse<PostHistoryRes> createHistory(@RequestParam("jsonList") String jsonList,
                                                       @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
-            throws IOException, com.there.config.BaseException {
+            throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PostHistoryReq postHistoryReq = objectMapper.readValue(jsonList, new TypeReference<>() {
@@ -117,7 +113,7 @@ public class HistoryController {
             int userIdxByJwt = jwtService.getUserIdx();
 
             if (postHistoryReq.getTitle() == null) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_TITLES);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_TITLE);
             }
 
             if (postHistoryReq.getTitle().length() > 45) {
@@ -125,7 +121,7 @@ public class HistoryController {
             }
 
             if (postHistoryReq.getContent() == null) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_CONTENTS);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_CONTENT);
             }
 
             if (postHistoryReq.getContent().length() > 500) {
@@ -133,7 +129,7 @@ public class HistoryController {
             }
 
             if (MultipartFiles == null ) {
-                return new BaseResponse<>(BaseResponseStatus.HISTORYS_EMPTY_IMGURL);
+                return new BaseResponse<>(BaseResponseStatus.EMPTY_IMGURL);
             }
 
 
@@ -158,7 +154,7 @@ public class HistoryController {
     })
     @ResponseBody
     @PatchMapping("/{historyIdx}/status")
-    public BaseResponse<String> deleteHistory(@PathVariable("historyIdx") int historyIdx) throws com.there.config.BaseException {
+    public BaseResponse<String> deleteHistory(@PathVariable("historyIdx") int historyIdx) {
 
         try {
 
@@ -184,7 +180,7 @@ public class HistoryController {
     })
     @ResponseBody
     @GetMapping("/modify/{historyIdx}")
-    public BaseResponse<GetHistoryScreenRes> getModifyHistory(@PathVariable("historyIdx") int historyIdx) throws com.there.config.BaseException {
+    public BaseResponse<GetHistoryScreenRes> getModifyHistory(@PathVariable("historyIdx") int historyIdx) {
         try {
 
             int userIdxByJwt = jwtService.getUserIdx();
@@ -211,7 +207,7 @@ public class HistoryController {
     public BaseResponse<String> modifyHistory(@PathVariable("historyIdx") int historyIdx,
                                               @RequestParam("jsonList") String jsonList,
                                               @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
-            throws IOException, com.there.config.BaseException {
+            throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchHistoryReq patchHistoryReq = objectMapper.readValue(jsonList, new TypeReference<>() {

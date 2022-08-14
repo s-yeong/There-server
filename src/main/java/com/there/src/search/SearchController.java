@@ -1,7 +1,7 @@
 package com.there.src.search;
 
-import com.there.src.search.config.BaseException;
-import com.there.src.search.config.BaseResponse;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +45,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/popular")
-    public BaseResponse<List<GetPopularSearchListRes>> getPopularSearch() throws com.there.config.BaseException{
+    public BaseResponse<List<GetPopularSearchListRes>> getPopularSearch() {
         try{
             List<GetPopularSearchListRes> getPopularSearchListRes = searchProvider.retrievePopularSearches();
             return new BaseResponse<>(getPopularSearchListRes);
@@ -66,7 +66,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/recent")
-    public BaseResponse<List<GetRecentSearchListRes>> getRecentSearch() throws com.there.config.BaseException{
+    public BaseResponse<List<GetRecentSearchListRes>> getRecentSearch() {
       try{
           int userIdxByJwt = jwtService.getUserIdx();
           List<GetRecentSearchListRes> getRecentSearchListRes = searchProvider.retrieveRecentSearches(userIdxByJwt);
@@ -87,7 +87,7 @@ public class SearchController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @DeleteMapping("/recent/{searchIdx}")
-    public BaseResponse<String> deleteRecentSearch(@PathVariable("searchIdx") int searchIdx) throws com.there.config.BaseException{
+    public BaseResponse<String> deleteRecentSearch(@PathVariable("searchIdx") int searchIdx) {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             searchService.deleteRecentSearch(userIdxByJwt, searchIdx);
@@ -110,7 +110,7 @@ public class SearchController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @DeleteMapping("/recent/all")
-    public BaseResponse<String> deleteAllRecentSearch() throws com.there.config.BaseException{
+    public BaseResponse<String> deleteAllRecentSearch() {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             searchService.deleteAllRecentSearch(userIdxByJwt);
@@ -135,7 +135,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/account")
-    public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) throws com.there.config.BaseException{
+    public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(userIdxByJwt, account);
@@ -158,7 +158,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/hashtag")
-    public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) throws com.there.config.BaseException{
+    public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) {
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             List<GetSearchByHashtagRes> getSearchByHashtagRes = searchProvider.retrieveByHashtag(userIdxByJwt, hashtag);
@@ -181,7 +181,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/hashtag/{tagIdx}/popular")
-    public BaseResponse<List<GetSearchPostsByHashtagRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
+    public BaseResponse<List<GetSearchPostsByHashtagRes>> getPopularSearch(@PathVariable("tagIdx") int tagIdx) {
         try{
 
             List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrievePopularPosts(tagIdx);
@@ -204,7 +204,7 @@ public class SearchController {
     })
     @ResponseBody
     @GetMapping("/hashtag/{tagIdx}/recent")
-    public BaseResponse<List<GetSearchPostsByHashtagRes>> getRecentSearch(@PathVariable("tagIdx") int tagIdx) throws com.there.config.BaseException{
+    public BaseResponse<List<GetSearchPostsByHashtagRes>> getRecentSearch(@PathVariable("tagIdx") int tagIdx) {
         try{
 
             List<GetSearchPostsByHashtagRes> getSearchPostsByHashtagRes = searchProvider.retrieveRecentPosts(tagIdx);

@@ -1,6 +1,6 @@
 package com.there.src.portfolio;
 
-import com.there.src.portfolio.config.*;
+import com.there.config.*;
 import com.there.src.portfolio.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -9,12 +9,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.there.src.portfolio.config.BaseResponseStatus.EMPTY_TITLE;
-import static com.there.src.portfolio.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.there.config.BaseResponseStatus.EMPTY_TITLE;
+import static com.there.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Api
 @RestController
@@ -26,6 +27,7 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
     private final PortfolioProvider portfolioProvider;
 
+    @Autowired
     public PortfolioController(JwtService jwtService, PortfolioService portfolioService, PortfolioProvider portfolioProvider) {
         this.jwtService = jwtService;
         this.portfolioService = portfolioService;
@@ -65,14 +67,10 @@ public class PortfolioController {
     @ResponseBody
     @PostMapping("/{portfolioIdx}/post/{postIdx}")
     public BaseResponse<PostPostInPortfolioRes> createPostInPortfolio
-            (@PathVariable("portfolioIdx")int portfolioIdx, @PathVariable("postIdx")int postIdx) {
+            (@PathVariable("portfolioIdx")int portfolioIdx, @PathVariable("postIdx")int postIdx) throws BaseException {
 
-        try {
-            PostPostInPortfolioRes PostInPortfolioRes = portfolioService.createPostInPortfolio(portfolioIdx, postIdx);
-            return new BaseResponse<>(PostInPortfolioRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+        PostPostInPortfolioRes PostInPortfolioRes = portfolioService.createPostInPortfolio(portfolioIdx, postIdx);
+        return new BaseResponse<>(PostInPortfolioRes);
     }
 
 
@@ -83,7 +81,7 @@ public class PortfolioController {
     })
     @ResponseBody
     @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx();
@@ -94,7 +92,7 @@ public class PortfolioController {
             return new BaseResponse<>(PortfolioListRes);
 
         } catch (BaseException exception) {
-           return new BaseResponse<>(exception.getStatus());
+            return new BaseResponse<>(exception.getStatus());
         }
 
     }
@@ -106,13 +104,20 @@ public class PortfolioController {
     })
     @ResponseBody
     @GetMapping("/{portfolioIdx}")
-    public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) {
-        try {
-            List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
-            return new BaseResponse<>(PortfolioListRes);
-        } catch (BaseException exception) {
-            return new BaseResponse<>(exception.getStatus());
-        }
+    public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
+        List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
+        return new BaseResponse<>(PortfolioListRes);
+
+    }
+
+    @ResponseBody
+    @PatchMapping("/modify/{portfolioIdx}")
+    public BaseResponse<String> ModifyPortfolioTitle
+            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) throws BaseException {
+
+        portfolioService.ModifyPortfolioTitle(portfolioIdx, patchPortfolioReq);
+        String result = "포트폴리오 이름 변경 하였습니다.";
+        return new BaseResponse<>(result);
 
     }
 
@@ -123,14 +128,12 @@ public class PortfolioController {
     })
     @ResponseBody
     @PatchMapping("/{portfolioIdx}")
-    public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) {
-        try {
-            portfolioService.deletePortfolio(portfolioIdx);
-            String result = "포트폴리오 삭제를 성공했습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
+    public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
+
+        portfolioService.deletePortfolio(portfolioIdx);
+        String result = "포트폴리오 삭제를 성공했습니다.";
+        return new BaseResponse<>(result);
+
     }
 
     @ApiOperation(value="Portfolio 내 Post 삭제 API", notes="")
@@ -140,17 +143,12 @@ public class PortfolioController {
     })
     @ResponseBody
     @PatchMapping("/{contentIdx}")
-    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
-        try {
-            portfolioService.deletePostInPortfolio(contentIdx);
-            String result = "포트폴리오 삭제를 성공했습니다.";
-            return new BaseResponse<>(result);
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
+    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) throws BaseException {
+
+        portfolioService.deletePostInPortfolio(contentIdx);
+        String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
+        return new BaseResponse<>(result);
+
     }
-
-
-
 
 }
