@@ -1,6 +1,6 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.BaseException;
+import com.there.config.BaseException;
 import com.there.src.history.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.there.src.history.cofig.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class HistoryService {
@@ -42,7 +42,7 @@ public class HistoryService {
 
             // 이 게시물이 userIdx가 맞는지
             if(historyProvider.checkUserPostExist(userIdx, postHistoryReq.getPostIdx()) == 0){
-                throw new BaseException(USERS_POSTS_INVALID_ID);
+                throw new BaseException(USERS_INVALID_ID);
             }
 
             // 히스토리 DB에서 생성시 히스토리 식별자 Dao에서 가져옴
@@ -81,7 +81,7 @@ public class HistoryService {
         }
 
         if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
-            throw new BaseException(USERS_HISTORYS_INVALID_ID);
+            throw new BaseException(USERS_INVALID_ID);
         }
 
         try{
@@ -111,7 +111,7 @@ public class HistoryService {
                 throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
             }
             if(historyProvider.checkUserHistoryExist(userIdx, historyIdx) == 0){
-                throw new BaseException(USERS_HISTORYS_INVALID_ID);
+                throw new BaseException(USERS_INVALID_ID);
             }
 
             int updateResult = historyDao.updateHistory(historyIdx, patchHistoryReq);

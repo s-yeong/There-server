@@ -1,6 +1,6 @@
 package com.there.src.post;
 
-import com.there.src.post.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.post.model.PatchPostsReq;
 import com.there.src.post.model.PostPostsReq;
 import com.there.src.post.model.PostPostsRes;
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.there.src.post.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class PostService {

@@ -1,6 +1,6 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.BaseException;
+import com.there.config.*;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.history.cofig.BaseResponseStatus.DATABASE_ERROR;
-import static com.there.src.history.cofig.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class HistoryProvider {
@@ -63,7 +62,7 @@ public class HistoryProvider {
                 throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
             }
             if(checkUserHistoryExist(userIdx, historyIdx) == 0){
-                throw new BaseException(USERS_HISTORYS_INVALID_ID);
+                throw new BaseException(USERS_INVALID_ID);
             }
 
             GetHistoryScreenRes getHistoryScreenRes = historyDao.selectModifyHistory(historyIdx);
