@@ -1,6 +1,8 @@
 package com.there.src.follow;
 
 
+import com.there.src.follow.model.GetFollowerListRes;
+import com.there.src.follow.model.GetFollowingListRes;
 import com.there.src.user.config.BaseException;
 import com.there.src.user.config.BaseResponse;
 import com.there.src.follow.model.PostFollowReq;
@@ -11,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.there.src.user.config.BaseResponseStatus.INVALID_USER_JWT;
 
@@ -63,4 +67,20 @@ public class FollowController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @GetMapping("/{userIdx}/followingList")
+    public BaseResponse<List<GetFollowerListRes>> getFollowerList
+            (@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+        List<GetFollowerListRes> getFollowerListRes = followProvider.FollowerList(userIdx);
+        return new BaseResponse<>(getFollowerListRes);
+    }
+    @ResponseBody
+    @GetMapping("/{userIdx}/followerList")
+    public BaseResponse<List<GetFollowingListRes>> getFollowingList
+            (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+        List<GetFollowingListRes> getFollowingListRes = followProvider.FollowingList(userIdx);
+        return new BaseResponse<>(getFollowingListRes);
+    }
+
 }
