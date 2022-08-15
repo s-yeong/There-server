@@ -28,7 +28,7 @@ public class SearchProvider {
         this.jwtService = jwtService;
     }
 
-    // 인기 검색어 조회 API
+    // 인기 검색어 조회
     public List<GetPopularSearchListRes> retrievePopularSearches() throws BaseException {
         try{
 
@@ -42,7 +42,7 @@ public class SearchProvider {
 
     }
 
-    // 최근 검색어 조회 API
+    // 최근 검색어 조회
     public List<GetRecentSearchListRes> retrieveRecentSearches(int userIdx) throws BaseException {
         try{
 
@@ -57,17 +57,22 @@ public class SearchProvider {
     }
 
 
-    // 계정 검색 API
+    // 계정 검색
     public List<GetSearchByAccountRes> retrieveByAccount(int userIdx, String account) throws BaseException {
         try{
             List<GetSearchByAccountRes> getSearchByAccount = searchDao.selectAccountList(account);
 
             // 검색 기록 체크 - 존재O : 1, 존재X : 0
             if(checkSearchExist(userIdx, account) == 0){
+
+                // 중복 검색어 체크 - 존재O : 1, 존재X : 0
                 if(checkDuplicateKeyword(account) == 0)
                     searchDao.insertSearch(userIdx, account);
+                // 중복 검색어인 경우 해당 유저가 검색한지만 기록(UserSearch)
                 else searchDao.insertUserSearch(userIdx, account);
             }
+
+            // 검색 기록 존재하면 기록 업데이트(최근 검색어 업데이트 순으로 나열하기 위해)
             else{
                 searchDao.updateSearch(account);
             }
@@ -80,17 +85,22 @@ public class SearchProvider {
 
     }
 
-    // 해시태그 검색 API
+    // 해시태그 검색
     public List<GetSearchByHashtagRes> retrieveByHashtag(int userIdx, String hashtag) throws BaseException {
         try{
             List<GetSearchByHashtagRes> getSearchByHashtag = searchDao.selectHashtagList(hashtag);
 
             // 검색 기록 체크 - 존재O : 1, 존재X : 0
             if(checkSearchExist(userIdx, hashtag) == 0){
+
+                // 중복 검색어 체크 - 존재O : 1, 존재X : 0
                 if(checkDuplicateKeyword(hashtag) == 0)
                     searchDao.insertSearch(userIdx, hashtag);
+                // 중복 검색어인 경우 해당 유저가 검색한지만 기록(UserSearch)
                 else searchDao.insertUserSearch(userIdx, hashtag);
             }
+
+            // 검색 기록 존재하면 기록 업데이트(최근 검색어 업데이트 순으로 나열하기 위해)
             else{
                 searchDao.updateSearch(hashtag);
             }
