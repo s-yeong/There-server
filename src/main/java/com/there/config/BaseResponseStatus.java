@@ -25,6 +25,7 @@ public enum BaseResponseStatus {
     EMPTY_IMGURL(false, 2005, "사진을 올려주세요."),
     EMPTY_CONTENT(false, 2006, "내용을 입력해주세요."),
     USERS_INVALID_ID(false,2007, "해당 유저가 아닙니다."),
+    USERS_EMPTY_USER_ID(false, 2008, "없는 아이디입니다."),
 
     // posts
     EXCEEDED_IMGURL(false,2100, "게시글 사진을 하나만 올려주세요"),
@@ -32,12 +33,9 @@ public enum BaseResponseStatus {
 
     // historys
     HISTORYS_EMPTY_HISTORY_ID(false, 2102, "히스토리 아이디 값을 확인해주세요."),
-    HISTORYS_INVALID_TITLES(false, 2103, "히스토리 제목의 글자 수를 확인해주세요"),
-    HISTORYS_INVALID_CONTENTS(false, 2104, "히스토리 내용의 글자 수를 확인해주세요"),
+    HISTORYS_INVALID_TITLES(false, 2103, "히스토리 제목의 글자 수를 확인해주세요."),
+    HISTORYS_INVALID_CONTENTS(false, 2104, "히스토리 내용의 글자 수를 확인해주세요."),
     HISTORYS_MODIFY_NOTTHING(false,2105, "변경 사항이 없습니다."),
-
-    // search
-    USERS_EMPTY_USER_ID(false, 2106, "없는 아이디입니다."),
 
 
     /**

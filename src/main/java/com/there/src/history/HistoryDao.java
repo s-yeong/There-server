@@ -21,7 +21,7 @@ public class HistoryDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    // 히스토리 조회 함수    - 기록물 사진 같은 경우 하나의 리스트가 칼럼으로 들어감   - createdAt 기준으로 날짜 요일 조회
+    // 히스토리 조회 함수   - 히스토리 사진은 하나의 리스트가 칼럼으로 들어감    - createdAt 기준으로 날짜 요일 조회
     public GetHistoryRes selectHistory(int historyIdx){
         String selectHistoryQuery = "select h.historyIdx, h.title, h.content,\n" +
                 "      DATE(created_At) as createdAt,\n" +
@@ -81,7 +81,7 @@ public class HistoryDao {
                 ), selectHistoryListParam);
     }
 
-    // 히스토리 작성 API - 히스토리 작성 함수(이미지 제외)
+    // 히스토리 작성 함수(이미지 제외)
     public int insertHistory(int userIdx, PostHistoryReq postHistoryReq){
         String insertHistoryQuery = "insert into History(userIdx, postIdx, title, content) VALUES (?,?,?,?)";;
         Object[] insertHistoryParams = new Object[] {userIdx, postHistoryReq.getPostIdx(), postHistoryReq.getTitle(), postHistoryReq.getContent()};
@@ -101,27 +101,6 @@ public class HistoryDao {
 
     }
 
-    // 히스토리 수정 화면 조회 함수
-    public GetHistoryScreenRes selectModifyHistory(int historyIdx){
-        String selectModifyHistoryQuery = "select h.historyIdx, h.title, h.content\n" +
-                "from History as h\n" +
-                "where h.historyIdx = ? and h.status = 'ACTIVE';";
-        int selectModifyHistoryParam = historyIdx;
-        return this.jdbcTemplate.queryForObject(selectModifyHistoryQuery,
-                (rs, rowNum) -> new GetHistoryScreenRes(
-                        rs.getInt("historyIdx"),
-                        rs.getString("title"),
-                        rs.getString("content"),
-                        getHistoryPicturesRes = this.jdbcTemplate.query("select hp.pictureIdx as pictureIdx, hp.imgUrl as imgUrl\n" +
-                                        "from historyPicture as hp\n" +
-                                        "    join History as h on h.historyIdx = hp.historyIdx\n" +
-                                        "where h.historyIdx = ? and hp.liked_ip = 'ACTIVE';",
-                                (rk, rownum) -> new GetHistoryPicturesRes(
-                                        rk.getInt("pictureIdx"),
-                                        rk.getString("imgUrl")
-                                ), rs.getInt("historyIdx"))
-                ), selectModifyHistoryParam);
-    }
 
     // 히스토리 수정 API - 히스토리 수정 함수(이미지 제외)
     public int updateHistory(int historyIdx, PatchHistoryReq patchHistoryReq){
