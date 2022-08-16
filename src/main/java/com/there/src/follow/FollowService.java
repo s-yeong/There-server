@@ -1,15 +1,14 @@
 package com.there.src.follow;
 
-import com.there.src.user.config.BaseException;
-import com.there.src.follow.model.PostFollowReq;
-import com.there.src.follow.model.PostFollowRes;
+import com.there.config.BaseException;
+
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.user.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.*;
 @Service
 public class FollowService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());

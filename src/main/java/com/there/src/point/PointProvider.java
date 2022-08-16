@@ -1,6 +1,6 @@
 package com.there.src.point;
 
-import com.there.src.point.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.point.model.GetTotalPointRes;
 import com.there.src.point.model.GetchargePointListRes;
 import com.there.utils.JwtService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.point.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class PointProvider {

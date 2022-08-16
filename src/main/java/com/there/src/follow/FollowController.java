@@ -3,12 +3,9 @@ package com.there.src.follow;
 
 import com.there.src.follow.model.GetFollowerListRes;
 import com.there.src.follow.model.GetFollowingListRes;
-import com.there.src.user.config.BaseException;
-import com.there.src.user.config.BaseResponse;
-import com.there.src.follow.model.PostFollowReq;
-import com.there.src.follow.model.PostFollowRes;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.utils.JwtService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.there.src.user.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.there.config.BaseResponseStatus.*;
 
 
 @RestController
@@ -52,7 +49,7 @@ public class FollowController {
     @ResponseBody
     @PatchMapping("/users/{userIdx}/{followeeIdx}")
     public BaseResponse<String> follow
-    (@PathVariable("userIdx") int userIdx, @PathVariable("followeeIdx")int followeeIdx) throws com.there.config.BaseException {
+    (@PathVariable("userIdx") int userIdx, @PathVariable("followeeIdx")int followeeIdx) throws BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx();
 
@@ -101,7 +98,7 @@ public class FollowController {
     @ResponseBody
     @GetMapping("/{userIdx}/followingList")
     public BaseResponse<List<GetFollowerListRes>> getFollowerList
-            (@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+            (@PathVariable("userIdx") int userIdx) throws BaseException {
         List<GetFollowerListRes> getFollowerListRes = followProvider.FollowerList(userIdx);
         return new BaseResponse<>(getFollowerListRes);
     }
@@ -118,7 +115,7 @@ public class FollowController {
     @ResponseBody
     @GetMapping("/{userIdx}/followerList")
     public BaseResponse<List<GetFollowingListRes>> getFollowingList
-            (@PathVariable("userIdx")int userIdx) throws com.there.config.BaseException {
+            (@PathVariable("userIdx")int userIdx) throws BaseException {
         List<GetFollowingListRes> getFollowingListRes = followProvider.FollowingList(userIdx);
         return new BaseResponse<>(getFollowingListRes);
     }

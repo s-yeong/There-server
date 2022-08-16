@@ -1,7 +1,7 @@
 package com.there.src.point;
 
 
-import com.there.src.point.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.point.model.PostPointRes;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -9,9 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.there.config.BaseResponseStatus.*;
 
-import static com.there.src.point.config.BaseResponseStatus.*;
-import static com.there.src.point.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
 public class PointService {
