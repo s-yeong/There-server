@@ -147,16 +147,6 @@ public class S3Service {
         }
     }
 
-    /**
-     *  유저 프로필 사진 삭제
-     */
-    public void delUserProfileImg(int userIdx) throws BaseException {
-        try {
-            s3Dao.delUserProfileImg(userIdx);
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 
     /**
      * 게시물 사진 업로드 및 수정

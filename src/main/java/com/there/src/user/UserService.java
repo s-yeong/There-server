@@ -403,10 +403,10 @@ public class UserService {
             throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
         }
          try {
+
              if (MultipartFiles != null) {
 
                     s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
-                    s3Service.delUserProfileImg(userIdx);
 
                      // s3 업로드
                      String s3path = "User/userIdx : " + Integer.toString(userIdx);
