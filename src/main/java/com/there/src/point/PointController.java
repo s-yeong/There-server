@@ -1,7 +1,7 @@
 package com.there.src.point;
 
-import com.there.src.point.config.BaseException;
-import com.there.src.point.config.BaseResponse;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.there.src.point.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 
@@ -51,7 +51,7 @@ public class PointController {
     @ResponseBody
     @PostMapping("/kakaoPay/{userIdx}")
     public BaseResponse<String> kakaoPay(@PathVariable("userIdx") int userIdx, @RequestBody PostPointReq postpointReq)
-            throws com.there.config.BaseException {
+            throws BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
         if (userIdxByJwt != userIdx) {
@@ -118,7 +118,7 @@ public class PointController {
     @ResponseBody
     @GetMapping("/kakaoPay/chargePointList/{userIdx}")
     public BaseResponse<List<GetchargePointListRes>> chargePointList(@PathVariable("userIdx") int userIdx)
-            throws com.there.config.BaseException {
+            throws BaseException {
 
         try{
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
@@ -144,7 +144,7 @@ public class PointController {
     @ResponseBody
     @GetMapping("/kakaoPay/totalPoint/{userIdx}")
     public BaseResponse<GetTotalPointRes> getTotalPoint(@PathVariable("userIdx") int userIdx)
-            throws com.there.config.BaseException {
+            throws BaseException {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());

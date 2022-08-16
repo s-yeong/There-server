@@ -94,7 +94,10 @@ public enum BaseResponseStatus {
     CREATE_FAIL_COMMENT(false, 4115,"댓글 생성을 실패하였습니다."),
     UPDATE_FAIL_COMMENT(false, 4116,"댓글 수정에 실패하였습니다."),
     DELETE_FAIL_COMMENT(false, 4118,"댓글 삭제를 실패하였습니다."),
-    ACCESS_TOKEN_ERROR(false, 4119, "Access Token을 확인해주세요. ");
+    ACCESS_TOKEN_ERROR(false, 4119, "Access Token을 확인해주세요. "),
+
+    // point
+    CREATE_FAIL_CHARGE_POINT(false, 4120, "포인트 충전에 실패하였습니다. ");
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요
