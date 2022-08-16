@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetUserInfoRes {
+public class GetUnreadCountRes {
 
-    private String nickName;
-    private String profileImgUrl;
+    private int roomIdx;
+    private int count;
 
 }

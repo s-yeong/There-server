@@ -20,7 +20,7 @@ public class ChatContentDao {
     }
 
     /**
-     * 메세시 생성
+     * 메세지 생성
      */
     public int createContent(int roomIdx, MessagechatContentReq messagechatContentReq) {
         String createRoomQuery = "insert into chatRoom (roomIdx, content) values (?, ?);";
