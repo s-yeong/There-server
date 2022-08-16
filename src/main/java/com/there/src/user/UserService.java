@@ -382,6 +382,8 @@ public class UserService {
 
             try {
                 int userIdx = userDao.createUser(postJoinReq);
+                // 유저 기본 프로필 사진 업로드
+                s3Service.uploadUserdeafultProfileImg(userIdx);
 
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
