@@ -16,6 +16,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static com.there.config.BaseResponseStatus.INVALID_USER_JWT;
@@ -124,11 +125,16 @@ public class ChatController {
     })
     @ResponseBody
     @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
-    public BaseResponse<List<GetChatContentRes>> getChatContent
+    public BaseResponse<HashMap<String, List<GetChatContentRes>>> getChatContent
             (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
 
         try {
-            List<GetChatContentRes> getChatContentList = chatContentProvider.retrieveChatContent(roomIdx);
+            HashMap<String, List<GetChatContentRes>> getChatContentList = new HashMap<String, List<GetChatContentRes>>();
+            List<GetChatContentRes> getSendChatContentList = chatContentProvider.retrieveSendChatContent(roomIdx, senderIdx);
+            List<GetChatContentRes> getReceiveChatContentList = chatContentProvider.retrieveReceiveChatContent(roomIdx, receiverIdx);
+            getChatContentList.put("보낸 메시지", getSendChatContentList);
+            getChatContentList.put("받은 메시지", getReceiveChatContentList);
+
             return new BaseResponse<>(getChatContentList);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -144,7 +150,7 @@ public class ChatController {
     @ResponseBody
     @PatchMapping("/deletion/{contentIdx}")
     public BaseResponse<String> deleteChatContent
-            (@PathVariable("contentIdx") int contentIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+            (@PathVariable("contentIdx") int contentIdx) {
 
         try {
             chatContentService.deleteChatContent(contentIdx);

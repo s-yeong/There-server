@@ -24,11 +24,21 @@ public class ChatContentProvider {
     }
 
     /**
-     * 채팅방 콘텐츠 조회
+     * 채팅방 콘텐츠 조회(자신)
      */
-    public List<GetChatContentRes> retrieveChatContent(int roomIdx) throws BaseException {
+    public List<GetChatContentRes> retrieveSendChatContent(int roomIdx, int senderIdx) throws BaseException {
         try {
-            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx);
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectSendChatContentList(roomIdx, senderIdx);
+            return getChatContentList;
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+    }
+
+    public List<GetChatContentRes> retrieveReceiveChatContent(int roomIdx, int receiverIdx) throws BaseException {
+        try {
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectReceiverChatContentList(roomIdx, receiverIdx);
             return getChatContentList;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
