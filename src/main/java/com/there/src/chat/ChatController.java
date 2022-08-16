@@ -130,8 +130,12 @@ public class ChatController {
 
         try {
             HashMap<String, List<GetChatContentRes>> getChatContentList = new HashMap<String, List<GetChatContentRes>>();
-            List<GetChatContentRes> getSendChatContentList = chatContentProvider.retrieveSendChatContent(roomIdx, senderIdx);
-            List<GetChatContentRes> getReceiveChatContentList = chatContentProvider.retrieveReceiveChatContent(roomIdx, receiverIdx);
+
+            // 보낸 메시지 조회(senderIdx = 자신 Idx)
+            List<GetChatContentRes> getSendChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx);
+
+            // 받은 메시지 조회(senderIdx = 상대방 Idx)
+            List<GetChatContentRes> getReceiveChatContentList = chatContentProvider.retrieveChatContent(roomIdx, receiverIdx);
             getChatContentList.put("보낸 메시지", getSendChatContentList);
             getChatContentList.put("받은 메시지", getReceiveChatContentList);
 
