@@ -52,9 +52,9 @@ public class KakaoPay {
         params.add("quantity", "1");
         params.add("total_amount",Integer.toString(postpointReq.getAmount()));
         params.add("tax_free_amount", Integer.toString(postpointReq.getAmount()/10));
-        params.add("approval_url", "http://localhost:8080/kakaoPaySuccess/"+userIdx);
-        params.add("cancel_url", "http://localhost:8080/kakaoPayCancel");
-        params.add("fail_url", "http://localhost:8080/kakaoPaySuccessFail");
+        params.add("approval_url", "http://recordinthere.shop/kakaoPaySuccess/"+userIdx);
+        params.add("cancel_url", "http://recordinthere.shop/kakaoPayCancel");
+        params.add("fail_url", "http://recordinthere.shop/kakaoPaySuccessFail");
 
         System.out.println(userIdx);
 
