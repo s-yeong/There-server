@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class CommentProvider {

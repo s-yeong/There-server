@@ -37,6 +37,11 @@ public enum BaseResponseStatus {
     HISTORYS_INVALID_CONTENTS(false, 2104, "히스토리 내용의 글자 수를 확인해주세요."),
     HISTORYS_MODIFY_NOTTHING(false,2105, "변경 사항이 없습니다."),
 
+    // comment
+    USERS_COMMENT_INVALID_ID(false, 2106, "댓글 작성 권한이 없습니다."),
+    COMMENT_INVALID(false, 2107,"유효하지 않는 댓글입니다."),
+    COMMENTS_EMPTY_CONTENT(false, 2108, "댓글 내용을 입력하세요."),
+
 
     /**
      * 3000 : Response 오류
@@ -83,8 +88,13 @@ public enum BaseResponseStatus {
 
     // histroys
     DELETE_FAIL_HISTORY(false, 4113,"히스토리 삭제를 실패하였습니다."),
-    MODIFY_FAIL_HISTORY(false, 4114,"히스토리 수정을 실패하였습니다.");
+    MODIFY_FAIL_HISTORY(false, 4114,"히스토리 수정을 실패하였습니다."),
 
+    // comment
+    CREATE_FAIL_COMMENT(false, 4115,"댓글 생성을 실패하였습니다."),
+    UPDATE_FAIL_COMMENT(false, 4116,"댓글 수정에 실패하였습니다."),
+    DELETE_FAIL_COMMENT(false, 4118,"댓글 삭제를 실패하였습니다."),
+    ACCESS_TOKEN_ERROR(false, 4119, "Access Token을 확인해주세요. ");
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

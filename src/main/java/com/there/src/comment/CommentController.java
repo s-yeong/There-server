@@ -1,8 +1,8 @@
 package com.there.src.comment;
 
 
-import com.there.src.comment.config.BaseException;
-import com.there.src.comment.config.BaseResponse;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.src.comment.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.there.src.comment.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 @Api
@@ -50,7 +50,7 @@ public class CommentController {
     @PostMapping("/{postIdx}/{userIdx}")
     public BaseResponse<PostCommentRes> createComment
     (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx,
-     @RequestBody PostCommentReq postCommentReq) throws com.there.config.BaseException {
+     @RequestBody PostCommentReq postCommentReq) throws BaseException {
         try {
 
             if (!jwtService.validationToken(jwtService.getJwt())){
@@ -83,7 +83,7 @@ public class CommentController {
     @ResponseBody
     @GetMapping("/{postIdx}")
     public BaseResponse<List<GetCommentListRes>> getCommentList(@PathVariable("postIdx") int postIdx)
-            throws com.there.config.BaseException {
+            throws BaseException {
 
         List<GetCommentListRes> getCommentListResList = commentProvider.retrieveComment(postIdx);
         return new BaseResponse<>(getCommentListResList);
@@ -102,7 +102,7 @@ public class CommentController {
     @ResponseBody
     @PatchMapping("/{commentIdx}/status")
     public BaseResponse<String> deleteComment(@PathVariable("commentIdx") int commentIdx)
-            throws com.there.config.BaseException, BaseException {
+            throws BaseException {
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
         commentService.deleteComment(userIdxByJwt, commentIdx);
 
@@ -122,7 +122,7 @@ public class CommentController {
     @ResponseBody
     @PatchMapping("change/{commentIdx}")
     public BaseResponse<String> updateComment(@PathVariable("commentIdx") int commentIdx,
-    @RequestBody PatchCommentReq patchCommentReq) throws com.there.config.BaseException {
+    @RequestBody PatchCommentReq patchCommentReq) throws BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
         try {
@@ -146,7 +146,7 @@ public class CommentController {
     @ResponseBody
     @PostMapping("/{postIdx}/{userIdx}/{commentIdx}")
     public BaseResponse<PostReCommentRes> createReComment(@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx,
-    @PathVariable("commentIdx") int commentIdx, @RequestBody PostReCommentReq postReCommentReq) throws com.there.config.BaseException{
+    @PathVariable("commentIdx") int commentIdx, @RequestBody PostReCommentReq postReCommentReq) throws BaseException{
 
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
@@ -175,7 +175,7 @@ public class CommentController {
     @GetMapping("/{postIdx}/{commentIdx}")
     public BaseResponse<List<GetReCommentListRes>> getReCommentList
             (@PathVariable("postIdx") int postIdx, @PathVariable("commentIdx") int commentIdx)
-            throws com.there.config.BaseException {
+            throws BaseException {
 
         List<GetReCommentListRes> getReCommentListResList = commentProvider.ReComment(postIdx, commentIdx );
         return new BaseResponse<>(getReCommentListResList);
@@ -195,7 +195,7 @@ public class CommentController {
     @ResponseBody
     @PatchMapping("/{commentIdx}/Re/status")
     public BaseResponse<String> deleteReComment(@PathVariable("commentIdx") int commentIdx)
-            throws com.there.config.BaseException, BaseException {
+            throws BaseException {
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
         commentService.deleteComment(userIdxByJwt, commentIdx);
 
@@ -216,7 +216,7 @@ public class CommentController {
     @ResponseBody
     @PatchMapping("change/Re/{commentIdx}")
     public BaseResponse<String> updateReComment(@PathVariable("commentIdx") int commentIdx,
-    @RequestBody PatchCommentReq patchCommentReq) throws com.there.config.BaseException {
+    @RequestBody PatchCommentReq patchCommentReq) throws BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
         try {
