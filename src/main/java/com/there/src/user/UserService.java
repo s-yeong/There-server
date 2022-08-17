@@ -382,6 +382,8 @@ public class UserService {
 
             try {
                 int userIdx = userDao.createUser(postJoinReq);
+                // 유저 기본 프로필 사진 업로드
+                s3Service.uploadUserdeafultProfileImg(userIdx);
 
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
@@ -401,10 +403,10 @@ public class UserService {
             throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
         }
          try {
+
              if (MultipartFiles != null) {
 
                     s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
-                    s3Service.delUserProfileImg(userIdx);
 
                      // s3 업로드
                      String s3path = "User/userIdx : " + Integer.toString(userIdx);

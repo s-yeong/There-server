@@ -2,9 +2,9 @@ package com.there.src.user;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.there.src.s3.S3Service;
 import com.there.src.user.config.BaseException;
 import com.there.src.user.config.BaseResponse;
 import com.there.src.user.model.*;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -39,14 +38,17 @@ public class UserController {
     private final UserService userService;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final S3Service s3Service;
 
 
 
 
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
+    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, S3Service s3Service) {
         this.userProvider = userProvider;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
 
@@ -306,6 +308,31 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /**
+     * 유저 기본 프로필 사진 변경
+     * [PATCH] /{userIdx}/profileImgUrl
+     */
+    @ApiOperation(value = "유저 기본 프로필 사진 변경")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
+    @ResponseBody
+    @PatchMapping("/{userIdx}/profileImgUrl")
+    public BaseResponse<String> modifydeafultProfileImg(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+
+            int userIdxByJwt = jwtService.getUserIdx();
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            s3Service.uploadUserdeafultProfileImg(userIdx);
+            String result = "기본 이미지로 변경되었습니다.";
+            return new BaseResponse<>(result);
+    }
+
 
     /**
      * 회원 삭제
