@@ -11,6 +11,9 @@ import java.util.List;
 public class GetRoomInfoRes {
 
     private int roomIdx;
-    private int count;
+    private int senderIdx;
+    private int receiverIdx;
+    private String nickName;
+    private String profileImgUrl;
 
 }

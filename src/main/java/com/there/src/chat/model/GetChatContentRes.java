@@ -7,6 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class GetChatContentRes {
 
+    private int userIdx;
     private String content;
     private String created_At;
 }

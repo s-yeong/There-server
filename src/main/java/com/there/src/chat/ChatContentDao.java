@@ -20,7 +20,7 @@ public class ChatContentDao {
     }
 
     /**
-     * 메세시 생성
+     * 메세지 생성
      */
     public int createContent(int roomIdx, MessagechatContentReq messagechatContentReq) {
         String createRoomQuery = "insert into chatRoom (roomIdx, content) values (?, ?);";
@@ -53,17 +53,20 @@ public class ChatContentDao {
                     rs.getString("created_At")), getChatContentParams);
     }
 
-    // 채팅방 조회
-    public List<GetChatContentRes> selectChatContentList(int roomIdx) {
-        String selectChatContentQuery = "select  content, created_At\n" +
-                "from    chatContent\n" +
-                "where   roomIdx = ? and status = 'ACTIVE';";
-        int selectChatContentParams = roomIdx;
+    // 채팅방 메시지 조회(자신)
+    public List<GetChatContentRes> selectChatContentList(int roomIdx, int senderIdx) {
+        String selectChatContentQuery = "select      cc.senderIdx userIdx, content, cc.created_At\n" +
+                "from        chatContent cc left join chatRoom cr on cc.roomIdx = cr.roomIdx and cr.status = 'ACTIVE'\n" +
+                "where       cc.status = 'ACTIVE' and cc.roomIdx = ? and cc.senderIdx = ?;";
+        Object[] selectChatContentParams = new Object[]{roomIdx, senderIdx};
 
         return this.jdbcTemplate.query(selectChatContentQuery, (rs, rowNum) ->  new GetChatContentRes(
+                rs.getInt("userIdx"),
                 rs.getString("content"),
                 rs.getString("created_At")),selectChatContentParams);
     }
+
+
 
     public int deleteChatContent(int contentIdx) {
         String deleteChatContentQuery = "UPDATE chatContent SET status = 'INACTIVE' WHERE contentIdx = ?";

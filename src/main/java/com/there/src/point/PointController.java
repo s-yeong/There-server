@@ -26,13 +26,14 @@ import static com.there.config.BaseResponseStatus.*;
 public class PointController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Setter(onMethod_ = @Autowired)
+
     private final KakaoPay kakaopay;
 
     private final JwtService jwtService;
     private final PointProvider pointProvider;
     private KakaoPayReadyVO kakaoPayReadyVO;
 
+    @Autowired
     public PointController(KakaoPay kakaopay, JwtService jwtService, PointProvider pointProvider) {
         this.kakaopay = kakaopay;
         this.jwtService = jwtService;
