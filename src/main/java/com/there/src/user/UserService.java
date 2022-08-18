@@ -147,7 +147,7 @@ public class UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=2e8b184b25eb6aee0a1496b4af1d7ffd");
-            sb.append("&redirect_uri=http://localhost:8080/users/login/kakao");
+            sb.append("&redirect_uri=https://recordinthere.shop/users/login/kakao");
             sb.append("&code=" + code);
             sb.append("&client_secret=fJMsCcaBpzyMWMj6ughnTuo9zl3jMLq6");
             bw.write(sb.toString());
