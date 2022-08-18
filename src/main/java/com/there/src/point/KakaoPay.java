@@ -46,15 +46,15 @@ public class KakaoPay {
         // 서버로 요청할 Body
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("cid", "TC0ONETIME");
-        params.add("partner_order_id", "1001");
+        params.add("partner_order_id", "there.com");
         params.add("partner_user_id", Integer.toString(userIdx));
         params.add("item_name", "머니충전");
         params.add("quantity", "1");
         params.add("total_amount",Integer.toString(postpointReq.getAmount()));
         params.add("tax_free_amount", Integer.toString(postpointReq.getAmount()/10));
-        params.add("approval_url", "http://recordinthere.shop/kakaoPaySuccess/"+userIdx);
-        params.add("cancel_url", "http://recordinthere.shop/kakaoPayCancel");
-        params.add("fail_url", "http://recordinthere.shop/kakaoPaySuccessFail");
+        params.add("approval_url", "https://recordinthere.shop/kakaoPaySuccess/"+userIdx);
+        params.add("cancel_url", "https://recordinthere.shop/kakaoPayCancel");
+        params.add("fail_url", "https://recordinthere.shop/kakaoPaySuccessFail");
 
         System.out.println(userIdx);
 
@@ -99,7 +99,7 @@ public class KakaoPay {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("cid", "TC0ONETIME");
         params.add("tid", kakaoPayReadyVO.getTid());
-        params.add("partner_order_id", "1001");
+        params.add("partner_order_id", "there.com");
         params.add("partner_user_id", String.valueOf(userIdx));
         params.add("pg_token", pg_token);
 
@@ -111,16 +111,12 @@ public class KakaoPay {
             kakaoPayApprovalVO = restTemplate.postForObject(new URI(HOST + "/v1/payment/approve"), body, KakaoPayApprovalVO.class);
             log.info("" + kakaoPayApprovalVO);
 
-            System.out.println(kakaoPayReadyVO.getTid());
 
             Integer Idx = parseInt(kakaoPayApprovalVO.getPartner_user_id());
             Integer amount = kakaoPayApprovalVO.getAmount().getTotal();
             String tid = kakaoPayApprovalVO.getTid();
             Integer tax_free_amount = kakaoPayApprovalVO.getAmount().getTax_free();
 
-            System.out.println(userIdx);
-            System.out.println(amount);
-            System.out.println(tax_free_amount);
             pointDao.chargePoint(Idx, amount,tax_free_amount, tid);
 
             System.out.println("결제 성공하였습니다. ");
