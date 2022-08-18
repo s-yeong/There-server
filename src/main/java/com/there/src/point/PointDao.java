@@ -21,9 +21,8 @@ public class PointDao {
 
     // 포인트 충전
     public int chargePoint(int userIdx, int amount, int tax_free_amount, String tid) {
-        String chargePointQuery = "insert into Point (userIdx, amount, tax_free_amount,tid, totalpoint) " +
-                "values (?, ?,?,?,(select point from(select sum(amount) " +
-                "as point from Point where userIdx =? )amount));";
+        String chargePointQuery = "insert into Point (userIdx, amount, tax_free_amount,tid) " +
+                "values (?, ?,?,?);";
         Object[] chargePointParams = new Object[]{userIdx, amount, tax_free_amount, tid};
 
         this.jdbcTemplate.update(chargePointQuery, chargePointParams);
