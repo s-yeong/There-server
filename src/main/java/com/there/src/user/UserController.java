@@ -288,8 +288,8 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
 
-        if(patchUserReq.getNickName() ==null) {
-            return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
+        if(patchUserReq.getNickName() != null) {
+            return new BaseResponse<>(POST_USER_NOT_NULL);
         }
 
         try {
@@ -297,9 +297,6 @@ public class UserController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-
-            if(MultipartFiles == null)
-                return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
 
             userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";

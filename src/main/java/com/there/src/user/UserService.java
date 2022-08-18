@@ -395,27 +395,21 @@ public class UserService {
     // 유저 프로필 수정
     @Transactional(rollbackFor = BaseException.class)
     public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFiles) throws BaseException{
+
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
 
-        if(MultipartFiles.size() > 1){
-            throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+        if(MultipartFiles != null) {
+            if (MultipartFiles.size() > 1) {
+                throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+            }
         }
+
          try {
 
-             if (MultipartFiles != null) {
-
-                    s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
-
-                     // s3 업로드
-                     String s3path = "User/userIdx : " + Integer.toString(userIdx);
-                     String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
-
-                     // db 업로드
-                     s3Service.uploadUserProfileImg(imgPath, userIdx);
-             }
              int result = 0;
+
              if (patchUserReq.getNickName() != null){
                  result = userDao.updateNickName(userIdx, patchUserReq);
 
@@ -430,6 +424,18 @@ public class UserService {
 
              if (result == 0) {
                  throw new BaseException(MODIFY_FAIL_USERNAME);
+             }
+
+             if (MultipartFiles != null) {
+
+                 s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
+
+                 // s3 업로드
+                 String s3path = "User/userIdx : " + Integer.toString(userIdx);
+                 String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                 // db 업로드
+                 s3Service.uploadUserProfileImg(imgPath, userIdx);
              }
 
          }catch (Exception exception) {
