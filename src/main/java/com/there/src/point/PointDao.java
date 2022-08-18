@@ -25,7 +25,6 @@ public class PointDao {
                 "values (?, ?,?,?,(select point from(select sum(amount) " +
                 "as point from Point where userIdx =? )amount));";
         Object[] chargePointParams = new Object[]{userIdx, amount, tax_free_amount, tid};
-g
         this.jdbcTemplate.update(chargePointQuery, chargePointParams);
 
         String lastPointIdxQuery = "select last_insert_id()";
