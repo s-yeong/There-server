@@ -2,6 +2,7 @@ package com.there.src.point;
 
 import com.there.src.point.model.*;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,12 +24,15 @@ public class KakaoPay {
 
     private static final String HOST = "https://kapi.kakao.com";
 
+
     private KakaoPayReadyVO kakaoPayReadyVO;
+
     private KakaoPayApprovalVO kakaoPayApprovalVO;
+
 
     private final PointDao pointDao;
     private GetPointCancleRes getPointCancleRes;
-
+    @Autowired
     public KakaoPay(PointDao pointDao) {
         this.pointDao = pointDao;
     }
