@@ -15,7 +15,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.util.ListUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -125,19 +127,20 @@ public class ChatController {
     })
     @ResponseBody
     @GetMapping("/room/{roomIdx}/user/{senderIdx}/{receiverIdx}")
-    public BaseResponse<HashMap<String, List<GetChatContentRes>>> getChatContent
-            (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws com.there.config.BaseException {
+    public BaseResponse<List<GetChatContentRes>> getChatContent
+            (@PathVariable("roomIdx") int roomIdx, @PathVariable("senderIdx") int senderIdx, @PathVariable("receiverIdx") int receiverIdx) throws BaseException {
 
         try {
-            HashMap<String, List<GetChatContentRes>> getChatContentList = new HashMap<String, List<GetChatContentRes>>();
+
+            List<GetChatContentRes> getChatContentList = new ArrayList<GetChatContentRes>();
 
             // 보낸 메시지 조회(senderIdx = 자신 Idx)
             List<GetChatContentRes> getSendChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx);
-
             // 받은 메시지 조회(senderIdx = 상대방 Idx)
             List<GetChatContentRes> getReceiveChatContentList = chatContentProvider.retrieveChatContent(roomIdx, receiverIdx);
-            getChatContentList.put("보낸 메시지", getSendChatContentList);
-            getChatContentList.put("받은 메시지", getReceiveChatContentList);
+
+            getChatContentList.addAll(getSendChatContentList);
+            getChatContentList.addAll(getReceiveChatContentList);
 
             return new BaseResponse<>(getChatContentList);
         } catch (BaseException exception) {
