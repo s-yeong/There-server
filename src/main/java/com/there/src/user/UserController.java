@@ -288,10 +288,6 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
 
-        if(patchUserReq.getNickName() != null) {
-            return new BaseResponse<>(POST_USER_NOT_NULL);
-        }
-
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if(userIdx != userIdxByJwt){
