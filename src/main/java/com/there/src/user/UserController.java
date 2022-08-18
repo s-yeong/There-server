@@ -321,7 +321,7 @@ public class UserController {
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
@@ -330,6 +330,7 @@ public class UserController {
             String result = "삭제되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
+            System.out.println(exception);
             return new BaseResponse<>((exception.getStatus()));
         }
     }
