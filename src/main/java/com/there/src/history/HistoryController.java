@@ -74,7 +74,7 @@ public class HistoryController {
             @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
     })
     @ResponseBody
-    @GetMapping("/{postIdx}")
+    @GetMapping("/posts/{postIdx}")
     public BaseResponse<List<GetHistoryListRes>> getHistoryList(@PathVariable("postIdx") int postIdx) {
         try {
 

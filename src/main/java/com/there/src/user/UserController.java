@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.src.s3.S3Service;
-import com.there.src.user.config.BaseException;
-import com.there.src.user.config.BaseResponse;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
 
 
@@ -65,7 +65,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
+    @GetMapping("/{userIdx}")
     public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx") int userIdx) {
         try {
 
@@ -88,7 +88,7 @@ public class UserController {
     })
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
-    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) {
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
@@ -133,8 +133,6 @@ public class UserController {
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
-        } catch (com.there.config.BaseException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -190,7 +188,7 @@ public class UserController {
     })
     @ResponseBody
     @GetMapping("/kakao/{kakaoIdx}")
-    public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws  BaseException {
+    public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws BaseException {
         String result = "";
             userService.updateKakaoToken(kakaoIdx);
             return new BaseResponse<>(result);
@@ -210,7 +208,7 @@ public class UserController {
     })
     @PostMapping("/{userIdx}/reissue")
     public BaseResponse<TokenDto> reissue(
-            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
+            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException {
         return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
     }
 
@@ -283,7 +281,7 @@ public class UserController {
     @PatchMapping(value = "/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
                                               @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
-            throws IOException, com.there.config.BaseException{
+            throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
@@ -314,7 +312,7 @@ public class UserController {
     })
     @ResponseBody
     @PatchMapping("/{userIdx}/profileImgUrl")
-    public BaseResponse<String> modifydeafultProfileImg(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<String> modifydeafultProfileImg(@PathVariable("userIdx") int userIdx) throws BaseException {
 
             int userIdxByJwt = jwtService.getUserIdx();
             if (userIdx != userIdxByJwt) {
@@ -339,7 +337,7 @@ public class UserController {
     })
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if (userIdx != userIdxByJwt) {

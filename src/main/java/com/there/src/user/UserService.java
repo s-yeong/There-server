@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 import com.there.src.s3.S3Service;
-import com.there.src.user.config.BaseException;
+import com.there.config.BaseException;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 import com.there.src.user.model.*;

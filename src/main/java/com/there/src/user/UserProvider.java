@@ -1,7 +1,7 @@
 package com.there.src.user;
 
 
-import com.there.src.user.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 @Service

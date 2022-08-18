@@ -97,10 +97,29 @@ public enum BaseResponseStatus {
     ACCESS_TOKEN_ERROR(false, 4119, "Access Token을 확인해주세요. "),
 
     // point
-    CREATE_FAIL_CHARGE_POINT(false, 4120, "포인트 충전에 실패하였습니다. ");
+    CREATE_FAIL_CHARGE_POINT(false, 4120, "포인트 충전에 실패하였습니다. "),
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요
+
+    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력하세요."),
+    POST_USERS_EMPTY_PASSWORD(false, 2012, "비밀번호를 입력하세요."),
+    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
+
+
+    POST_USERS_EMPTY_NICKNAME(false, 2022, "닉네임을 입력해주세요."),
+    USERS_EXCEEDED_PROFILEIMG(false,2030, "프로필 사진을 하나만 입력해주세요"),
+
+    DUPLICATED_PWD(false, 3015, "비밀번호가 일치하지 않습니다. "),
+    FAIL_TO_LOGOUT(false, 3015, "로그아웃 실패"),
+
+
+
+    DELETE_FAIL_USER(false, 4002, "유저 삭제를 실패하였습니다. "),
+    REFRESH_TOKEN_ERROR(false, 4003, "Refresh Token을 확인해주세요. "),
+
+
+    MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패");
 
 
     private final boolean isSuccess;
