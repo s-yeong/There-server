@@ -52,7 +52,7 @@ public class KakaoPay {
         // 서버로 요청할 Body
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("cid", "TC0ONETIME");
-        params.add("partner_order_id", "1001");
+        params.add("partner_order_id", "there.com");
         params.add("partner_user_id", Integer.toString(userIdx));
         params.add("item_name", "머니충전");
         params.add("quantity", "1");
@@ -105,7 +105,7 @@ public class KakaoPay {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
         params.add("cid", "TC0ONETIME");
         params.add("tid", kakaoPayReadyVO.getTid());
-        params.add("partner_order_id", "1001");
+        params.add("partner_order_id", "there.com");
         params.add("partner_user_id", String.valueOf(userIdx));
         params.add("pg_token", pg_token);
 
