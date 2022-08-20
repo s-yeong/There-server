@@ -82,7 +82,7 @@ public class PortfolioController {
     @ResponseBody
 
     @GetMapping("/user/{userIdx}")
-    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws BaseException {
+    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
     
         try {
             int userIdxByJwt = jwtService.getUserIdx();
@@ -104,7 +104,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("/{portfolioIdx}")
+    @GetMapping("/pf/{portfolioIdx}")
     public BaseResponse<List<GetPortfolioRes>> getPortfolios (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
         List<GetPortfolioRes> PortfolioListRes = portfolioProvider.getPortfolios(portfolioIdx);
         return new BaseResponse<>(PortfolioListRes);
@@ -128,7 +128,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/{portfolioIdx}")
+    @PatchMapping("/pf/{portfolioIdx}")
     public BaseResponse<String> deletePortfolio (@PathVariable("portfolioIdx") int portfolioIdx) throws BaseException {
 
         portfolioService.deletePortfolio(portfolioIdx);
@@ -143,8 +143,8 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/post/{contentIdx}")
-    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
+    @PatchMapping("/content/{contentIdx}")
+    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) throws BaseException {
 
         portfolioService.deletePostInPortfolio(contentIdx);
         String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
