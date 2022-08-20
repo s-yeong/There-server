@@ -90,7 +90,7 @@ public class UserController {
     @GetMapping("/feed/{userIdx}")
     public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) {
         try {
-            //int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
+
             GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
