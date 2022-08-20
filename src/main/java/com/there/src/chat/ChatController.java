@@ -66,8 +66,8 @@ public class ChatController {
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
     })
-    @MessageMapping("/{sendIdx}/{receiverIdx}")
-    @SendTo("/user/{sendIdx}/{receiverIdx}")
+    @MessageMapping("/{senderIdx}/{receiverIdx}")
+    @SendTo("/user/{senderIdx}/{receiverIdx}")
     public MessagechatContentRes sendContent
             (@DestinationVariable("senderIdx") int senderIdx, @DestinationVariable("receiverIdx")int receiverIdx,
              @Payload MessagechatContentReq messagechatContentReq) throws BaseException {

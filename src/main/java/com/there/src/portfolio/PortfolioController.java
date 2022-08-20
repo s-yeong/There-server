@@ -40,9 +40,9 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/{userIdx}")
+    @PostMapping("/user/{userIdx}")
     public BaseResponse<PostPortfolioRes> createPortfolios
-            (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) throws com.there.config.BaseException {
+            (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx();
@@ -84,7 +84,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("/{userIdx}")
+    @GetMapping("/user/{userIdx}")
     public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
 
         try {
@@ -158,7 +158,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/{contentIdx}")
+    @PatchMapping("/post/{contentIdx}")
     public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
 
         try {
