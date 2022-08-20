@@ -85,8 +85,6 @@ public class PortfolioController {
     public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
     
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
             List<GetPortfolioListRes> PortfolioListRes = portfolioProvider.getPortfolioList(userIdx);
 
