@@ -30,17 +30,13 @@ public class UserProvider {
     }
 
     // 유저 피드 조회
-    public GetUserFeedRes retrieveUserFeed(int userIdx, int userIdxByJwt) throws BaseException {
+    public GetUserFeedRes retrieveUserFeed(int userIdx) throws BaseException {
 
         if (checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
 
         try {
-
-            if (userIdxByJwt != userIdx) {
-
-            }
             GetUserRes getUserRes = userDao.getUsersByIdx(userIdx);
             List<GetUserPostsRes> getUserPosts = userDao.selectUserPosts(userIdx);
             GetUserFeedRes getUserFeed = new GetUserFeedRes(getUserRes, getUserPosts);
