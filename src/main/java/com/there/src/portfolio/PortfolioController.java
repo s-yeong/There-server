@@ -45,8 +45,6 @@ public class PortfolioController {
             (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) {
 
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
             if (postPortfolioReq.getTitle() == null) return new BaseResponse<>(EMPTY_TITLE);
 
             PostPortfolioRes Portfolio = portfolioService.createPortfolios(userIdx, postPortfolioReq);
