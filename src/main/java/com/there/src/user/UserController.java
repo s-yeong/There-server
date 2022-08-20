@@ -90,8 +90,8 @@ public class UserController {
     @GetMapping("/feed/{userIdx}")
     public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) {
         try {
-            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
-            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
+
+            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -277,6 +277,11 @@ public class UserController {
      * 프로필 수정
      * [PATCH] /users/{userIdx}
      */
+    @ApiOperation(value = "프로필 수정 API", notes = "헤더에 jwt 입력 필요")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping(value = "/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
@@ -304,7 +309,7 @@ public class UserController {
      * 유저 기본 프로필 사진 변경
      * [PATCH] /{userIdx}/profileImgUrl
      */
-    @ApiOperation(value = "유저 기본 프로필 사진 변경")
+    @ApiOperation(value = "유저 기본 프로필 사진 변경", notes = "헤더에 jwt 입력 필요")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
@@ -330,7 +335,7 @@ public class UserController {
      * [PATCH] /{userIdx}/status
      * @return BaseResponse<String>
      */
-    @ApiOperation(value = "회원 삭제")
+    @ApiOperation(value = "회원 삭제", notes = "헤더에 jwt 입력 필요")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
