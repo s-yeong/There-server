@@ -40,9 +40,9 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/{userIdx}")
+    @PostMapping("/user/{userIdx}")
     public BaseResponse<PostPortfolioRes> createPortfolios
-            (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) throws com.there.config.BaseException {
+            (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) {
 
         try {
             int userIdxByJwt = jwtService.getUserIdx();
@@ -80,9 +80,10 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
 
+    @GetMapping("/user/{userIdx}")
+    public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) throws BaseException {
+    
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
@@ -142,8 +143,8 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PatchMapping("/{contentIdx}")
-    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) throws BaseException {
+    @PatchMapping("/post/{contentIdx}")
+    public BaseResponse<String> deletePostInPortfolio (@PathVariable("contentIdx") int contentIdx) {
 
         portfolioService.deletePostInPortfolio(contentIdx);
         String result = "포트폴리오 내 게시물 삭제를 성공했습니다.";
