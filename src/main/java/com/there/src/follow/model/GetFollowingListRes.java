@@ -1,4 +1,4 @@
-package com.there.src.chat.model;
+package com.there.src.follow.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,9 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetUserInfoRes {
-
+public class GetFollowingListRes {
     private String nickName;
     private String profileImgUrl;
-
 }

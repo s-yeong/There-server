@@ -125,7 +125,19 @@ public class S3Service {
     }
 
     /**
-     * 유저 프로필 사진업로드
+     * 유저 기본 프로필 사진 업로드
+     */
+    public void uploadUserdeafultProfileImg(int userIdx) throws BaseException {
+        try{
+            String imgPath = "https://there-s3-bucket.s3.ap-northeast-2.amazonaws.com/User/default/profileImg.png";
+            s3Dao.uploadUserProfileImg(imgPath, userIdx);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    /**
+     * 유저 프로필 사진 업로드
      */
     public void uploadUserProfileImg(String imgPath, int userIdx) throws BaseException {
         try{
@@ -135,16 +147,6 @@ public class S3Service {
         }
     }
 
-    /**
-     *  유저 프로필 사진 삭제
-     */
-    public void delUserProfileImg(int userIdx) throws BaseException {
-        try {
-            s3Dao.delUserProfileImg(userIdx);
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 
     /**
      * 게시물 사진 업로드 및 수정

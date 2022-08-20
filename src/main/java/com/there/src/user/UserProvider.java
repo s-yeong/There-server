@@ -1,10 +1,8 @@
 package com.there.src.user;
 
 
-import com.there.src.user.config.BaseException;
-import com.there.src.user.model.GetUserFeedRes;
-import com.there.src.user.model.GetUserPostsRes;
-import com.there.src.user.model.GetUserRes;
+import com.there.config.BaseException;
+import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
@@ -32,17 +30,13 @@ public class UserProvider {
     }
 
     // 유저 피드 조회
-    public GetUserFeedRes retrieveUserFeed(int userIdx, int userIdxByJwt) throws BaseException {
+    public GetUserFeedRes retrieveUserFeed(int userIdx) throws BaseException {
 
         if (checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
 
         try {
-
-            if (userIdxByJwt != userIdx) {
-
-            }
             GetUserRes getUserRes = userDao.getUsersByIdx(userIdx);
             List<GetUserPostsRes> getUserPosts = userDao.selectUserPosts(userIdx);
             GetUserFeedRes getUserFeed = new GetUserFeedRes(getUserRes, getUserPosts);
@@ -79,6 +73,24 @@ public class UserProvider {
         try{
             return userDao.checkUserExist(userIdx);
         } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public PostLoginRes getUserInfo(String email) throws BaseException{
+        try {
+            int userIdx = userDao.getUserInfo(email);
+            String jwt = jwtService.createToken(userIdx);
+            return new PostLoginRes(userIdx, jwt);
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    public KakaoToken getKakaoToken(int kakaoIdx) throws BaseException {
+        try {
+            return userDao.getKakaoToken(kakaoIdx);
+        } catch (Exception exception) {
+            System.out.println(exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

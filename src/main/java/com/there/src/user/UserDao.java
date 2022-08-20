@@ -23,7 +23,7 @@ public class UserDao {
     }
 
     public GetUserRes getUsersByIdx(int userIdx){
-        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info, imgUrl, followingCount, followeeCount\n" +
+        String getUsersByIdxQuery = "select userIdx, name, nickName, email, info, profileImgUrl, followingCount, followeeCount\n" +
                 "from User\n" +
                 "    left join(select followeeIdx, count(followeeIdx) as followingCount\n" +
                 "        from Follow\n" +
@@ -42,7 +42,7 @@ public class UserDao {
                         rs.getString("nickName"),
                         rs.getString("email"),
                         rs.getString("info"),
-                        rs.getString("imgUrl"),
+                        rs.getString("profileImgUrl"),
                         rs.getInt("followingCount"),
                         rs.getInt("followeeCount")),
                 getUsersByIdxParams);
@@ -92,12 +92,20 @@ public class UserDao {
 
     // 회원가입
     public int createUser(PostJoinReq postJoinReq) {
-        String createUserQuery = "insert into User(email, password, name ) VALUES (?, ?, ?)";
-        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getName()};
+        String createUserQuery = "insert into User(email, password,nickName) values(?,  ?,?)";
+        Object[] createUserParams = new Object[]{postJoinReq.getEmail(), postJoinReq.getPassword(), postJoinReq.getNickName()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
 
         String lastInsertQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInsertQuery, int.class);
+    }
+
+    // 카카오 첫 로그인
+    public void createKakaoUser(String email, String nickname, int kakaoIdx) {
+        String createKakaoUserQuery = "insert into User(email, name, kakaoIdx, joinType) values(?,  ?, ?,'kakao')";
+        Object[] createUserParams = new Object[]{email, nickname, kakaoIdx};
+        this.jdbcTemplate.update(createKakaoUserQuery, createUserParams);
+
     }
 
     // 로그아웃
@@ -142,12 +150,61 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(selectRefreshToken, String.class, selectRefreshTokenParams);
     }
 
+    public String getkakaoRefreshToken(int kakaoIdx) {
+        String selectKakaoRefreshToken = "select refreshToken from KakaoUser where kakaoIdx=?";
+        int selectKakaoRefreshTokenParams = kakaoIdx;
+        return this.jdbcTemplate.queryForObject(selectKakaoRefreshToken, String.class, selectKakaoRefreshTokenParams);
+    }
+
+    public KakaoToken getKakaoToken(int kakaoIdx) {
+        String getRefreshTokenQuery = "select accesstoken, refreshtoken from KakaoUser where kakaoIdx = ?";
+        int getRefreshTokenParams = kakaoIdx;
+        return this.jdbcTemplate.queryForObject(getRefreshTokenQuery,
+                (rs, rowNum) -> new KakaoToken(
+                        rs.getString("accesstoken"),
+                        rs.getString("refreshtoken")
+                ),
+                getRefreshTokenParams);
+    }
+
+    public int getkakaoIdx(String accessToken) {
+        String selectkakaoIdxQuery = "select kakaoIdx from KakaoUser where accessToken=?";
+        String selectkakaoIdxParamas = accessToken;
+        return this.jdbcTemplate.queryForObject(selectkakaoIdxQuery, int.class, selectkakaoIdxParamas);
+    }
+    public int updateKakaoToken(int kakaoIdx, KakaoToken kakaoToken) {
+        String updateKakaoTokenQuery = "update KakaoUser set  accesstoken = ?, refreshtoken = ? where kakaoIdx = ?";
+        Object[] updateKakaoTokenParams = new Object[]{kakaoToken.getAccesstoken(), kakaoToken.getRefreshtoken(), kakaoIdx};
+        return this.jdbcTemplate.update(updateKakaoTokenQuery,updateKakaoTokenParams);
+    }
+
+    public void updateKakaoUser (int kakaoIdx) {
+        String updateKakaoUserQuery = "update KakaoUser set kakaoIdx =?";
+        Object[] updateKakaoUserParams = new Object[]{kakaoIdx};
+        this.jdbcTemplate.update(updateKakaoUserQuery, updateKakaoUserParams);
+    }
+
 
     // 회원 정보 수정
     public int updateProfile(int userIdx, PatchUserReq patchUserReq){
         String updateUserNameQuery= "update User set nickName =?, name=?, info=? where userIdx =?";
         Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), patchUserReq.getName(),
                 patchUserReq.getInfo(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateNickName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set nickName =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getNickName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateName(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set name =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getName(), userIdx};
+        return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
+    }
+    public int updateInfo(int userIdx, PatchUserReq patchUserReq){
+        String updateUserNameQuery= "update User set info =? where userIdx =?";
+        Object[] updateUserNameParams = new Object[]{patchUserReq.getInfo(), userIdx};
         return this.jdbcTemplate.update(updateUserNameQuery, updateUserNameParams);
     }
 
@@ -158,4 +215,18 @@ public class UserDao {
 
         return this.jdbcTemplate.update(deleteUserQuery, deleteUserParams);
     }
+
+    public int getUserInfo(String email) {
+        String getUserInfoQuery = "select userIdx from User where email=?";
+        String getUserInfoParams = email;
+
+        return this.jdbcTemplate.queryForObject(getUserInfoQuery, int.class, getUserInfoParams);
+    }
+
+    public void createKakaoUserToken(String accessToken, String refreshToken) {
+        String createKakaoUserTokenQuery = "insert into KakaoUser(accessToken, refreshToken) values(?,?)";
+        Object[] createKakaoUserTokenParams = new Object[]{accessToken, refreshToken};
+        this.jdbcTemplate.update(createKakaoUserTokenQuery, createKakaoUserTokenParams);
+    }
+
 }

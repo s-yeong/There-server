@@ -1,6 +1,6 @@
 package com.there.src.portfolio;
 
-import com.there.src.portfolio.config.*;
+import com.there.config.*;
 import com.there.src.portfolio.model.GetPortfolioListRes;
 import com.there.src.portfolio.model.GetPortfolioRes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.portfolio.config.BaseResponseStatus.GET_FAIL_LIST;
-import static com.there.src.portfolio.config.BaseResponseStatus.GET_FAIL_PORTFOLIO;
+import static com.there.config.BaseResponseStatus.GET_FAIL_LIST;
+import static com.there.config.BaseResponseStatus.GET_FAIL_PORTFOLIO;
 
 @Service
 public class PortfolioProvider {

@@ -48,7 +48,7 @@ public class JwtService {
                 .setHeaderParam("type","jwt")
                 .claim("userIdx",userIdx)
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenVaildMillisecond))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenVaildMillisecond))
                 .signWith(SignatureAlgorithm.HS256,Secret.JWT_SECRET_KEY.getBytes())
                 .compact();
     }
@@ -176,11 +176,13 @@ public class JwtService {
 
     public boolean validationExpiration(String token){
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(Secret.JWT_SECRET_KEY.getBytes()).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(Secret.JWT_SECRET_KEY).parseClaimsJws(token);
             return claims.getBody().getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
+            System.out.println(e);
             return true;
         } catch(Exception e) {
+            System.out.println(e);
             return false;
         }
     }

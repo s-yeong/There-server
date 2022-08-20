@@ -3,8 +3,8 @@ package com.there.src.post;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.there.src.post.config.BaseException;
-import com.there.src.post.config.BaseResponse;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.src.post.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.there.src.post.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Api
 @RestController
@@ -46,6 +46,31 @@ public class PostController {
     }
 
     /**
+     * 게시글 조회 API
+     * posts/:postIdx
+     */
+
+    @ApiOperation(value="게시글 조회 API", notes="PathVariable로 postIdx 받아와서 게시글 상세 조회")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
+    @ResponseBody
+    @GetMapping("/{postIdx}")
+    public BaseResponse<GetPostsRes> getPosts(@PathVariable("postIdx")int postIdx) {
+
+        try{
+
+            GetPostsRes getPostsRes = postProvider.retrievePosts(postIdx);
+            return new BaseResponse<>(getPostsRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+
+    }
+
+    /**
     * 게시글 생성 API
     * posts/users/:userIdx
     */
@@ -57,7 +82,7 @@ public class PostController {
     @ResponseBody
     @PostMapping(value = "/users/{userIdx}",consumes = {"multipart/form-data"})
     public BaseResponse<PostPostsRes> createPosts(@PathVariable("userIdx")int userIdx, @RequestParam("jsonList") String jsonList,
-     @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws IOException, com.there.config.BaseException {
+     @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PostPostsReq postPostsReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
@@ -93,7 +118,7 @@ public class PostController {
     @PatchMapping(value = "change/{postIdx}/users/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> updatePosts(@PathVariable("postIdx")int postIdx, @PathVariable("userIdx")int userIdx,
                                             @RequestParam("jsonList") String jsonList, @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
-            throws IOException, com.there.config.BaseException {
+            throws IOException, BaseException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchPostsReq patchPostsReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
@@ -116,10 +141,15 @@ public class PostController {
      * 게시글 삭제 API
      * posts/{postIdx}/users/:userIdx
      */
+    @ApiOperation(value="게시글 삭제 API", notes="실제 DB를 삭제하지 않고 status를 INACTIVE로 변경")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("deletion/{postIdx}/users/{userIdx}")
     public BaseResponse<String> deletePosts
-    (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx) throws BaseException {
 
         int userIdxByJwt = jwtService.getUserIdx();
 
@@ -139,11 +169,16 @@ public class PostController {
      * 무작위(랜덤) 게시글 리스트 조회 API
      * /posts/random
      */
+    @ApiOperation(value="무작위 게시글 리스트 조회 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("random")
     public BaseResponse<List<GetPostListRes>> getRandomPostList(){
         try {
-            List<GetPostListRes> getPostListRes = postProvider.retrievePosts();
+            List<GetPostListRes> getPostListRes = postProvider.retrieveRandomPosts();
             return new BaseResponse<>(getPostListRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -154,9 +189,14 @@ public class PostController {
      * 인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API
      * /posts/rankingAndfollowerPostList
      */
+    @ApiOperation(value="인기글, 내가 팔로우한 구독자의 게시글 리스트 조회 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @GetMapping("rankingAndfollowerPostList")
-    public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() throws com.there.config.BaseException{
+    public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() {
         try {
             int userIdxByJwt = jwtService.getUserIdx();
 

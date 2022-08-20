@@ -1,6 +1,6 @@
 package com.there.src.history;
 
-import com.there.src.history.cofig.BaseException;
+import com.there.config.*;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
 import org.slf4j.Logger;
@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.there.src.history.cofig.BaseResponseStatus.DATABASE_ERROR;
-import static com.there.src.history.cofig.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class HistoryProvider {
@@ -29,7 +28,7 @@ public class HistoryProvider {
     }
 
     // 히스토리 조회
-    public GetHistoryRes findHistory(int historyIdx) throws BaseException {
+    public GetHistoryRes retrieveHistory(int historyIdx) throws BaseException {
         try {
 
             GetHistoryRes getHistoryRes = historyDao.selectHistory(historyIdx);
@@ -40,7 +39,7 @@ public class HistoryProvider {
     }
 
     // 히스토리 리스트 조회
-    public List<GetHistoryListRes> retrieveHistorys(int postIdx) throws BaseException{
+    public List<GetHistoryListRes> retrieveHistoryList(int postIdx) throws BaseException{
         try{
             List<GetHistoryListRes> getHistoryList = historyDao.selectHistoryList(postIdx);
             return getHistoryList;
@@ -52,28 +51,6 @@ public class HistoryProvider {
 
     }
 
-    // 히스토리 수정화면 조회
-    public GetHistoryScreenRes findModifyHistory(int userIdx, int historyIdx) throws BaseException {
-        try {
-            if(checkUserExist(userIdx) == 0){
-                throw new BaseException(USERS_EMPTY_USER_ID);
-            }
-
-            if(checkHistoryExist(historyIdx) == 0){
-                throw new BaseException(HISTORYS_EMPTY_HISTORY_ID);
-            }
-            if(checkUserHistoryExist(userIdx, historyIdx) == 0){
-                throw new BaseException(USERS_HISTORYS_INVALID_ID);
-            }
-
-            GetHistoryScreenRes getHistoryScreenRes = historyDao.selectModifyHistory(historyIdx);
-            return getHistoryScreenRes;
-
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     public int checkUserExist(int userIdx) throws BaseException{
         try{
             return historyDao.checkUserExist(userIdx);
@@ -81,6 +58,7 @@ public class HistoryProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
     public int checkHistoryExist(int historyIdx) throws BaseException{
         try{

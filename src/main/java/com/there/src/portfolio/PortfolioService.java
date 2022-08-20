@@ -1,6 +1,6 @@
 package com.there.src.portfolio;
 
-import com.there.src.portfolio.config.*;
+import com.there.config.*;
 import com.there.src.portfolio.model.PatchPortfolioReq;
 import com.there.src.portfolio.model.PostPortfolioReq;
 import com.there.src.portfolio.model.PostPortfolioRes;
@@ -8,7 +8,7 @@ import com.there.src.portfolio.model.PostPostInPortfolioRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.portfolio.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
 public class PortfolioService {
