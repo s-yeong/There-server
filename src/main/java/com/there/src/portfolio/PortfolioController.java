@@ -80,7 +80,6 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-
     @GetMapping("/user/{userIdx}")
     public BaseResponse<List<GetPortfolioListRes>> getPortfolioList(@PathVariable("userIdx") int userIdx) {
     
