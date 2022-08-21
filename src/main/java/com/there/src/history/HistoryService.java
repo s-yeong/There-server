@@ -22,15 +22,13 @@ public class HistoryService {
 
     private final HistoryDao historyDao;
     private final HistoryProvider historyProvider;
-    private final JwtService jwtService;
     private final S3Service s3Service;
 
 
     @Autowired
-    public HistoryService(HistoryDao historyDao, HistoryProvider historyProvider, JwtService jwtService, S3Service s3Service) {
+    public HistoryService(HistoryDao historyDao, HistoryProvider historyProvider, S3Service s3Service) {
         this.historyDao = historyDao;
         this.historyProvider = historyProvider;
-        this.jwtService = jwtService;
         this.s3Service = s3Service;
     }
 

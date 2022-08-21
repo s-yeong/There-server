@@ -16,15 +16,13 @@ import static com.there.config.BaseResponseStatus.*;
 public class HistoryProvider {
 
     private final HistoryDao historyDao;
-    private final JwtService jwtService;
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public HistoryProvider(HistoryDao historyDao, JwtService jwtService) {
+    public HistoryProvider(HistoryDao historyDao) {
         this.historyDao = historyDao;
-        this.jwtService = jwtService;
     }
 
     // 히스토리 조회

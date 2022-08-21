@@ -25,21 +25,16 @@ public class HistoryController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final HistoryProvider historyProvider;
-    @Autowired
     private final HistoryService historyService;
-    @Autowired
     private final JwtService jwtService;
+
+
     @Autowired
-    private final S3Service s3Service;
-
-
-    public HistoryController(HistoryProvider historyProvider, HistoryService historyService, JwtService jwtService, S3Service s3Service) {
+    public HistoryController(HistoryProvider historyProvider, HistoryService historyService, JwtService jwtService) {
         this.historyProvider = historyProvider;
         this.historyService = historyService;
         this.jwtService = jwtService;
-        this.s3Service = s3Service;
     }
 
     /**
