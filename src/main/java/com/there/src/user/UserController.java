@@ -32,18 +32,14 @@ import static com.there.utils.ValidationRegex.isRegexEmail;
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final UserProvider userProvider;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final JwtService jwtService;
-    @Autowired
     private final S3Service s3Service;
 
 
 
-
+    @Autowired
     public UserController(UserProvider userProvider, UserService userService, JwtService jwtService, S3Service s3Service) {
         this.userProvider = userProvider;
         this.userService = userService;
