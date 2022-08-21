@@ -7,6 +7,7 @@ import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/search")
 public class SearchController {
 
@@ -24,13 +26,6 @@ public class SearchController {
     private final SearchService searchService;
     private final JwtService jwtService;
 
-
-    @Autowired
-    public SearchController(SearchProvider searchProvider, SearchService searchService, JwtService jwtService) {
-        this.searchProvider = searchProvider;
-        this.searchService = searchService;
-        this.jwtService = jwtService;
-    }
 
     /**
      * 인기 검색어 조회 API

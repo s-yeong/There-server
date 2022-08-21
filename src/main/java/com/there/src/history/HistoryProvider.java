@@ -3,6 +3,7 @@ package com.there.src.history;
 import com.there.config.*;
 import com.there.src.history.model.*;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +14,13 @@ import java.util.List;
 import static com.there.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class HistoryProvider {
 
     private final HistoryDao historyDao;
 
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    public HistoryProvider(HistoryDao historyDao) {
-        this.historyDao = historyDao;
-    }
 
     // 히스토리 조회
     public GetHistoryRes retrieveHistory(int historyIdx) throws BaseException {

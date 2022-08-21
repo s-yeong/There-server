@@ -15,6 +15,7 @@ import com.there.src.user.model.*;
 import com.there.utils.AES256;
 import com.there.utils.JwtService;
 import com.there.utils.SHA256;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,19 +44,8 @@ public class UserService {
     private final UserProvider userProvider;
     private final JwtService jwtService;
     private final S3Service s3Service;
-
     private final RedisTemplate redisTemplate;
 
-
-
-    @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, S3Service s3Service, RedisTemplate redisTemplate) {
-        this.userDao = userDao;
-        this.userProvider = userProvider;
-        this.jwtService = jwtService;
-        this.s3Service = s3Service;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Transactional
     // 로그인

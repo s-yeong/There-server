@@ -3,6 +3,7 @@ package com.there.src.search;
 import com.there.config.BaseException;
 import com.there.src.search.model.*;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,13 @@ import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 
 @Service
+@RequiredArgsConstructor
 public class SearchProvider {
 
     private final SearchDao searchDao;
 
-
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    public SearchProvider(SearchDao searchDao) {
-        this.searchDao = searchDao;
-    }
 
     // 인기 검색어 조회
     public List<GetPopularSearchListRes> retrievePopularSearches() throws BaseException {

@@ -10,6 +10,7 @@ import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/historys")
 public class HistoryController {
 
@@ -29,13 +31,6 @@ public class HistoryController {
     private final HistoryService historyService;
     private final JwtService jwtService;
 
-
-    @Autowired
-    public HistoryController(HistoryProvider historyProvider, HistoryService historyService, JwtService jwtService) {
-        this.historyProvider = historyProvider;
-        this.historyService = historyService;
-        this.jwtService = jwtService;
-    }
 
     /**
      * 히스토리 조회 API   -- ex) "히스토리 제목" 누르면 그 히스토리 조회

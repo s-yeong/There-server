@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static com.there.config.BaseResponseStatus.*;
 
 @Api
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/posts")
 public class PostController {
 
@@ -36,12 +38,6 @@ public class PostController {
     private final PostService postService;
     private final JwtService jwtService;
 
-    @Autowired
-    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService) {
-        this.postProvider = postProvider;
-        this.postService = postService;
-        this.jwtService = jwtService;
-    }
 
     /**
      * 게시글 조회 API
