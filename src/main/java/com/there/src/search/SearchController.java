@@ -20,14 +20,12 @@ public class SearchController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final SearchProvider searchProvider;
-    @Autowired
     private final SearchService searchService;
-    @Autowired
     private final JwtService jwtService;
 
 
+    @Autowired
     public SearchController(SearchProvider searchProvider, SearchService searchService, JwtService jwtService) {
         this.searchProvider = searchProvider;
         this.searchService = searchService;

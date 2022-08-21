@@ -23,13 +23,11 @@ public class PostService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PostDao postDao;
-    private final JwtService jwtService;
     private final S3Service s3Service;
 
     @Autowired
-    public PostService(PostDao postDao, JwtService jwtService, S3Service s3Service) {
+    public PostService(PostDao postDao, S3Service s3Service) {
         this.postDao = postDao;
-        this.jwtService = jwtService;
         this.s3Service = s3Service;
     }
 

@@ -18,12 +18,10 @@ public class PostProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PostDao postDao;
-    private final JwtService jwtService;
 
     @Autowired
-    public PostProvider(PostDao postDao, JwtService jwtService) {
+    public PostProvider(PostDao postDao) {
         this.postDao = postDao;
-        this.jwtService = jwtService;
     }
 
 

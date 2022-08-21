@@ -35,14 +35,12 @@ public class PostController {
     private final PostProvider postProvider;
     private final PostService postService;
     private final JwtService jwtService;
-    private final S3Service s3Service;
 
     @Autowired
-    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService, S3Service s3Service) {
+    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService) {
         this.postProvider = postProvider;
         this.postService = postService;
         this.jwtService = jwtService;
-        this.s3Service = s3Service;
     }
 
     /**

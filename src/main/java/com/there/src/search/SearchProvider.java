@@ -17,15 +17,13 @@ import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 public class SearchProvider {
 
     private final SearchDao searchDao;
-    private final JwtService jwtService;
 
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public SearchProvider(SearchDao searchDao, JwtService jwtService) {
+    public SearchProvider(SearchDao searchDao) {
         this.searchDao = searchDao;
-        this.jwtService = jwtService;
     }
 
     // 인기 검색어 조회

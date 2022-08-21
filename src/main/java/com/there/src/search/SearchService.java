@@ -17,14 +17,12 @@ public class SearchService {
 
     private final SearchDao searchDao;
     private final SearchProvider searchProvider;
-    private final JwtService jwtService;
 
 
     @Autowired
-    public SearchService(SearchDao searchDao, SearchProvider searchProvider, JwtService jwtService) {
+    public SearchService(SearchDao searchDao, SearchProvider searchProvider) {
         this.searchDao = searchDao;
         this.searchProvider = searchProvider;
-        this.jwtService = jwtService;
     }
 
 
