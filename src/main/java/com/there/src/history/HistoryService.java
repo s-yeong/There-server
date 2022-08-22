@@ -4,6 +4,7 @@ import com.there.config.BaseException;
 import com.there.src.history.model.*;
 import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,15 @@ import java.util.List;
 import static com.there.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class HistoryService {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final HistoryDao historyDao;
     private final HistoryProvider historyProvider;
-    private final JwtService jwtService;
     private final S3Service s3Service;
 
-
-    @Autowired
-    public HistoryService(HistoryDao historyDao, HistoryProvider historyProvider, JwtService jwtService, S3Service s3Service) {
-        this.historyDao = historyDao;
-        this.historyProvider = historyProvider;
-        this.jwtService = jwtService;
-        this.s3Service = s3Service;
-    }
 
     // 히스토리 작성
     @Transactional(rollbackFor = BaseException.class)
