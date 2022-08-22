@@ -46,7 +46,7 @@ public enum BaseResponseStatus {
     STATEMENTS_INVALID_SELFINTRO(false,2110,"자기소개 글자 수를 확인해주세요."),
     STATEMENTS_INVALID_WORKINTRO(false,2111,"추구하는 작품 소개 글자 수를 확인해주세요."),
     STATEMENTS_INVALID_CONTACT(false,2112,"연락처 글자 수를 확인해주세요."),
-
+    STATEMENTS_EMPTY(false,2113, "작성된 작가노트가 없습니다."),
 
     /**
      * 3000 : Response 오류
@@ -103,6 +103,8 @@ public enum BaseResponseStatus {
 
     // point
     CREATE_FAIL_CHARGE_POINT(false, 4120, "포인트 충전에 실패하였습니다. "),
+    // artistStatement
+    UPDATE_FAIL_STATEMENT(false,4121, "작가노트 수정에 실패하였습니다."),
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

@@ -1,6 +1,7 @@
 package com.there.src.artistStatement;
 
 import com.there.config.BaseException;
+import com.there.src.artistStatement.model.PatchArtistStatementReq;
 import com.there.src.artistStatement.model.PostArtistStatementReq;
 import com.there.src.artistStatement.model.PostArtistStatementRes;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ArtistStatementService {
     private final ArtistStatementProvider artistStatementProvider;
 
 
+    // 작가노트 작성
     public PostArtistStatementRes createStatement(int userIdx, PostArtistStatementReq postArtistStatementReq)
             throws BaseException {
 
@@ -40,6 +42,40 @@ public class ArtistStatementService {
             throw new BaseException(DATABASE_ERROR);
 
         }
+    }
+
+    // 작가노트 수정
+    public void modifyStatement(int userIdx, PatchArtistStatementReq patchArtistStatementReq)
+        throws BaseException {
+
+        if(artistStatementProvider.checkStatementExist(userIdx) == 0) {
+            throw new BaseException(STATEMENTS_EMPTY);
+        }
+
+        try {
+            int result = 0;
+
+            // 1. 자기소개 수정
+            if(patchArtistStatementReq.getSelfIntroduction() != null) {
+                result = artistStatementDao.updateStatementSelfIntro(userIdx, patchArtistStatementReq);
+            }
+            // 2.추구하는 작품 소개 수정
+            if(patchArtistStatementReq.getWorkIntroduction() != null) {
+                result = artistStatementDao.updateStatementWorkIntro(userIdx, patchArtistStatementReq);
+            }
+            // 3. 연락처 수정
+            if(patchArtistStatementReq.getContact() != null) {
+                result = artistStatementDao.updateStatementContact(userIdx, patchArtistStatementReq);
+            }
+
+            if(result == 0) {
+                throw new BaseException(UPDATE_FAIL_STATEMENT);
+            }
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
 

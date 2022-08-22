@@ -1,6 +1,7 @@
 package com.there.src.artistStatement;
 
 import com.there.src.artistStatement.model.GetArtistStatementRes;
+import com.there.src.artistStatement.model.PatchArtistStatementReq;
 import com.there.src.artistStatement.model.PostArtistStatementReq;
 import com.there.src.history.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,4 +59,35 @@ public class ArtistStatementDao {
         return this.jdbcTemplate.queryForObject(checkStatementExistQuery, int.class,
                 checkStatementExistParam);
     }
+
+    /**
+     * 작가노트 수정
+     * 1. 자기소개 수정
+     * 2. 추구하는 작품 소개 수정
+     * 3. 연락처 수정
+     */
+    // 1. 자기소개 수정
+    public int updateStatementSelfIntro(int userIdx, PatchArtistStatementReq patchArtistStatementReq) {
+            String updateStatementSelfIntroQuery = "update ArtistStatement SET selfIntroduction = ? where userIdx = ?;" ;
+            Object [] updateStatementSelfIntroParams = new Object[] {patchArtistStatementReq.getSelfIntroduction(), userIdx};
+            return this.jdbcTemplate.update(updateStatementSelfIntroQuery,
+                    updateStatementSelfIntroParams);
+    }
+
+    // 2. 추구하는 작품 소개 수정
+    public int updateStatementWorkIntro(int userIdx, PatchArtistStatementReq patchArtistStatementReq) {
+        String updateStatementWorkIntroQuery = "update ArtistStatement SET workIntroduction = ? where userIdx = ?;" ;
+        Object [] updateStatementWorkIntroParams = new Object[] {patchArtistStatementReq.getWorkIntroduction(), userIdx};
+        return this.jdbcTemplate.update(updateStatementWorkIntroQuery,
+                updateStatementWorkIntroParams);
+    }
+
+    // 3. 연락처 수정
+    public int updateStatementContact(int userIdx, PatchArtistStatementReq patchArtistStatementReq) {
+        String updateStatementContactQuery = "update ArtistStatement SET contact = ? where userIdx = ?;" ;
+        Object [] updateStatementContactParams = new Object[] {patchArtistStatementReq.getWorkIntroduction(), userIdx};
+        return this.jdbcTemplate.update(updateStatementContactQuery,
+                updateStatementContactParams);
+    }
+
 }
