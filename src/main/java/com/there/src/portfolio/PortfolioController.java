@@ -43,7 +43,7 @@ public class PortfolioController {
         this.s3Service = s3Service;
     }
 
-    @ApiOperation(value="Portfolio 생성 API", notes="포트폴리오 제목 및 대표 사진 반드시 필요")
+    @ApiOperation(value="Portfolio 생성 API", notes="포트폴리오 제목, 대표 사진 반드시 필요")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
