@@ -3,6 +3,8 @@ package com.there.src.artistStatement;
 import com.there.config.BaseException;
 import com.there.config.BaseResponse;
 import com.there.src.artistStatement.model.GetArtistStatementRes;
+import com.there.src.artistStatement.model.PostArtistStatementReq;
+import com.there.src.artistStatement.model.PostArtistStatementRes;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -11,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+
+import static com.there.config.BaseResponseStatus.*;
 
 
 @RestController
@@ -47,6 +51,47 @@ public class ArtistStatementController {
         }
     }
 
+    /**
+     * 작가노트 작성 API
+     * [POST] /statements/users/:userIdx
+     */
+    @ApiOperation(value="작가노트 작성 API", notes="유저의 작가노트를 작성합니다.")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(code = 2109, message = "이미 작성된 작가노트가 있습니다."),
+            @ApiResponse(code = 2110, message = "자기소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2111, message = "추구하는 작품 소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2112, message = "연락처 글자 수를 확인해주세요."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
+    @ResponseBody
+    @PostMapping("/users/{userIdx}")
+    public BaseResponse<PostArtistStatementRes> createArtistStatement(@PathVariable("userIdx") int userIdx,
+                                                                      @RequestBody PostArtistStatementReq postArtistStatementReq) {
+        try {
+
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
+            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
+            if(postArtistStatementReq.getSelfIntroduction().length() > 300) {
+                return new BaseResponse<>(STATEMENTS_INVALID_SELFINTRO);
+            }
+
+            if(postArtistStatementReq.getWorkIntroduction().length() > 300) {
+                return new BaseResponse<>(STATEMENTS_INVALID_WORKINTRO);
+            }
+
+            if(postArtistStatementReq.getContact().length() > 50) {
+                return new BaseResponse<>(STATEMENTS_INVALID_CONTACT);
+            }
+            PostArtistStatementRes postArtistStatementRes = artistStatementService.createStatement(userIdx, postArtistStatementReq);
+            return new BaseResponse<>(postArtistStatementRes);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
 

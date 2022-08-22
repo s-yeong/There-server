@@ -1,10 +1,8 @@
 package com.there.src.artistStatement;
 
 import com.there.config.BaseException;
-import com.there.src.history.model.PatchHistoryReq;
-import com.there.src.history.model.PostHistoryReq;
-import com.there.src.history.model.PostHistoryRes;
-import com.there.src.s3.S3Service;
+import com.there.src.artistStatement.model.PostArtistStatementReq;
+import com.there.src.artistStatement.model.PostArtistStatementRes;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +22,25 @@ public class ArtistStatementService {
 
     private final ArtistStatementDao artistStatementDao;
     private final ArtistStatementProvider artistStatementProvider;
+
+
+    public PostArtistStatementRes createStatement(int userIdx, PostArtistStatementReq postArtistStatementReq)
+            throws BaseException {
+
+        if(artistStatementProvider.checkStatementExist(userIdx) == 1){
+            throw new BaseException(STATEMENTS_EXIST);
+        }
+
+        try{
+
+            int statementIdx = artistStatementDao.insertStatement(userIdx, postArtistStatementReq);
+            return new PostArtistStatementRes(statementIdx);
+        }
+        catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+
+        }
+    }
 
 
 

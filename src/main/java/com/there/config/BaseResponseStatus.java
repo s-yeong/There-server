@@ -41,6 +41,11 @@ public enum BaseResponseStatus {
     USERS_COMMENT_INVALID_ID(false, 2106, "댓글 작성 권한이 없습니다."),
     COMMENT_INVALID(false, 2107,"유효하지 않는 댓글입니다."),
     COMMENTS_EMPTY_CONTENT(false, 2108, "댓글 내용을 입력하세요."),
+    // artistStatement
+    STATEMENTS_EXIST(false,2109, "이미 작성된 작가노트가 있습니다."),
+    STATEMENTS_INVALID_SELFINTRO(false,2110,"자기소개 글자 수를 확인해주세요."),
+    STATEMENTS_INVALID_WORKINTRO(false,2111,"추구하는 작품 소개 글자 수를 확인해주세요."),
+    STATEMENTS_INVALID_CONTACT(false,2112,"연락처 글자 수를 확인해주세요."),
 
 
     /**

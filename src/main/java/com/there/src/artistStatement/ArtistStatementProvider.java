@@ -30,5 +30,14 @@ public class ArtistStatementProvider {
     }
 
 
+    // 작가노트 체크
+    public int checkStatementExist(int userIdx) throws BaseException {
+        try {
+            return artistStatementDao.checkStatementExist(userIdx);
+
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }
