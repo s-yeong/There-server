@@ -26,6 +26,7 @@ public enum BaseResponseStatus {
     EMPTY_CONTENT(false, 2006, "내용을 입력해주세요."),
     USERS_INVALID_ID(false,2007, "해당 유저가 아닙니다."),
     USERS_EMPTY_USER_ID(false, 2008, "없는 아이디입니다."),
+    FAIL_MODIFY(false, 2009, "수정 실패 했습니다."),
 
     // posts
     EXCEEDED_IMGURL(false,2100, "게시글 사진을 하나만 올려주세요"),
@@ -42,6 +43,8 @@ public enum BaseResponseStatus {
     COMMENT_INVALID(false, 2107,"유효하지 않는 댓글입니다."),
     COMMENTS_EMPTY_CONTENT(false, 2108, "댓글 내용을 입력하세요."),
 
+    // portfolio
+    EMPTY_POST(false, 2109, "포스트를 선택하세요"),
 
     /**
      * 3000 : Response 오류

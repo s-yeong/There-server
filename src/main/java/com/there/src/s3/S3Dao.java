@@ -63,5 +63,13 @@ public class S3Dao {
         this.jdbcTemplate.update(uploadPostImgUrlQuery, uploadPostImgUrlParams);
     }
 
+    /**
+     * 포트폴리오 이미지 업로드
+     */
+    public void uploadPortfolioImg(String imgPath, int portfolioIdx) {
+        String uploadPostImgUrlQuery = "update Portfolio SET ImgUrl = ? where portfolioIdx = ?;";
+        Object[] uploadPostImgUrlParams = new Object[]{imgPath, portfolioIdx};
+        this.jdbcTemplate.update(uploadPostImgUrlQuery, uploadPostImgUrlParams);
+    }
 }
 

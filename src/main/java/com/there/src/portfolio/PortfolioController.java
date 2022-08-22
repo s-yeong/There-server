@@ -1,7 +1,13 @@
 package com.there.src.portfolio;
 
+import com.amazonaws.services.ec2.model.IdFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.config.*;
 import com.there.src.portfolio.model.*;
+import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,43 +17,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.there.config.BaseResponseStatus.EMPTY_IMGURL;
 import static com.there.config.BaseResponseStatus.EMPTY_TITLE;
-import static com.there.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @Api
 @RestController
-@RequestMapping("/portfolio")
+@RequestMapping("/portfolios")
 public class PortfolioController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final JwtService jwtService;
     private final PortfolioService portfolioService;
     private final PortfolioProvider portfolioProvider;
+    private final S3Service s3Service;
 
     @Autowired
-    public PortfolioController(JwtService jwtService, PortfolioService portfolioService, PortfolioProvider portfolioProvider) {
+    public PortfolioController(JwtService jwtService, PortfolioService portfolioService, PortfolioProvider portfolioProvider, S3Service s3Service) {
         this.jwtService = jwtService;
         this.portfolioService = portfolioService;
         this.portfolioProvider = portfolioProvider;
+        this.s3Service = s3Service;
     }
 
-    @ApiOperation(value="Portfolio 생성 API", notes="포트폴리오 제목 반드시 입력 필요")
+    @ApiOperation(value="Portfolio 생성 API", notes="포트폴리오 제목 및 대표 사진 반드시 필요")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/user/{userIdx}")
+    @PostMapping(value = "/users/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<PostPortfolioRes> createPortfolios
-            (@PathVariable("userIdx") int userIdx, @RequestBody PostPortfolioReq postPortfolioReq) {
+            (@PathVariable("userIdx") int userIdx, @RequestParam("jsonList") String jsonList,
+             @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PostPortfolioReq postPortfolioReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
 
         try {
-            if (postPortfolioReq.getTitle() == null) return new BaseResponse<>(EMPTY_TITLE);
 
-            PostPortfolioRes Portfolio = portfolioService.createPortfolios(userIdx, postPortfolioReq);
+            if (postPortfolioReq.getTitle() == null) return new BaseResponse<>(EMPTY_TITLE);
+            if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
+
+            PostPortfolioRes Portfolio = portfolioService.createPortfolios(userIdx, postPortfolioReq, MultipartFiles);
             return new BaseResponse<>(Portfolio);
 
         } catch (BaseException exception) {
@@ -57,18 +72,23 @@ public class PortfolioController {
         }
     }
 
-    @ApiOperation(value="Portfolio 내 Post 추가 API", notes="")
+    @ApiOperation(value="Portfolio 내 Post 추가 API", notes="반드시 1개 이상의 포스트 선택")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping("/{portfolioIdx}/post/{postIdx}")
-    public BaseResponse<PostPostInPortfolioRes> createPostInPortfolio
-            (@PathVariable("portfolioIdx")int portfolioIdx, @PathVariable("postIdx")int postIdx) throws BaseException {
+    @PostMapping(value = "/{portfolioIdx}/post", consumes = {"multipart/form-data"})
+    public BaseResponse<String> createPostInPortfolio
+            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestParam("jsonList") String jsonList) throws BaseException, JsonProcessingException {
 
-        PostPostInPortfolioRes PostInPortfolioRes = portfolioService.createPostInPortfolio(portfolioIdx, postIdx);
-        return new BaseResponse<>(PostInPortfolioRes);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PostPostInPortfolioReq postPostInPortfolioReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
+
+        portfolioService.createPostInPortfolio(portfolioIdx, postPostInPortfolioReq);
+        String result = "포스트 추가를 하였습니다.";
+
+        return new BaseResponse<>(result);
     }
 
 
@@ -108,10 +128,14 @@ public class PortfolioController {
 
     @ResponseBody
     @PatchMapping("/modify/{portfolioIdx}")
-    public BaseResponse<String> ModifyPortfolioTitle
-            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestBody PatchPortfolioReq patchPortfolioReq) throws BaseException {
+    public BaseResponse<String> ModifyPortfolio
+            (@PathVariable("portfolioIdx")int portfolioIdx, @RequestParam("jsonList") String jsonList,
+             @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws BaseException, JsonProcessingException {
 
-        portfolioService.ModifyPortfolioTitle(portfolioIdx, patchPortfolioReq);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        PatchPortfolioReq patchPortfolioReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
+
+        portfolioService.ModifyPortfolio(portfolioIdx, patchPortfolioReq, MultipartFiles);
         String result = "포트폴리오 이름 변경 하였습니다.";
         return new BaseResponse<>(result);
 
