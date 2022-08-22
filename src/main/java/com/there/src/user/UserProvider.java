@@ -4,6 +4,7 @@ package com.there.src.user;
 import com.there.config.BaseException;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserProvider {
 
     private final UserDao userDao;
@@ -23,11 +25,6 @@ public class UserProvider {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    public UserProvider(UserDao userDao, JwtService jwtService) {
-        this.userDao = userDao;
-        this.jwtService = jwtService;
-    }
 
     // 유저 피드 조회
     public GetUserFeedRes retrieveUserFeed(int userIdx) throws BaseException {

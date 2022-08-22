@@ -2,6 +2,7 @@ package com.there.src.search;
 
 import com.there.config.BaseException;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +12,13 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class SearchService {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SearchDao searchDao;
     private final SearchProvider searchProvider;
-    private final JwtService jwtService;
-
-
-    @Autowired
-    public SearchService(SearchDao searchDao, SearchProvider searchProvider, JwtService jwtService) {
-        this.searchDao = searchDao;
-        this.searchProvider = searchProvider;
-        this.jwtService = jwtService;
-    }
 
 
     // 최근 검색어 삭제
