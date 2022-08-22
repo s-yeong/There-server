@@ -78,6 +78,24 @@ public class ArtistStatementService {
 
     }
 
+    // 작가노트 삭제
+    public void deleteStatement(int userIdx) throws BaseException{
+
+        if(artistStatementProvider.checkStatementExist(userIdx) == 0) {
+            throw new BaseException(STATEMENTS_EMPTY);
+        }
+
+        try {
+
+            int result = artistStatementDao.deleteStatement(userIdx);
+
+            if(result == 0) {
+                throw new BaseException(DELETE_FAIL_STATEMENT);
+            }
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 }

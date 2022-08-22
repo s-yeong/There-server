@@ -90,4 +90,11 @@ public class ArtistStatementDao {
                 updateStatementContactParams);
     }
 
+    // 작가노트 삭제
+    public int deleteStatement(int userIdx) {
+        String deleteStatementQuery = "delete from ArtistStatement where userIdx = ?;";
+        int deleteStatementParam = userIdx;
+        return this.jdbcTemplate.update(deleteStatementQuery, deleteStatementParam);
+    }
+
 }

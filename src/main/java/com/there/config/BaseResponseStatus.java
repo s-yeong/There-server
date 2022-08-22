@@ -105,6 +105,7 @@ public enum BaseResponseStatus {
     CREATE_FAIL_CHARGE_POINT(false, 4120, "포인트 충전에 실패하였습니다. "),
     // artistStatement
     UPDATE_FAIL_STATEMENT(false,4121, "작가노트 수정에 실패하였습니다."),
+    DELETE_FAIL_STATEMENT(false,4122, "작가노트 삭제에 실패하였습니다."),
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

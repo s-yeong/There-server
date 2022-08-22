@@ -98,7 +98,6 @@ public class ArtistStatementController {
      * 작가노트 수정 API
      * [PATCH] /statements/users/:userIdx
      */
-
     @ApiOperation(value="작가노트 수정 API", notes="유저의 작가노트를 수정합니다.")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -148,6 +147,35 @@ public class ArtistStatementController {
     }
 
 
+    /**
+     * 작가노트 삭제 API
+     * [DELETE] /statements/users/:userIdx
+     */
+    @ApiOperation(value="작가노트 삭제 API", notes="유저의 작가노트를 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(code = 2113, message = "작성된 작가노트가 없습니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
+            @ApiResponse(code = 4122, message = "작가노트 삭제에 실패하였습니다."),
+    })
+    @ResponseBody
+    @DeleteMapping("/users/{userIdx}")
+    public BaseResponse<String> deleteArtistStatement(@PathVariable("userIdx") int userIdx) {
+        try {
+
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
+            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
+            artistStatementService.deleteStatement(userIdx);
+            String result = "작가노트가 삭제되었습니다.";
+
+            return new BaseResponse<>(result);
+
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
 
