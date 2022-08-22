@@ -127,7 +127,7 @@ public class PortfolioController {
     }
 
     @ResponseBody
-    @PatchMapping("/modify/{portfolioIdx}")
+    @PatchMapping("/change/{portfolioIdx}")
     public BaseResponse<String> ModifyPortfolio
             (@PathVariable("portfolioIdx")int portfolioIdx, @RequestParam("jsonList") String jsonList,
              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws BaseException, JsonProcessingException {
