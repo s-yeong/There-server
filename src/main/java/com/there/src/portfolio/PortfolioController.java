@@ -49,7 +49,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping(value = "/users/{userIdx}", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/user/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<PostPortfolioRes> createPortfolios
             (@PathVariable("userIdx") int userIdx, @RequestParam("jsonList") String jsonList,
              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws JsonProcessingException {
@@ -135,8 +135,7 @@ public class PortfolioController {
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchPortfolioReq patchPortfolioReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
 
-        portfolioService.ModifyPortfolio(portfolioIdx, patchPortfolioReq, MultipartFiles);
-        String result = "포트폴리오 이름 변경 하였습니다.";
+        String result = portfolioService.ModifyPortfolio(portfolioIdx, patchPortfolioReq, MultipartFiles);
         return new BaseResponse<>(result);
 
     }
