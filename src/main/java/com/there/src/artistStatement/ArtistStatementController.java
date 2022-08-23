@@ -60,10 +60,10 @@ public class ArtistStatementController {
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
-            @ApiResponse(code = 2109, message = "이미 작성된 작가노트가 있습니다."),
-            @ApiResponse(code = 2110, message = "자기소개 글자 수를 확인해주세요."),
-            @ApiResponse(code = 2111, message = "추구하는 작품 소개 글자 수를 확인해주세요."),
-            @ApiResponse(code = 2112, message = "연락처 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2110, message = "이미 작성된 작가노트가 있습니다."),
+            @ApiResponse(code = 2111, message = "자기소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2112, message = "추구하는 작품 소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2113, message = "연락처 글자 수를 확인해주세요."),
             @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
     })
     @ResponseBody
@@ -102,10 +102,10 @@ public class ArtistStatementController {
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
-            @ApiResponse(code = 2110, message = "자기소개 글자 수를 확인해주세요."),
-            @ApiResponse(code = 2111, message = "추구하는 작품 소개 글자 수를 확인해주세요."),
-            @ApiResponse(code = 2112, message = "연락처 글자 수를 확인해주세요."),
-            @ApiResponse(code = 2113, message = "작성된 작가노트가 없습니다."),
+            @ApiResponse(code = 2111, message = "자기소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2112, message = "추구하는 작품 소개 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2113, message = "연락처 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2114, message = "작성된 작가노트가 없습니다."),
             @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
             @ApiResponse(code = 4121, message = "작가노트 수정에 실패하였습니다."),
     })
@@ -155,7 +155,7 @@ public class ArtistStatementController {
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
-            @ApiResponse(code = 2113, message = "작성된 작가노트가 없습니다."),
+            @ApiResponse(code = 2114, message = "작성된 작가노트가 없습니다."),
             @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
             @ApiResponse(code = 4122, message = "작가노트 삭제에 실패하였습니다."),
     })
