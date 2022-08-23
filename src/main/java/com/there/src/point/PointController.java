@@ -6,6 +6,7 @@ import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @Controller
 public class PointController {
 
@@ -33,12 +35,7 @@ public class PointController {
     private final PointProvider pointProvider;
     private KakaoPayReadyVO kakaoPayReadyVO;
 
-    @Autowired
-    public PointController(KakaoPay kakaopay, JwtService jwtService, PointProvider pointProvider) {
-        this.kakaopay = kakaopay;
-        this.jwtService = jwtService;
-        this.pointProvider = pointProvider;
-    }
+
 
     /**
      * 내 포인트 충전 API

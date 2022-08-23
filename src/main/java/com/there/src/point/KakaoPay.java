@@ -1,6 +1,7 @@
 package com.there.src.point;
 
 import com.there.src.point.model.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -20,23 +21,16 @@ import static java.lang.Integer.parseInt;
 
 
 @Service
+@RequiredArgsConstructor
 @Log
 public class KakaoPay {
 
     private static final String HOST = "https://kapi.kakao.com";
-
-
     private KakaoPayReadyVO kakaoPayReadyVO;
-
     private KakaoPayApprovalVO kakaoPayApprovalVO;
-
-
     private final PointDao pointDao;
     private GetPointCancleRes getPointCancleRes;
-    @Autowired
-    public KakaoPay(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
+
 
     public String kakaoPayReady(int userIdx, PostPointReq postpointReq) {
 
@@ -82,9 +76,7 @@ public class KakaoPay {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         return "/pay";
-
     }
 
     public KakaoPayApprovalVO kakaoPayInfo(String pg_token, int userIdx) {
@@ -108,8 +100,6 @@ public class KakaoPay {
         params.add("partner_order_id", "there.com");
         params.add("partner_user_id", String.valueOf(userIdx));
         params.add("pg_token", pg_token);
-
-
 
         HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 
@@ -176,5 +166,4 @@ public class KakaoPay {
         }
         return null;
     }
-
 }
