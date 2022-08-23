@@ -9,6 +9,7 @@ import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/follow")
 public class FollowController {
 
@@ -28,12 +30,6 @@ public class FollowController {
     private final FollowProvider followProvider;
     private final JwtService jwtService;
 
-    @Autowired
-    public FollowController(FollowProvider followProvider, FollowService followService, JwtService jwtService) {
-        this.followProvider = followProvider;
-        this.followService = followService;
-        this.jwtService = jwtService;
-    }
 
     /**
      * 팔로우 API
