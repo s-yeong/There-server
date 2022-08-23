@@ -160,5 +160,16 @@ public class S3Service {
         }
     }
 
+    /**
+     * 포트폴리오 사진 업로드 및 수정
+     */
 
+    public void uploadPortfolioImg(String imgPath, int portfolioIdx) throws BaseException {
+        try{
+            s3Dao.uploadPortfolioImg(imgPath, portfolioIdx);
+        } catch (Exception exception) {
+            System.out.println(exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
