@@ -4,6 +4,7 @@ import com.there.src.portfolio.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -34,24 +35,18 @@ public class PortfolioDao {
 
     /**
      * PortPolio 내 Post 추가
-     * @param portfolioIdx
-     * @param postIdx
-     * @return
      */
-    public int createPostInPortfolio(int portfolioIdx, int postIdx) {
+    public void createPostInPortfolio(int portfolioIdx, int postIdx) {
+
         String createPostInPortfolioQuery = "insert into Portfolio_Post (portfolioIdx, postIdx) values (?, ?);";
-        String LastContentIdx = "select last_insert_id()";
         Object[] createPostInPortfolioParams = new Object[]{portfolioIdx, postIdx};
 
         this.jdbcTemplate.update(createPostInPortfolioQuery, createPostInPortfolioParams);
 
-        return this.jdbcTemplate.queryForObject(LastContentIdx, int.class);
     }
 
     /**
      * Portfolio List 조회
-     * @param userIdx
-     * @return
      */
     public List<GetPortfolioListRes> getPortfolioList(int userIdx) {
 
@@ -72,8 +67,6 @@ public class PortfolioDao {
 
     /**
      * Portfolio 조회
-     * @param portfolioIdx
-     * @return
      */
     public List<GetPortfolioRes> getPortfolios(int portfolioIdx) {
 
@@ -92,14 +85,11 @@ public class PortfolioDao {
 
     /**
      * Portfolio 제목 변경
-     * @param portfolioIdx
-     * @param patchPortfolioReq
-     * @return
      */
-    public int ModifyPortfolioTitle(int portfolioIdx, PatchPortfolioReq patchPortfolioReq) {
+    public int updateTitle(int portfolioIdx, String Title) {
 
         String ModifyPortfolioTitleQuery = "UPDATE Portfolio SET title = ? WHERE portfolioIdx = ?";
-        Object[] ModifyPortfolioTitleParams = new Object[]{portfolioIdx, patchPortfolioReq.getTitle()};
+        Object[] ModifyPortfolioTitleParams = new Object[]{Title, portfolioIdx};
 
         return this.jdbcTemplate.update(ModifyPortfolioTitleQuery, ModifyPortfolioTitleParams);
 

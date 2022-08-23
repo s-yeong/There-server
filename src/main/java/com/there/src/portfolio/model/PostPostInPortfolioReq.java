@@ -4,15 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class PostPortfolioReq {
+public class PostPostInPortfolioReq {
 
-    private String title;
-    private int[] postIdx = null;
-
+    private int [] postIdx;
 }
