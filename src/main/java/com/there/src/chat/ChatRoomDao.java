@@ -50,7 +50,7 @@ public class ChatRoomDao {
                 "from chatContent\n" +
                 "where (roomIdx, created_At) in (select roomIdx, max(created_At) as created_At from chatContent where status = 'ACTIVE' group by roomIdx)\n" +
                 "        and roomIdx in (select roomIdx from chatRoom where chatRoom.senderIdx = ? and chatRoom.status = 'ACTIVE')\n" +
-                "order by roomIdx;";
+                "group by roomIdx;";
 
         String getUnreadCountQuery = "select      roomIdx, count(*) as count\n" +
                 "from        chatContent\n" +
@@ -94,9 +94,9 @@ public class ChatRoomDao {
                         (tmp_Room.getRoomIdx(), tmp_Room.getSenderIdx(), tmp_Room.getReceiverIdx(),
                                 tmp_Last.getContent(), tmp_Last.getCreated_At(),
                                 tmp_Room.getNickName(), tmp_Room.getProfileImgUrl(), tmp_Count.getCount());
-           }
 
-            RoomList.add(Room);
+                RoomList.add(Room);
+           }
 
         }
 
