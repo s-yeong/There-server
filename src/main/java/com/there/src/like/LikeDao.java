@@ -23,7 +23,7 @@ public class LikeDao {
     // 좋아요 및 감정표현 생성
     public int createLikes(int userIdx, PostLikeReq postLikeReq) {
 
-        String insertLikeQuery = "insert into postLikes (userIdx, postIdx, emotion) values (?, ?, ?);";
+        String insertLikeQuery = "insert into postLike (userIdx, postIdx, emotion) values (?, ?, ?);";
         Object[] insertLikeParams = new Object[]{userIdx, postLikeReq.getPostIdx(), postLikeReq.getEmotion()};
         String lastinsertIdxQuery = "select last_insert_id()";
 
