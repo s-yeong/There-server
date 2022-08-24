@@ -1,11 +1,14 @@
 package com.there.src.chat;
 
+import com.there.config.BaseException;
+import com.there.config.BaseResponseStatus;
 import com.there.src.chat.model.GetRoomListRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,8 +31,16 @@ public class ChatRoomProvider {
 
         List<GetRoomListRes> getRoomInfoList = chatRoomDao.selectChatRoomList(userIdx);
 
+
         // 읽은 메시지로 상태 변경 (단, 읽지 않은 메시지가 있을 때만)
-        if (chatContentDao.selectUnCheckCount(userIdx) > 0) chatContentDao.checkChatContent(userIdx);
+        if (chatContentDao.selectUnCheckCount(userIdx) > 0) {
+
+            for (int i = 0 ; i < getRoomInfoList.size(); i++) {
+                chatContentDao.checkChatContent(getRoomInfoList.get(i).getRoomIdx());
+            }
+
+        }
+
 
         return getRoomInfoList;
     }
