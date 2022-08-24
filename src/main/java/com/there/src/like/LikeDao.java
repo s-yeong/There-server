@@ -34,7 +34,7 @@ public class LikeDao {
 
     // 좋아요 및 감정표현 조회
     public List<GetLikeRes> selectLikes(int postIdx) {
-        String selectLikeQuery = "select emotion, count(*) count from postLikes where postIdx = ? group by emotion;";
+        String selectLikeQuery = "select emotion, count(*) count from postLike where postIdx = ? group by emotion;";
         int selectLikeParams = postIdx;
 
         return this.jdbcTemplate.query(selectLikeQuery, (rs, rowNum) -> new GetLikeRes(
@@ -45,7 +45,7 @@ public class LikeDao {
 
     // 좋아요 및 감정표현 수정
     public int updateLikes(int userIdx, int postIdx, int emotion) {
-        String updateLikesQuery = "UPDATE postLikes SET emotion = ? WHERE userIdx = ? and postIdx = ?";
+        String updateLikesQuery = "UPDATE postLike SET emotion = ? WHERE userIdx = ? and postIdx = ?";
         Object[] updateLikesParams = new Object[]{emotion, userIdx, postIdx};
 
         return this.jdbcTemplate.update(updateLikesQuery, updateLikesParams);
@@ -53,7 +53,7 @@ public class LikeDao {
 
     // 좋아요 및 감정표현 삭제
     public int deleteLikes(int likeIdx, DeleteLikeReq deleteLikeReq) {
-        String insertLikeQuery = "delete from postLikes where likeIdx = ? ;";
+        String insertLikeQuery = "delete from postLike where likeIdx = ? ;";
         int insertLikeParams = likeIdx;
 
         return this.jdbcTemplate.update(insertLikeQuery, insertLikeParams);
