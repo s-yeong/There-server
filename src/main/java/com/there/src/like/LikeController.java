@@ -36,8 +36,8 @@ public class LikeController {
      * /likes/users/:userIdx
      */
     @ResponseBody
-    @PostMapping("/users/{userIdx}")
-    public BaseResponse<PostLikeRes> createLikes(@PathVariable("userIdx")int userIdx, @RequestBody PostLikeReq postLikeReq) throws com.there.config.BaseException {
+    @PostMapping("/users/{usedIdx}")
+    public BaseResponse<PostLikeRes> createLikes(@PathVariable("userIdx")int userIdx, @RequestBody PostLikeReq postLikeReq) {
 
         try {
 
