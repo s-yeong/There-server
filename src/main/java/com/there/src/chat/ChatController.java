@@ -57,7 +57,8 @@ public class ChatController {
     public BaseResponse<PostChatRoomRes> createRoom (@PathVariable("receiverIdx")int receiverIdx) {
 
         try {
-            int senderIdx = jwtService.getUserIdx();
+            int senderIdx = jwtService.getUserIdx1(jwtService.getJwt());
+
             PostChatRoomRes postChatRoomRes = chatRoomService.createRoom(senderIdx, receiverIdx);
             return new BaseResponse<>(postChatRoomRes);
         } catch (BaseException exception) {
