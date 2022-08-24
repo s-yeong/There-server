@@ -79,12 +79,7 @@ public class ChatRoomDao {
                                 rs.getInt("roomIdx"),
                                 rs.getInt("count")), getChatRoomListParams);
 
-        // 안 읽은 메시지가 없을 경우
-        if (CountInfo.size() == 0) {
-            for (int i = 0; i < RoomInfo.size() ; i++) {
-                CountInfo.add(new GetUnreadCountRes(RoomInfo.get(i).getRoomIdx(), 0));
-            }
-        }
+
 
         for (int i = 0; i < RoomInfo.size(); i++) {
 
@@ -92,6 +87,9 @@ public class ChatRoomDao {
             GetRoomInfoRes tmp_Room = RoomInfo.get(i);
             GetLastContentRes tmp_Last = lastContent.get(i);
             GetUnreadCountRes tmp_Count = CountInfo.get(i);
+            if (tmp_Count == null) {
+                CountInfo.add(new GetUnreadCountRes(RoomInfo.get(i).getRoomIdx(), 0));
+            }
 
             // 채팅방 Idx가 동일할 때 채팅방 정보에 대한 객체 생성
             if (tmp_Room.getRoomIdx() == tmp_Count.getRoomIdx() & tmp_Last.getRoomIdx() == tmp_Count.getRoomIdx()) {
