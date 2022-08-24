@@ -33,10 +33,10 @@ public class LikeController {
 
     /**
      * 좋아요 및 감정표현 생성 API
-     * /lieks/users/:userIdx
+     * /likes/users/:userIdx
      */
     @ResponseBody
-    @PostMapping("/users/{usedIdx}")
+    @PostMapping("/users/{userIdx}")
     public BaseResponse<PostLikeRes> createLikes(@PathVariable("userIdx")int userIdx, @RequestBody PostLikeReq postLikeReq) throws com.there.config.BaseException {
 
         try {
@@ -48,6 +48,7 @@ public class LikeController {
 
             PostLikeRes postLikeRes = likeService.createLikes(userIdx, postLikeReq);
             return new BaseResponse<>(postLikeRes);
+
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -58,7 +59,7 @@ public class LikeController {
      * likes/posts/:postIdx
      */
     @ResponseBody
-    @GetMapping("posts/{postIdx}")
+    @GetMapping("/posts/{postIdx}")
     public BaseResponse<List<GetLikeRes>> selectLikes(@PathVariable("postIdx")int postIdx) {
         try {
             List<GetLikeRes> getLikes = likeProvider.retrieveLikes(postIdx);
@@ -97,11 +98,11 @@ public class LikeController {
      * likes/:likesIdx
      */
     @ResponseBody
-    @DeleteMapping("/{likesIdx}")
+    @DeleteMapping("/{likeIdx}")
     public BaseResponse<String> deleteLikes
-    (@PathVariable("likesIdx")int likesIdx, @RequestBody DeleteLikeReq deleteLikeReq) {
+    (@PathVariable("likeIdx")int likeIdx, @RequestBody DeleteLikeReq deleteLikeReq) {
         try {
-            likeService.deleteLikes(likesIdx, deleteLikeReq);
+            likeService.deleteLikes(likeIdx, deleteLikeReq);
             String result = "삭제 완료";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {

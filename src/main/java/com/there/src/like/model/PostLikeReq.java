@@ -4,9 +4,10 @@ import lombok.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PostLikeReq {
 
-    private int postIdx;
     private int emotion;
+    private int postIdx;
 
 }
