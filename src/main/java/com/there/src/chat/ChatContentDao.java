@@ -78,7 +78,7 @@ public class ChatContentDao {
     // 메시지 확인
     public int checkChatContent(int roomIdx) {
         String updateChatContentQuery = "UPDATE  chatContent\n" +
-                "SET     `check` = 1\n" +
+                "SET     `read` = 1\n" +
                 "WHERE   status = 'ACTIVE' and roomIdx = ?;";
         int updateChatContentParams = roomIdx;
 
