@@ -49,15 +49,16 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping(value = "/user/{userIdx}", consumes = {"multipart/form-data"})
+    @PostMapping(value = "", consumes = {"multipart/form-data"})
     public BaseResponse<PostPortfolioRes> createPortfolios
-            (@PathVariable("userIdx") int userIdx, @RequestParam("jsonList") String jsonList,
+            (@RequestParam("jsonList") String jsonList,
              @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PostPortfolioReq postPortfolioReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
 
         try {
+            int userIdx = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (postPortfolioReq.getTitle() == null) return new BaseResponse<>(EMPTY_TITLE);
             if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
@@ -78,7 +79,7 @@ public class PortfolioController {
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
-    @PostMapping(value = "/{portfolioIdx}/post", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/{portfolioIdx}/content", consumes = {"multipart/form-data"})
     public BaseResponse<String> createPostInPortfolio
             (@PathVariable("portfolioIdx")int portfolioIdx, @RequestParam("jsonList") String jsonList) throws BaseException, JsonProcessingException {
 
