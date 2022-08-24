@@ -24,7 +24,7 @@ public class PostDao {
     public GetPostsRes selectPosts(int postIdx) {
 
         String selectPostsQuery = "select u.profileImgUrl as profileImgUrl, u.nickName as nickName, p.postIdx as postIdx, imgUrl, content,\n" +
-                "       if(count(likesIdx) is null, 0, count(likesIdx)) as likeCount\n" +
+                "       if(count(likeIdx) is null, 0, count(likeIdx)) as likeCount\n" +
                 "from Post as p\n" +
                 "    join User as u on u.userIdx = p.userIdx\n" +
                 "    left join postLike as ps on ps.postIdx = p.postIdx\n" +
