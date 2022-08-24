@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.config.*;
 import com.there.src.history.model.*;
-import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,7 +12,6 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,7 +103,7 @@ public class HistoryController {
         try {
 
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (postHistoryReq.getTitle() == null) {
                 return new BaseResponse<>(BaseResponseStatus.EMPTY_TITLE);
@@ -157,7 +155,7 @@ public class HistoryController {
 
         try {
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             historyService.deleteHistory(userIdxByJwt, historyIdx);
 
             String result = "히스토리가 삭제되었습니다.";
@@ -214,7 +212,7 @@ public class HistoryController {
                 }
             }
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             historyService.modifyHistory(userIdxByJwt, historyIdx, patchHistoryReq, MultipartFiles);
 

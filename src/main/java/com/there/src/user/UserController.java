@@ -306,7 +306,7 @@ public class UserController {
     @PatchMapping("/{userIdx}/profileImgUrl")
     public BaseResponse<String> modifydeafultProfileImg(@PathVariable("userIdx") int userIdx) throws BaseException {
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }

@@ -63,7 +63,7 @@ public class SearchController {
     public BaseResponse<List<GetRecentSearchListRes>> getRecentSearch() {
       try{
 
-          int userIdxByJwt = jwtService.getUserIdx();
+          int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
           List<GetRecentSearchListRes> getRecentSearchListRes = searchProvider.retrieveRecentSearches(userIdxByJwt);
           return new BaseResponse<>((getRecentSearchListRes));
 
@@ -88,7 +88,7 @@ public class SearchController {
     public BaseResponse<String> deleteRecentSearch(@PathVariable("searchIdx") int searchIdx) {
         try{
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             searchService.deleteRecentSearch(userIdxByJwt, searchIdx);
 
             String result = "삭제를 성공했습니다.";
@@ -113,7 +113,7 @@ public class SearchController {
     public BaseResponse<String> deleteAllRecentSearch() {
         try{
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             searchService.deleteAllRecentSearch(userIdxByJwt);
 
             String result = "삭제를 성공했습니다.";
@@ -139,7 +139,7 @@ public class SearchController {
     public BaseResponse<List<GetSearchByAccountRes>> getSearchByAccount(@RequestParam String account) {
         try{
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             List<GetSearchByAccountRes> getSearchByAccountRes = searchProvider.retrieveByAccount(userIdxByJwt, account);
 
             return new BaseResponse<>(getSearchByAccountRes);
@@ -163,7 +163,7 @@ public class SearchController {
     public BaseResponse<List<GetSearchByHashtagRes>> getSearchByHashtag(@RequestParam String hashtag) {
         try{
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             List<GetSearchByHashtagRes> getSearchByHashtagRes = searchProvider.retrieveByHashtag(userIdxByJwt, hashtag);
             return new BaseResponse<>(getSearchByHashtagRes);
 
