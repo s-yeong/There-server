@@ -39,12 +39,13 @@ public class LikeController {
     @PostMapping("/users/{usedIdx}")
     public BaseResponse<PostLikeRes> createLikes(@PathVariable("userIdx")int userIdx, @RequestBody PostLikeReq postLikeReq) throws com.there.config.BaseException {
 
-        int userIdxByJwt = jwtService.getUserIdx();
-
-        // User 권한 확인
-        if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
-
         try {
+
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
+
+            // User 권한 확인
+            if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
+
             PostLikeRes postLikeRes = likeService.createLikes(userIdx, postLikeReq);
             return new BaseResponse<>(postLikeRes);
         } catch (BaseException exception) {
