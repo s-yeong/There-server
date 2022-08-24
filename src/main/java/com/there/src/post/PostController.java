@@ -83,7 +83,7 @@ public class PostController {
 
         try {
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
             if (MultipartFiles == null) return new BaseResponse<>(EMPTY_IMGURL);
@@ -116,7 +116,7 @@ public class PostController {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchPostsReq patchPostsReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
-        int userIdxByJwt = jwtService.getUserIdx();
+        int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
         if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
         if (patchPostsReq.getHashtag() != null && patchPostsReq.getHashtag().length > 5) return new BaseResponse<>(EXCEEDED_HASHTAG);
@@ -145,7 +145,7 @@ public class PostController {
     public BaseResponse<String> deletePosts
     (@PathVariable("postIdx") int postIdx, @PathVariable("userIdx") int userIdx) throws BaseException {
 
-        int userIdxByJwt = jwtService.getUserIdx();
+        int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
         if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);
 
@@ -192,7 +192,7 @@ public class PostController {
     @GetMapping("rankingAndfollowerPostList")
     public BaseResponse<Map<String, List<GetPostListRes>>>getRankingAndFollowerPostList() {
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             Map<String, List<GetPostListRes>> getPostListRes = new HashMap<>();
             getPostListRes.put("인기글 리스트", postProvider.retrieveRankingPosts());
