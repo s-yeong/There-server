@@ -52,9 +52,9 @@ public class ChatRoomDao {
                 "        and roomIdx in (select roomIdx from chatRoom where chatRoom.senderIdx = ? and chatRoom.status = 'ACTIVE')\n" +
                 "group by roomIdx;";
 
-        String getUnreadCountQuery = "select roomIdx, count(case when 'check' = 1 then 1 end) as rd, count(case when 'check' = 0 then 1 end) as urd\n" +
+        String getUnreadCountQuery = "select roomIdx, count(case when `read` = 1 then 1 end) as rd, count(case when `read` = 0 then 1 end) as urd\n" +
                 "from chatContent\n" +
-                "where status = 'ACTIVE' and roomIdx in (select roomIdx from chatRoom cr where cr.senderIdx = ? and cr.status = 'ACTIVE')\n" +
+                "where status = 'ACTIVE' and roomIdx in (select roomIdx from chatRoom cr where cr.senderIdx = 70 and cr.status = 'ACTIVE')\n" +
                 "group by roomIdx;";
 
         int getChatRoomListParams = userIdx;
