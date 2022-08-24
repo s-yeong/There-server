@@ -9,6 +9,7 @@ import lombok.Data;
 public class GetUnreadCountRes {
 
     private int roomIdx;
-    private int count;
+    private int rd;
+    private int urd;
 
 }

@@ -52,9 +52,9 @@ public class ChatRoomDao {
                 "        and roomIdx in (select roomIdx from chatRoom where chatRoom.senderIdx = ? and chatRoom.status = 'ACTIVE')\n" +
                 "group by roomIdx;";
 
-        String getUnreadCountQuery = "select roomIdx, if(count(*) is null, 0, count(*)) as count\n" +
+        String getUnreadCountQuery = "select roomIdx, count(case when 'check' = 1 then 1 end) as rd, count(case when 'check' = 0 then 1 end) as urd\n" +
                 "from chatContent\n" +
-                "where `check` = 0 and status = 'ACTIVE' and roomIdx in (select roomIdx from chatRoom cr where cr.senderIdx = ? and cr.status = 'ACTIVE')\n" +
+                "where status = 'ACTIVE' and roomIdx in (select roomIdx from chatRoom cr where cr.senderIdx = ? and cr.status = 'ACTIVE')\n" +
                 "group by roomIdx;";
 
         int getChatRoomListParams = userIdx;
@@ -77,7 +77,8 @@ public class ChatRoomDao {
         // 채팅방 안 읽은 메시지 조회
         CountInfo = this.jdbcTemplate.query(getUnreadCountQuery, (rs, rowNum) -> new GetUnreadCountRes(
                                 rs.getInt("roomIdx"),
-                                rs.getInt("count")), getChatRoomListParams);
+                                rs.getInt("rd"),
+                                rs.getInt("urd")), getChatRoomListParams);
 
 
 
@@ -87,19 +88,17 @@ public class ChatRoomDao {
             GetRoomInfoRes tmp_Room = RoomInfo.get(i);
             GetLastContentRes tmp_Last = lastContent.get(i);
             GetUnreadCountRes tmp_Count = CountInfo.get(i);
-            if (tmp_Count == null) {
-                CountInfo.add(new GetUnreadCountRes(RoomInfo.get(i).getRoomIdx(), 0));
-            }
 
             // 채팅방 Idx가 동일할 때 채팅방 정보에 대한 객체 생성
             if (tmp_Room.getRoomIdx() == tmp_Count.getRoomIdx() & tmp_Last.getRoomIdx() == tmp_Count.getRoomIdx()) {
+
                 Room = new GetRoomListRes
                         (tmp_Room.getRoomIdx(), tmp_Room.getSenderIdx(), tmp_Room.getReceiverIdx(),
                                 tmp_Last.getContent(), tmp_Last.getCreated_At(),
-                                tmp_Room.getNickName(), tmp_Room.getProfileImgUrl(), tmp_Count.getCount());
+                                tmp_Room.getNickName(), tmp_Room.getProfileImgUrl(), tmp_Count.getUrd());
 
                 RoomList.add(Room);
-           }
+            }
 
         }
 
