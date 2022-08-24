@@ -52,12 +52,10 @@ public class ChatRoomDao {
                 "        and roomIdx in (select roomIdx from chatRoom where chatRoom.senderIdx = ? and chatRoom.status = 'ACTIVE')\n" +
                 "group by roomIdx;";
 
-        String getUnreadCountQuery = "select      roomIdx, count(*) as count\n" +
-                "from        chatContent\n" +
-                "where       'check' = 0 and status = 'ACTIVE' and roomIdx in (select  roomIdx\n" +
-                "                                                              from    chatRoom cr\n" +
-                "                                                              where   senderIdx = ? and cr.status = 'ACTIVE')\n" +
-                "group by    roomIdx;";
+        String getUnreadCountQuery = "select roomIdx, if(count(*) is null, 0, count(*)) as count\n" +
+                "from chatContent\n" +
+                "where `check` = 0 and status = 'ACTIVE' and roomIdx in (select roomIdx from chatRoom cr where cr.senderIdx = ? and cr.status = 'ACTIVE')\n" +
+                "group by roomIdx;";
 
         int getChatRoomListParams = userIdx;
 
@@ -80,6 +78,13 @@ public class ChatRoomDao {
         CountInfo = this.jdbcTemplate.query(getUnreadCountQuery, (rs, rowNum) -> new GetUnreadCountRes(
                                 rs.getInt("roomIdx"),
                                 rs.getInt("count")), getChatRoomListParams);
+
+        // 안 읽은 메시지가 없을 경우
+        if (CountInfo.size() == 0) {
+            for (int i = 0; i < RoomInfo.size() ; i++) {
+                CountInfo.add(new GetUnreadCountRes(RoomInfo.get(i).getRoomIdx(), 0));
+            }
+        }
 
         for (int i = 0; i < RoomInfo.size(); i++) {
 
