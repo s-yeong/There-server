@@ -73,7 +73,7 @@ public class PortfolioController {
         }
     }
 
-    @ApiOperation(value="Portfolio 내 Post 추가 API", notes="반드시 1개 이상의 포스트 선택")
+    @ApiOperation(value="Portfolio 내 Post 추가 API", notes="jsonList = {\"postIdx\"}")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
