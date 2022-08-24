@@ -10,6 +10,7 @@ public class GetPortfolioListRes {
 
     private int portfolioIdx;
     private String title;
+    private String imgUrl;
     private int Post_count;
 
 }

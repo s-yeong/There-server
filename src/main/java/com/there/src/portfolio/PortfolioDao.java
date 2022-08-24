@@ -50,7 +50,7 @@ public class PortfolioDao {
      */
     public List<GetPortfolioListRes> getPortfolioList(int userIdx) {
 
-        String getPortfolioListQuery = "select pf.portfolioIdx, title, Post_count\n" +
+        String getPortfolioListQuery = "select pf.portfolioIdx, imgUrl, title, Post_count\n" +
                 "from Portfolio pf\n" +
                 "    left join (select portfolioIdx, count(portfolioIdx) Post_count from Portfolio_Post group by portfolioIdx) pp on pf.portfolioIdx = pp.portfolioIdx\n" +
                 "\n" +
@@ -62,6 +62,7 @@ public class PortfolioDao {
         return this.jdbcTemplate.query(getPortfolioListQuery, (rs, rowNum) -> new GetPortfolioListRes(
                 rs.getInt("portfolioIdx"),
                 rs.getString("title"),
+                rs.getString("imgUrl"),
                 rs.getInt("Post_count")), getPortfolioListParams);
     }
 
