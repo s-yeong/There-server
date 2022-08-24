@@ -4,6 +4,7 @@ package com.there.src.point;
 import com.there.config.BaseException;
 import com.there.src.point.model.PostPointRes;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +14,10 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class PointService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private final PointDao pointDao;
-    private final JwtService jwtService;
-
-    @Autowired
-    public PointService(PointDao pointDao, JwtService jwtService) {
-        this.pointDao = pointDao;
-        this.jwtService = jwtService;
-    }
 
     // 포인트 충전
     public PostPointRes chargePoint(int userIdx, int amount, int tax_free_amount, String tid) throws BaseException {

@@ -4,6 +4,7 @@ import com.there.config.BaseException;
 import com.there.src.comment.model.GetCommentListRes;
 import com.there.src.comment.model.GetReCommentListRes;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,14 @@ import java.util.List;
 import static com.there.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class CommentProvider {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final CommentDao commentDao;
     private final JwtService jwtService;
 
-    @Autowired
-    public CommentProvider(CommentDao commentDao, JwtService jwtService){
-        this.commentDao = commentDao;
-        this.jwtService = jwtService;
-    }
+
 
     // 댓글 리스트 조회
     public List<GetCommentListRes> retrieveComment(int postIdx) throws BaseException{

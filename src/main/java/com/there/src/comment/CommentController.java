@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import static com.there.config.BaseResponseStatus.*;
 
 @Api
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/comments")
 public class CommentController {
 
@@ -30,12 +32,6 @@ public class CommentController {
     private final CommentService commentService;
     private final JwtService jwtService;
 
-    @Autowired
-    public CommentController(CommentProvider commentProvider, CommentService commentService, JwtService jwtService) {
-        this.commentProvider = commentProvider;
-        this.commentService = commentService;
-        this.jwtService = jwtService;
-    }
 
     /**
      * 댓글 생성 API
@@ -57,7 +53,6 @@ public class CommentController {
                 throw new BaseException(ACCESS_TOKEN_ERROR);
             }
 
-            System.out.println(jwtService.getUserIdx1(jwtService.getJwt()));
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (userIdxByJwt != userIdx) return new BaseResponse<>(INVALID_USER_JWT);

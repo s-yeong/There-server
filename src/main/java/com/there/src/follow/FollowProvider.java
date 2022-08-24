@@ -2,6 +2,9 @@ package com.there.src.follow;
 
 import com.there.src.follow.model.GetFollowerListRes;
 import com.there.src.follow.model.GetFollowingListRes;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.there.config.BaseException;
@@ -11,13 +14,11 @@ import java.util.List;
 import static com.there.config.BaseResponseStatus.DATABASE_ERROR;
 
 @Service
+@RequiredArgsConstructor
 public class FollowProvider {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final FollowDao followDao;
 
-    @Autowired
-    public FollowProvider(FollowDao followDao) {
-        this.followDao = followDao;
-    }
 
     // 나를 팔로우 하는 유저 리스트 조회 (== FollowerList)
     public List<GetFollowerListRes> FollowerList(int userIdx)  throws BaseException {
