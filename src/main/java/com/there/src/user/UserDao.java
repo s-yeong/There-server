@@ -55,8 +55,7 @@ public class UserDao {
                 "\n" +
                 "                            join User as u on u.userIdx = p.userIdx\n" +
                 "                        WHERE p.status = 'ACTIVE' and u.userIdx = ?\n" +
-                "                        group by p.postIdx\n" +
-                "                        order by p.postIdx;";
+                "                        order by p.created_At desc;";
         int selectUserPostsParam = userIdx;
 
         return this.jdbcTemplate.query(selectUserPostsQuery,

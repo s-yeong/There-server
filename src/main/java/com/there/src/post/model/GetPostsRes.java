@@ -18,5 +18,5 @@ public class GetPostsRes {
     private String imgUrl;
     private String content;
     private int likeCount;
-    private List<GetPostTagRes> getPostTagist;
+    private List<GetPostTagRes> getPostTagList;
 }
