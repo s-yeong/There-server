@@ -127,6 +127,11 @@ public class PortfolioController {
 
     }
 
+    @ApiOperation(value="Portfolio 수정 API", notes="")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping("/change/{portfolioIdx}")
     public BaseResponse<String> ModifyPortfolio
