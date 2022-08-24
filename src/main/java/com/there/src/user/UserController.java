@@ -2,53 +2,42 @@ package com.there.src.user;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.there.src.user.config.BaseException;
-import com.there.src.user.config.BaseResponse;
+import com.there.src.s3.S3Service;
+import com.there.config.BaseException;
+import com.there.config.BaseResponse;
 import com.there.src.user.model.*;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 import static com.there.utils.ValidationRegex.isRegexEmail;
 
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final UserProvider userProvider;
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final JwtService jwtService;
-
-
-
-
-    public UserController(UserProvider userProvider, UserService userService, JwtService jwtService) {
-        this.userProvider = userProvider;
-        this.userService = userService;
-        this.jwtService = jwtService;
-    }
-
+    private final S3Service s3Service;
 
 
     /**
@@ -63,7 +52,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러")
     })
     @ResponseBody
-    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
+    @GetMapping("/{userIdx}")
     public BaseResponse<GetUserRes> getUserByIdx(@PathVariable("userIdx") int userIdx) {
         try {
 
@@ -86,10 +75,10 @@ public class UserController {
     })
     @ResponseBody
     @GetMapping("/feed/{userIdx}")
-    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<GetUserFeedRes> getUserFeed(@PathVariable("userIdx") int userIdx) {
         try {
-            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
-            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx, userIdxByJwt);
+
+            GetUserFeedRes getUserFeed = userProvider.retrieveUserFeed(userIdx);
             return new BaseResponse<>(getUserFeed);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -131,8 +120,6 @@ public class UserController {
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
-        } catch (com.there.config.BaseException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -188,7 +175,7 @@ public class UserController {
     })
     @ResponseBody
     @GetMapping("/kakao/{kakaoIdx}")
-    public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws  BaseException {
+    public BaseResponse<String> updateKakaoToken(@PathVariable int kakaoIdx) throws BaseException {
         String result = "";
             userService.updateKakaoToken(kakaoIdx);
             return new BaseResponse<>(result);
@@ -208,7 +195,7 @@ public class UserController {
     })
     @PostMapping("/{userIdx}/reissue")
     public BaseResponse<TokenDto> reissue(
-            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException, com.there.config.BaseException {
+            @PathVariable("userIdx")int userIdx, @RequestParam ("accessToken") String accessToken, @RequestParam("refreshToken") String refreshToken) throws BaseException {
         return new BaseResponse(userService.reissue(userIdx, accessToken,refreshToken ));
     }
 
@@ -277,27 +264,25 @@ public class UserController {
      * 프로필 수정
      * [PATCH] /users/{userIdx}
      */
+    @ApiOperation(value = "프로필 수정 API", notes = "헤더에 jwt 입력 필요")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청 성공"),
+            @ApiResponse(code = 4000, message = "서버 에러")
+    })
     @ResponseBody
     @PatchMapping(value = "/{userIdx}", consumes = {"multipart/form-data"})
     public BaseResponse<String> modifyProfile(@PathVariable("userIdx")int userIdx, @RequestParam ("jsonList") String jsonList,
                                               @RequestPart(value = "images", required = false) List<MultipartFile> MultipartFiles)
-            throws IOException, com.there.config.BaseException{
+            throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         PatchUserReq patchUserReq = objectMapper.readValue(jsonList, new TypeReference<>() {});
-
-        if(patchUserReq.getNickName() ==null) {
-            return new BaseResponse<>(POST_USER_EMPTY_NICKNAME);
-        }
 
         try {
             int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-
-            if(MultipartFiles == null)
-                return new BaseResponse<>(POST_USER_EMPTY_PROFILEIMG);
 
             userService.modifyProfile(userIdx, patchUserReq, MultipartFiles);
             String result ="회원정보 수정을 완료하였습니다.";
@@ -308,20 +293,45 @@ public class UserController {
     }
 
     /**
+     * 유저 기본 프로필 사진 변경
+     * [PATCH] /{userIdx}/profileImgUrl
+     */
+    @ApiOperation(value = "유저 기본 프로필 사진 변경", notes = "헤더에 jwt 입력 필요")
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2003, message = "권한이 없는 유저의 접근입니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
+    @ResponseBody
+    @PatchMapping("/{userIdx}/profileImgUrl")
+    public BaseResponse<String> modifydeafultProfileImg(@PathVariable("userIdx") int userIdx) throws BaseException {
+
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
+            if (userIdx != userIdxByJwt) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            s3Service.uploadUserdeafultProfileImg(userIdx);
+            String result = "기본 이미지로 변경되었습니다.";
+            return new BaseResponse<>(result);
+    }
+
+
+    /**
      * 회원 삭제
      * [PATCH] /{userIdx}/status
      * @return BaseResponse<String>
      */
-    @ApiOperation(value = "회원 삭제")
+    @ApiOperation(value = "회원 삭제", notes = "헤더에 jwt 입력 필요")
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청 성공"),
             @ApiResponse(code = 4000, message = "서버 에러")
     })
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) throws com.there.config.BaseException {
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
@@ -330,6 +340,7 @@ public class UserController {
             String result = "삭제되었습니다.";
             return new BaseResponse<>(result);
         } catch (BaseException exception) {
+            System.out.println(exception);
             return new BaseResponse<>((exception.getStatus()));
         }
     }

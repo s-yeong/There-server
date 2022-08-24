@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.there.config.*;
 import com.there.src.history.model.*;
-import com.there.src.s3.S3Service;
 import com.there.utils.JwtService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,27 +19,16 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/historys")
 public class HistoryController {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private final HistoryProvider historyProvider;
-    @Autowired
     private final HistoryService historyService;
-    @Autowired
     private final JwtService jwtService;
-    @Autowired
-    private final S3Service s3Service;
 
-
-    public HistoryController(HistoryProvider historyProvider, HistoryService historyService, JwtService jwtService, S3Service s3Service) {
-        this.historyProvider = historyProvider;
-        this.historyService = historyService;
-        this.jwtService = jwtService;
-        this.s3Service = s3Service;
-    }
 
     /**
      * 히스토리 조회 API   -- ex) "히스토리 제목" 누르면 그 히스토리 조회
@@ -48,8 +36,8 @@ public class HistoryController {
      */
     @ApiOperation(value="히스토리 조회 API", notes="히스토리 제목(historyIdx) 누르면 그 히스토리 조회")
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
     })
     @ResponseBody
     @GetMapping("/{historyIdx}")
@@ -70,12 +58,12 @@ public class HistoryController {
      */
     @ApiOperation(value="히스토리 리스트 조회 API", notes="히스토리 제목 + 날짜들이 리스트로 조회")
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
     })
     @ResponseBody
-    @GetMapping("/{postIdx}")
-    public BaseResponse<List<GetHistoryListRes>> getHistoryList(@RequestParam int postIdx) {
+    @GetMapping("/posts/{postIdx}")
+    public BaseResponse<List<GetHistoryListRes>> getHistoryList(@PathVariable("postIdx") int postIdx) {
         try {
 
             List<GetHistoryListRes> getHistoryListRes = historyProvider.retrieveHistoryList(postIdx);
@@ -89,13 +77,18 @@ public class HistoryController {
     /**
      * 히스토리 작성 API
      * [POST] /historys
-     *
-     * @return BaseResponse<postHistoryRes>
      */
     @ApiOperation(value="히스토리 작성 API", notes="Body 타입 : form-data<jsonList, images>")
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2004, message = "제목을 입력해주세요."),
+            @ApiResponse(code = 2005, message = "사진을 올려주세요."),
+            @ApiResponse(code = 2006, message = "내용을 입력해주세요."),
+            @ApiResponse(code = 2007, message = "해당 유저가 아닙니다."),
+            @ApiResponse(code = 2008, message = "없는 아이디입니다."),
+            @ApiResponse(code = 2103, message = "히스토리 제목의 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2104, message = "히스토리 내용의 글자 수를 확인해주세요."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
     })
     @ResponseBody
     @PostMapping(value="", consumes = {"multipart/form-data"})
@@ -110,7 +103,7 @@ public class HistoryController {
         try {
 
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             if (postHistoryReq.getTitle() == null) {
                 return new BaseResponse<>(BaseResponseStatus.EMPTY_TITLE);
@@ -149,8 +142,12 @@ public class HistoryController {
      */
     @ApiOperation(value="히스토리 삭제 API", notes="실제 DB를 삭제하지 않고 status를 DELETED로 변경")
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2007, message = "해당 유저가 아닙니다."),
+            @ApiResponse(code = 2008, message = "없는 아이디입니다."),
+            @ApiResponse(code = 2102, message = "히스토리 아이디 값을 확인해주세요."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
+            @ApiResponse(code = 4113, message = "히스토리 삭제를 실패하였습니다."),
     })
     @ResponseBody
     @PatchMapping("/{historyIdx}/status")
@@ -158,34 +155,11 @@ public class HistoryController {
 
         try {
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
             historyService.deleteHistory(userIdxByJwt, historyIdx);
 
             String result = "히스토리가 삭제되었습니다.";
             return new BaseResponse<>(result);
-
-        } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    /**
-     * 히스토리 수정 화면 API
-     * [GET] /historys/modify/:historyIdx
-     */
-    @ApiOperation(value="히스토리 수정 화면 API", notes="히스토리 조회와 다른 점은 JWT 인증이 필요")
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
-    })
-    @ResponseBody
-    @GetMapping("/modify/{historyIdx}")
-    public BaseResponse<GetHistoryScreenRes> getModifyHistory(@PathVariable("historyIdx") int historyIdx) {
-        try {
-
-            int userIdxByJwt = jwtService.getUserIdx();
-            GetHistoryScreenRes getHistoryScreenRes = historyProvider.retrieveModifyHistory(userIdxByJwt, historyIdx);
-            return new BaseResponse<>(getHistoryScreenRes);
 
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -199,8 +173,14 @@ public class HistoryController {
      */
     @ApiOperation(value="히스토리 수정 API", notes="Body 타입 : form-data<jsonList, images>")
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청 성공"),
-            @ApiResponse(code = 4000, message = "서버 에러")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2005, message = "변경 사항이 없습니다."),
+            @ApiResponse(code = 2007, message = "해당 유저가 아닙니다."),
+            @ApiResponse(code = 2008, message = "없는 아이디입니다."),
+            @ApiResponse(code = 2102, message = "히스토리 아이디 값을 확인해주세요."),
+            @ApiResponse(code = 2103, message = "히스토리 제목의 글자 수를 확인해주세요."),
+            @ApiResponse(code = 2104, message = "히스토리 내용의 글자 수를 확인해주세요."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다."),
     })
     @ResponseBody
     @PatchMapping(value = "/modify/{historyIdx}", consumes = {"multipart/form-data"})
@@ -232,7 +212,7 @@ public class HistoryController {
                 }
             }
 
-            int userIdxByJwt = jwtService.getUserIdx();
+            int userIdxByJwt = jwtService.getUserIdx1(jwtService.getJwt());
 
             historyService.modifyHistory(userIdxByJwt, historyIdx, patchHistoryReq, MultipartFiles);
 

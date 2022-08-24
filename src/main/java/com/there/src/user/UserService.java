@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
 import com.there.src.s3.S3Service;
-import com.there.src.user.config.BaseException;
+import com.there.config.BaseException;
 
-import static com.there.src.user.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 
 import com.there.src.user.model.*;
@@ -15,6 +15,7 @@ import com.there.src.user.model.*;
 import com.there.utils.AES256;
 import com.there.utils.JwtService;
 import com.there.utils.SHA256;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,19 +44,8 @@ public class UserService {
     private final UserProvider userProvider;
     private final JwtService jwtService;
     private final S3Service s3Service;
-
     private final RedisTemplate redisTemplate;
 
-
-
-    @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService, S3Service s3Service, RedisTemplate redisTemplate) {
-        this.userDao = userDao;
-        this.userProvider = userProvider;
-        this.jwtService = jwtService;
-        this.s3Service = s3Service;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Transactional
     // 로그인
@@ -147,7 +138,7 @@ public class UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=2e8b184b25eb6aee0a1496b4af1d7ffd");
-            sb.append("&redirect_uri=http://localhost:8080/users/login/kakao");
+            sb.append("&redirect_uri=https://recordinthere.shop/users/login/kakao");
             sb.append("&code=" + code);
             sb.append("&client_secret=fJMsCcaBpzyMWMj6ughnTuo9zl3jMLq6");
             bw.write(sb.toString());
@@ -382,6 +373,8 @@ public class UserService {
 
             try {
                 int userIdx = userDao.createUser(postJoinReq);
+                // 유저 기본 프로필 사진 업로드
+                s3Service.uploadUserdeafultProfileImg(userIdx);
 
                 return new PostJoinRes(userIdx);
             } catch (Exception exception) {
@@ -393,27 +386,21 @@ public class UserService {
     // 유저 프로필 수정
     @Transactional(rollbackFor = BaseException.class)
     public void modifyProfile(int userIdx, PatchUserReq patchUserReq, List<MultipartFile> MultipartFiles) throws BaseException{
+
         if(userProvider.checkUserExist(userIdx) == 0) {
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
 
-        if(MultipartFiles.size() > 1){
-            throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+        if(MultipartFiles != null) {
+            if (MultipartFiles.size() > 1) {
+                throw new BaseException(USERS_EXCEEDED_PROFILEIMG);
+            }
         }
+
          try {
-             if (MultipartFiles != null) {
 
-                    s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
-                    s3Service.delUserProfileImg(userIdx);
-
-                     // s3 업로드
-                     String s3path = "User/userIdx : " + Integer.toString(userIdx);
-                     String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
-
-                     // db 업로드
-                     s3Service.uploadUserProfileImg(imgPath, userIdx);
-             }
              int result = 0;
+
              if (patchUserReq.getNickName() != null){
                  result = userDao.updateNickName(userIdx, patchUserReq);
 
@@ -428,6 +415,18 @@ public class UserService {
 
              if (result == 0) {
                  throw new BaseException(MODIFY_FAIL_USERNAME);
+             }
+
+             if (MultipartFiles != null) {
+
+                 s3Service.removeFolder("User/userIdx : " + Integer.toString(userIdx));
+
+                 // s3 업로드
+                 String s3path = "User/userIdx : " + Integer.toString(userIdx);
+                 String imgPath = s3Service.uploadFiles(MultipartFiles.get(0), s3path);
+
+                 // db 업로드
+                 s3Service.uploadUserProfileImg(imgPath, userIdx);
              }
 
          }catch (Exception exception) {

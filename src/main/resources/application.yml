@@ -16,7 +16,7 @@ spring:
 
   redis:
     port: 6379
-    host: localhost
+    host: recordinthere.shop
   jwt:
     secret-key: SECRET_KEY
     blacklist:

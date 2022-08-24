@@ -3,6 +3,7 @@ package com.there.src.post;
 import com.there.config.BaseException;
 import com.there.src.post.model.*;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +14,12 @@ import java.util.List;
 import static com.there.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class PostProvider {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PostDao postDao;
-    private final JwtService jwtService;
-
-    @Autowired
-    public PostProvider(PostDao postDao, JwtService jwtService) {
-        this.postDao = postDao;
-        this.jwtService = jwtService;
-    }
 
 
     // 게시글 조회

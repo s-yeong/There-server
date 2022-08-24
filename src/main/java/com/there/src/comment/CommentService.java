@@ -1,31 +1,25 @@
 package com.there.src.comment;
 
-
-import com.there.src.comment.config.BaseException;
+import com.there.config.BaseException;
 import com.there.src.comment.model.*;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.there.src.comment.config.BaseResponseStatus.*;
+import static com.there.config.BaseResponseStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final CommentDao commentDao;
-
     private final CommentProvider commentProvider;
     private final JwtService jwtService;
 
-    @Autowired
-    public CommentService(CommentDao commentDao, CommentProvider commentProvider, JwtService jwtService){
-        this.commentDao = commentDao;
-        this.commentProvider = commentProvider;
-        this.jwtService = jwtService;
-    }
 
     // 댓글 작성
     public PostCommentRes createComment(int postIdx, int userIdx,PostCommentReq postCommentReq) throws BaseException{
@@ -38,7 +32,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void deleteComment(int userIdx, int commentIdx) throws com.there.config.BaseException, BaseException {
+    public void deleteComment(int userIdx, int commentIdx) throws BaseException {
 
         if(commentProvider.checkUserCommentExist(userIdx, commentIdx) == 0){
             throw new BaseException(USERS_COMMENT_INVALID_ID);
@@ -72,7 +66,7 @@ public class CommentService {
     }
 
     // 대댓글 작성
-    public PostReCommentRes createReComment(int postIdx, int userIdx, int commentIdx , PostReCommentReq postReCommentReq) throws com.there.config.BaseException, BaseException{
+    public PostReCommentRes createReComment(int postIdx, int userIdx, int commentIdx , PostReCommentReq postReCommentReq) throws  BaseException{
 
         if(commentDao.checkReComment(commentIdx) == 0){
             throw new BaseException(COMMENT_INVALID);
@@ -81,12 +75,12 @@ public class CommentService {
             int reply_id = commentDao.createReComment(postIdx, userIdx,commentIdx, postReCommentReq);
             return new PostReCommentRes(reply_id);
         } catch (Exception exception) {
-            throw new BaseException(CREATE_FAIL_RECOMMENT);
+            throw new BaseException(CREATE_FAIL_COMMENT);
         }
     }
 
     // 대댓글 삭제
-    public void deleteReComment(int userIdx, int commentIdx) throws com.there.config.BaseException, BaseException {
+    public void deleteReComment(int userIdx, int commentIdx) throws BaseException {
 
         if(commentProvider.checkUserCommentExist(userIdx, commentIdx) == 0){
             throw new BaseException(USERS_COMMENT_INVALID_ID);

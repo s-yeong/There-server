@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetChatContentRes {
+public class GetLastContentRes {
 
-    private int userIdx;
+    private int roomIdx;
     private String content;
     private String created_At;
 }

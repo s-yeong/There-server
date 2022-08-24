@@ -1,8 +1,9 @@
 package com.there.src.chat;
 
+import com.there.src.chat.model.GetLastContentRes;
 import com.there.src.chat.model.GetRoomInfoRes;
 import com.there.src.chat.model.GetRoomListRes;
-import com.there.src.chat.model.GetUserInfoRes;
+import com.there.src.chat.model.GetUnreadCountRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -37,44 +38,66 @@ public class ChatRoomDao {
 
         List<GetRoomListRes> RoomList = new ArrayList<GetRoomListRes>();
         List<GetRoomInfoRes> RoomInfo;
-        List<GetUserInfoRes> UserInfo;
+        List<GetLastContentRes> lastContent;
+        List<GetUnreadCountRes> CountInfo;
 
-        String getChatRoomInfoQuery = "select      roomIdx, count(*) as count\n" +
+        String getChatRoomInfoQuery = "select roomIdx, senderIdx, receiverIdx, nickName, profileImgUrl\n" +
+                "from chatRoom cr LEFT JOIN User u on cr.receiverIdx = u.userIdx\n" +
+                "where senderIdx = ? and u.status = 'ACTIVE' and cr.status = 'ACTIVE';";
+
+        String getLastContentQuery
+                = "select roomIdx, content, created_At\n" +
+                "from chatContent\n" +
+                "where (roomIdx, created_At) in (select roomIdx, max(created_At) as created_At from chatContent where status = 'ACTIVE' group by roomIdx)\n" +
+                "        and roomIdx in (select roomIdx from chatRoom where chatRoom.senderIdx = ? and chatRoom.status = 'ACTIVE')\n" +
+                "order by roomIdx;";
+
+        String getUnreadCountQuery = "select      roomIdx, count(*) as count\n" +
                 "from        chatContent\n" +
                 "where       'check' = 0 and status = 'ACTIVE' and roomIdx in (select  roomIdx\n" +
-                "                                                              from    chatRoom\n" +
-                "                                                              where   senderIdx = ?)\n" +
+                "                                                              from    chatRoom cr\n" +
+                "                                                              where   senderIdx = ? and cr.status = 'ACTIVE')\n" +
                 "group by    roomIdx;";
-
-        String getUserInfoQuery = "select  nickName, profileImgUrl\n" +
-                "from    User u\n" +
-                "where   u.userIdx in (select receiverIdx from chatRoom where senderIdx = ? and u.status = 'ACTIVE');";
 
         int getChatRoomListParams = userIdx;
 
         // 채팅방 정보 조회
         RoomInfo = this.jdbcTemplate.query(getChatRoomInfoQuery, (rs, rowNum) -> new GetRoomInfoRes(
 
-
                 rs.getInt("roomIdx"),
-                rs.getInt("count")), getChatRoomListParams);
+                rs.getInt("senderIdx"),
+                rs.getInt("receiverIdx"),
+                rs.getString("nickName"),
+                rs.getString("profileImgUrl")), getChatRoomListParams);
 
+        // 마지막 채팅 조회
+        lastContent = this.jdbcTemplate.query(getLastContentQuery, (rs, rowNum) -> new GetLastContentRes(
+                rs.getInt("roomIdx"),
+                rs.getString("content"),
+                rs.getString("created_At")), getChatRoomListParams);
 
-        // 유저 정보 조회
-        UserInfo = this.jdbcTemplate.query(getUserInfoQuery, (rs, rowNum) -> new GetUserInfoRes(
-                                rs.getString("nickName"),
-                                rs.getString("profileImgUrl")), getChatRoomListParams);
+        // 채팅방 안 읽은 메시지 조회
+        CountInfo = this.jdbcTemplate.query(getUnreadCountQuery, (rs, rowNum) -> new GetUnreadCountRes(
+                                rs.getInt("roomIdx"),
+                                rs.getInt("count")), getChatRoomListParams);
 
         for (int i = 0; i < RoomInfo.size(); i++) {
 
-            GetRoomListRes Room;
+            GetRoomListRes Room = null;
             GetRoomInfoRes tmp_Room = RoomInfo.get(i);
-            GetUserInfoRes tmp_User = UserInfo.get(i);
+            GetLastContentRes tmp_Last = lastContent.get(i);
+            GetUnreadCountRes tmp_Count = CountInfo.get(i);
 
-            Room =
-                    new GetRoomListRes(tmp_Room.getRoomIdx(), tmp_Room.getCount(), tmp_User.getNickName(), tmp_User.getProfileImgUrl());
+            // 채팅방 Idx가 동일할 때 채팅방 정보에 대한 객체 생성
+            if (tmp_Room.getRoomIdx() == tmp_Count.getRoomIdx() & tmp_Last.getRoomIdx() == tmp_Count.getRoomIdx()) {
+                Room = new GetRoomListRes
+                        (tmp_Room.getRoomIdx(), tmp_Room.getSenderIdx(), tmp_Room.getReceiverIdx(),
+                                tmp_Last.getContent(), tmp_Last.getCreated_At(),
+                                tmp_Room.getNickName(), tmp_Room.getProfileImgUrl(), tmp_Count.getCount());
+           }
 
             RoomList.add(Room);
+
         }
 
         return RoomList;

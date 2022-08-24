@@ -2,6 +2,7 @@ package com.there.src.search;
 
 import com.there.config.BaseException;
 import com.there.utils.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,25 +12,17 @@ import static com.there.config.BaseResponseStatus.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class SearchService {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SearchDao searchDao;
     private final SearchProvider searchProvider;
-    private final JwtService jwtService;
-
-
-    @Autowired
-    public SearchService(SearchDao searchDao, SearchProvider searchProvider, JwtService jwtService) {
-        this.searchDao = searchDao;
-        this.searchProvider = searchProvider;
-        this.jwtService = jwtService;
-    }
 
 
     // 최근 검색어 삭제
-    public void deleteRecentSearch(int userIdx, int searchIdx) throws BaseException, com.there.config.BaseException {
+    public void deleteRecentSearch(int userIdx, int searchIdx) throws BaseException {
 
         if(searchProvider.checkUserExist(userIdx) == 0){
             throw new BaseException(USERS_EMPTY_USER_ID);
@@ -49,13 +42,15 @@ public class SearchService {
     }
 
     // 최근 검색어 모두 삭제
-    public void deleteAllRecentSearch(int userIdx) throws BaseException, com.there.config.BaseException {
+    public void deleteAllRecentSearch(int userIdx) throws BaseException {
 
         if(searchProvider.checkUserExist(userIdx) == 0){
             throw new BaseException(USERS_EMPTY_USER_ID);
         }
 
         try{
+
+            // 검색 기록이 존재하지 않을 때까지 삭제
             while(searchProvider.checkUserSearchExist(userIdx) == 1){
                 searchDao.deleteAllRecentSearch(userIdx);
             }

@@ -3,11 +3,12 @@ package com.there.src.chat.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+
 @Data
 @AllArgsConstructor
-public class GetChatContentRes {
+public class GetUnreadCountRes {
 
-    private int userIdx;
-    private String content;
-    private String created_At;
+    private int roomIdx;
+    private int count;
+
 }

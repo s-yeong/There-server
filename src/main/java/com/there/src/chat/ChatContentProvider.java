@@ -25,16 +25,19 @@ public class ChatContentProvider {
 
     /**
      * 채팅방 콘텐츠 조회
+     * 받은 메시지 일 경우 senderIdx = 상대방 Idx
+     * 보낸 메세지 일 경우 senderIdx = 자신 Idx
      */
-    public List<GetChatContentRes> retrieveChatContent(int roomIdx) throws BaseException {
+    public List<GetChatContentRes> retrieveChatContent(int roomIdx, int senderIdx) throws BaseException {
         try {
-            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx);
+            List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx, senderIdx);
             return getChatContentList;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
 
     }
+
 
     /**
      * 메시지 가져오기

@@ -48,7 +48,7 @@ public class JwtService {
                 .setHeaderParam("type","jwt")
                 .claim("userIdx",userIdx)
                 .setIssuedAt(now)
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenVaildMillisecond))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenVaildMillisecond))
                 .signWith(SignatureAlgorithm.HS256,Secret.JWT_SECRET_KEY.getBytes())
                 .compact();
     }

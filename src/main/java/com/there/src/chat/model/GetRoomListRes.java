@@ -8,8 +8,12 @@ import lombok.Data;
 public class GetRoomListRes {
 
     private int roomIdx;
-    private int count;
+    private int senderIdx;
+    private int receiverIdx;
+    private String lastContent;
+    private String created_At;
     private String nickName;
     private String profileImgUrl;
+    private int count;
 
 }
