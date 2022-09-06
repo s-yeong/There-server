@@ -80,7 +80,7 @@ public class PostService {
     @Transactional(rollbackFor = Exception.class)
     public void updatePosts(int postIdx, PatchPostsReq patchPostsReq, List<MultipartFile> MultipartFiles) throws BaseException {
 
-        int result = 0;
+        int result ;
         if(MultipartFiles != null && MultipartFiles.size() > 1){
             throw new BaseException(EXCEEDED_IMGURL);
         }

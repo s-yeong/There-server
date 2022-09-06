@@ -399,7 +399,7 @@ public class UserService {
 
          try {
 
-             int result = 0;
+             int result = 1;
 
              if (patchUserReq.getNickName() != null){
                  result = userDao.updateNickName(userIdx, patchUserReq);
