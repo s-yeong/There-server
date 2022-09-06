@@ -76,22 +76,13 @@ public class ChatContentDao {
     }
 
     // 메시지 확인
-    public int checkChatContent(int roomIdx) {
+    public int checkChatContent(int roomIdx, int senderIdx) {
         String updateChatContentQuery = "UPDATE  chatContent\n" +
                 "SET     `read` = 1\n" +
-                "WHERE   status = 'ACTIVE' and roomIdx = ?;";
-        int updateChatContentParams = roomIdx;
+                "WHERE   status = 'ACTIVE' and roomIdx = ? and senderIdx = ?;";
+        Object[] updateChatContentParams = new Object[]{roomIdx, senderIdx};
 
         return this.jdbcTemplate.update(updateChatContentQuery, updateChatContentParams);
     }
 
-    // 안 읽은 메시지 수 카운트
-    public int selectUnCheckCount(int userIdx) {
-        String selectUncheckCountQuery = "select count(*) count\n" +
-                "from chatContent\n" +
-                "where roomIdx in (select roomIdx from chatRoom where senderIdx = ?) and `check` = 0 and status = 'ACTIVE';";
-        int selectUnCheckCountParams = userIdx;
-
-        return this.jdbcTemplate.queryForObject(selectUncheckCountQuery, int.class, selectUnCheckCountParams);
-    }
 }

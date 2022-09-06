@@ -31,10 +31,7 @@ public class ChatContentProvider {
     public List<GetChatContentRes> retrieveChatContent(int roomIdx, int senderIdx) throws BaseException {
         try {
             List<GetChatContentRes> getChatContentList = chatContentDao.selectChatContentList(roomIdx, senderIdx);
-
-            // 읽은 메시지로 상태 변경 (단, 읽지 않은 메시지가 있을 때만)
-            chatContentDao.checkChatContent(roomIdx);
-
+            chatContentDao.checkChatContent(roomIdx, senderIdx);
             return getChatContentList;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

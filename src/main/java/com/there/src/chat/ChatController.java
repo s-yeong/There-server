@@ -137,6 +137,7 @@ public class ChatController {
 
             // 보낸 메시지 조회(senderIdx = 자신 Idx)
             List<GetChatContentRes> getSendChatContentList = chatContentProvider.retrieveChatContent(roomIdx, senderIdx);
+
             // 받은 메시지 조회(senderIdx = 상대방 Idx)
             List<GetChatContentRes> getReceiveChatContentList = chatContentProvider.retrieveChatContent(roomIdx, receiverIdx);
 
