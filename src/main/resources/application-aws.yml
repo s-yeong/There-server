@@ -1,0 +1,11 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAVAK5CW4BPKEKWB63
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: there-s3-bucket
+    stack:
+      auto: false
